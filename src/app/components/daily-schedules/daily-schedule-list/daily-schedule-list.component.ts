@@ -96,8 +96,12 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   onDateChange(event: any): void {
-    this.selectedDate = event.value.toDate();
-    this.loadSchedule();
+    if (event && event.value) {
+      console.log('Datum geändert:', event.value.format('DD.MM.YYYY'));
+      this.selectedDate = event.value.toDate();
+      this.schedules = []; // Liste leeren
+      this.loadSchedule(); // Neue Daten laden
+    }
   }
 
   formatTime(date: Date): string {

@@ -4,8 +4,8 @@
   <mat-card class="date-selector">
     <mat-form-field appearance="fill">
       <mat-label>Datum auswählen</mat-label>
-      <input matInput [matDatepicker]="picker" [ngModel]="selectedDate" 
-             (ngModelChange)="onDateChange($event)">
+      <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" 
+             (dateChange)="onDateChange($event)">
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
