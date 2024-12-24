@@ -7,7 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import moment from 'moment';
 import { Therapy } from '../../../models/therapy';
 import { Employee } from '../../../models/employee';
 import { Patient } from '../../../models/patient';
@@ -27,11 +29,29 @@ import { PatientService } from '../../../services/patient.service';
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule
+    MatDatepickerModule
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: 'DD.MM.YYYY',
+        },
+        display: {
+          dateInput: 'DD.MM.YYYY',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
+      },
+    }
   ]
 })
 export class TherapyDialogComponent {
@@ -42,6 +62,7 @@ export class TherapyDialogComponent {
   selectedTime: string = '00:00';
 
   constructor(
+    private dateAdapter: DateAdapter<any>,
     public dialogRef: MatDialogRef<TherapyDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { therapy?: Therapy },
     private employeeService: EmployeeService,
@@ -66,6 +87,8 @@ export class TherapyDialogComponent {
 
     this.loadEmployees();
     this.loadPatients();
+    moment.locale('de');
+    this.dateAdapter.setLocale('de');
   }
 
   loadEmployees(): void {
@@ -88,9 +111,10 @@ export class TherapyDialogComponent {
     if (this.isValid()) {
       // Kombiniere Datum und Zeit
       const [hours, minutes] = this.selectedTime.split(':').map(Number);
-      const combinedDateTime = new Date(this.therapy.time);
-      combinedDateTime.setHours(hours, minutes);
-      this.therapy.time = combinedDateTime;
+      const momentDate = moment(this.therapy.time as Date);
+      momentDate.hours(hours);
+      momentDate.minutes(minutes);
+      this.therapy.time = momentDate.toDate();
       
       this.dialogRef.close(this.therapy);
     }
