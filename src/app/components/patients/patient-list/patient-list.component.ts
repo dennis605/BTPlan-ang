@@ -41,7 +41,15 @@ export class PatientListComponent implements OnInit {
 
   deletePatient(id: number): void {
     if (confirm('Möchten Sie diesen Patienten wirklich löschen?')) {
-      this.patientService.deletePatient(id);
+      this.patientService.deletePatient(id).subscribe({
+        next: () => {
+          this.loadPatients();
+        },
+        error: (error) => {
+          console.error('Fehler beim Löschen des Patienten:', error);
+          alert('Fehler beim Löschen des Patienten');
+        }
+      });
     }
   }
 
@@ -52,7 +60,15 @@ export class PatientListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.patientService.updatePatient(result);
+        this.patientService.updatePatient(result).subscribe({
+          next: () => {
+            this.loadPatients();
+          },
+          error: (error) => {
+            console.error('Fehler beim Aktualisieren des Patienten:', error);
+            alert('Fehler beim Aktualisieren des Patienten');
+          }
+        });
       }
     });
   }
@@ -64,7 +80,15 @@ export class PatientListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.patientService.addPatient(result);
+        this.patientService.addPatient(result).subscribe({
+          next: () => {
+            this.loadPatients();
+          },
+          error: (error) => {
+            console.error('Fehler beim Hinzufügen des Patienten:', error);
+            alert('Fehler beim Hinzufügen des Patienten');
+          }
+        });
       }
     });
   }
