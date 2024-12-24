@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { Therapy } from '../../../models/therapy';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -72,7 +74,10 @@ export class DailyScheduleListComponent implements OnInit {
     'therapyType'
   ];
 
-  constructor(private dailyScheduleService: DailyScheduleService) {}
+  constructor(
+    private dailyScheduleService: DailyScheduleService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     moment.locale('de');
@@ -118,5 +123,16 @@ export class DailyScheduleListComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     });
+  }
+
+  openTherapyDetails(therapy: Therapy): void {
+    import('../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component')
+      .then(m => m.DailyScheduleDetailDialogComponent)
+      .then(component => {
+        this.dialog.open(component, {
+          data: therapy,
+          width: '600px'
+        });
+      });
   }
 }

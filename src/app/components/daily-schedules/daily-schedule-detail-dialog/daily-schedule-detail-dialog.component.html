@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Therapie Details</h2>
+
+<mat-dialog-content>
+  <div class="therapy-details">
+    <div class="detail-row">
+      <strong>Name:</strong>
+      <span>{{ therapy.name }}</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Zeit:</strong>
+      <span>{{ formatTime(therapy.time) }}</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Therapeut:</strong>
+      <span>{{ therapy.leadingEmployee.name }} {{ therapy.leadingEmployee.surname }}</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Ort:</strong>
+      <span>{{ therapy.location }}</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Art der Therapie:</strong>
+      <span>{{ therapy.therapyType }}</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Vorbereitungszeit:</strong>
+      <span>{{ therapy.preparationTime }} Minuten</span>
+    </div>
+
+    <div class="detail-row">
+      <strong>Nachbereitungszeit:</strong>
+      <span>{{ therapy.followUpTime }} Minuten</span>
+    </div>
+
+    <div class="detail-row patients-section">
+      <strong>Teilnehmende Patienten:</strong>
+      <mat-chip-set>
+        <mat-chip *ngFor="let patient of therapy.patients">
+          {{ patient.name }} {{ patient.surname }}
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Schließen</button>
+</mat-dialog-actions>

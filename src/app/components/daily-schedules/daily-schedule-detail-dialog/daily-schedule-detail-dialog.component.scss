@@ -1,0 +1,35 @@
+.therapy-details {
+  padding: 16px;
+  max-width: 600px;
+}
+
+.detail-row {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+  }
+
+  span {
+    font-size: 16px;
+  }
+}
+
+.patients-section {
+  mat-chip-set {
+    margin-top: 8px;
+  }
+}
+
+mat-dialog-content {
+  min-height: 300px;
+  max-height: 80vh;
+}
+
+mat-dialog-actions {
+  padding: 16px;
+}
