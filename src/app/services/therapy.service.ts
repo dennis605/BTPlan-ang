@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Therapy } from '../models/therapy';
 import { EmployeeService } from './employee.service';
 import { PatientService } from './patient.service';
+import { LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,23 +14,27 @@ export class TherapyService {
 
   constructor(
     private employeeService: EmployeeService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private locationService: LocationService
   ) {
     // Initial dummy data
     this.employeeService.getEmployees().subscribe(employees => {
       if (employees.length > 0) {
         this.patientService.getPatients().subscribe(patients => {
           if (patients.length > 0) {
-            this.addTherapy({
-              id: 1,
-              name: 'Gruppentherapie',
-              patients: [patients[0]],
-              leadingEmployee: employees[0],
-              location: 'Raum 101',
-              time: new Date(),
-              preparationTime: 15,
-              followUpTime: 10,
-              therapyType: 'Gruppe'
+            this.locationService.getLocations().subscribe(locations => {
+              if (locations.length > 0) {
+                this.addTherapy({
+                  id: 1,
+                  name: 'Gruppentherapie',
+                  patients: [patients[0]],
+                  leadingEmployee: employees[0],
+                  location: locations[0],
+                  time: new Date(),
+                  preparationTime: 15,
+                  followUpTime: 10
+                });
+              }
             });
           }
         });
