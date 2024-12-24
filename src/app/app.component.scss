@@ -26,6 +26,8 @@ mat-sidenav {
 }
 
 mat-nav-list {
+  padding-top: 8px;
+
   a {
     mat-icon {
       margin-right: 8px;
@@ -34,5 +36,9 @@ mat-nav-list {
 
   .active {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  mat-divider {
+    margin: 16px 0;
   }
 }
