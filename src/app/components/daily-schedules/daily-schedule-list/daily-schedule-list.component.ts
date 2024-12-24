@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -30,6 +30,9 @@ import { DailyScheduleService } from '../../../services/daily-schedule.service';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
   ]
 })
 export class DailyScheduleListComponent implements OnInit {
