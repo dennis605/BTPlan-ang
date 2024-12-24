@@ -90,9 +90,10 @@ export class TherapyListComponent implements OnInit {
 
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('de-DE', {
+      weekday: 'short',
       year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+      month: 'long',
+      day: 'numeric'
     });
   }
 }
