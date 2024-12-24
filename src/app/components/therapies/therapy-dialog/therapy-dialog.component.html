@@ -32,13 +32,20 @@
       <input matInput [(ngModel)]="therapy.location" name="location" required>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Datum & Zeit</mat-label>
-      <input matInput [ngModel]="therapy.time" (ngModelChange)="therapy.time = $event"
-             name="time" [matDatepicker]="picker" required>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
+    <div class="date-time-container">
+      <mat-form-field appearance="fill" class="date-field">
+        <mat-label>Datum</mat-label>
+        <input matInput [ngModel]="therapy.time" (ngModelChange)="therapy.time = $event"
+               name="date" [matDatepicker]="picker" required>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="time-field">
+        <mat-label>Uhrzeit</mat-label>
+        <input matInput type="time" [(ngModel)]="selectedTime" name="time" required>
+      </mat-form-field>
+    </div>
 
     <div class="time-inputs">
       <mat-form-field appearance="fill">

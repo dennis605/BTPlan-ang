@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { Therapy } from '../../../models/therapy';
 import { Employee } from '../../../models/employee';
 import { Patient } from '../../../models/patient';
@@ -29,6 +29,9 @@ import { PatientService } from '../../../services/patient.service';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
   ]
 })
 export class TherapyDialogComponent {
@@ -36,6 +39,7 @@ export class TherapyDialogComponent {
   employees: Employee[] = [];
   patients: Patient[] = [];
   therapyTypes: string[] = ['Einzel', 'Gruppe', 'Workshop'];
+  selectedTime: string = '00:00';
 
   constructor(
     public dialogRef: MatDialogRef<TherapyDialogComponent>,
@@ -53,6 +57,12 @@ export class TherapyDialogComponent {
       followUpTime: 15,
       therapyType: ''
     };
+
+    // Initialisiere selectedTime aus therapy.time
+    if (data.therapy) {
+      const time = new Date(this.therapy.time);
+      this.selectedTime = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+    }
 
     this.loadEmployees();
     this.loadPatients();
@@ -76,6 +86,12 @@ export class TherapyDialogComponent {
 
   onSave(): void {
     if (this.isValid()) {
+      // Kombiniere Datum und Zeit
+      const [hours, minutes] = this.selectedTime.split(':').map(Number);
+      const combinedDateTime = new Date(this.therapy.time);
+      combinedDateTime.setHours(hours, minutes);
+      this.therapy.time = combinedDateTime;
+      
       this.dialogRef.close(this.therapy);
     }
   }
