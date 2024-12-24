@@ -1,0 +1,38 @@
+<div class="container">
+  <h2>Orte verwalten</h2>
+  
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon>
+    Neuen Ort hinzufügen
+  </button>
+
+  <mat-table [dataSource]="locations" class="mat-elevation-z8">
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let location">{{location.name}}</mat-cell>
+    </ng-container>
+
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef>Beschreibung</mat-header-cell>
+      <mat-cell *matCellDef="let location">{{location.description}}</mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Aktionen</mat-header-cell>
+      <mat-cell *matCellDef="let location">
+        <button mat-icon-button color="primary" (click)="openDialog(location)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteLocation(location.id!)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

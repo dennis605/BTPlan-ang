@@ -29,7 +29,12 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Ort</mat-label>
-      <input matInput [(ngModel)]="therapy.location" name="location" required>
+      <mat-select [(ngModel)]="therapy.location" name="location" required
+                [compareWith]="compareLocations">
+        <mat-option *ngFor="let location of locations" [value]="location">
+          {{location.name}}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
 
     <div class="date-time-container">
@@ -61,14 +66,6 @@
       </mat-form-field>
     </div>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Art der Therapie</mat-label>
-      <mat-select [(ngModel)]="therapy.therapyType" name="therapyType" required>
-        <mat-option *ngFor="let type of therapyTypes" [value]="type">
-          {{type}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
   </form>
 </mat-dialog-content>
 

@@ -1,0 +1,29 @@
+.container {
+  padding: 20px;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  button {
+    margin-bottom: 20px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  mat-table {
+    width: 100%;
+    margin-top: 20px;
+
+    .mat-column-actions {
+      width: 120px;
+      text-align: right;
+    }
+
+    mat-cell {
+      gap: 8px;
+    }
+  }
+}

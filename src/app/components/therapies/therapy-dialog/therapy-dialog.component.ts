@@ -13,8 +13,10 @@ import moment from 'moment';
 import { Therapy } from '../../../models/therapy';
 import { Employee } from '../../../models/employee';
 import { Patient } from '../../../models/patient';
+import { Location } from '../../../models/location';
 import { EmployeeService } from '../../../services/employee.service';
 import { PatientService } from '../../../services/patient.service';
+import { LocationService } from '../../../services/location.service';
 
 @Component({
   selector: 'app-therapy-dialog',
@@ -58,7 +60,7 @@ export class TherapyDialogComponent {
   therapy: Therapy;
   employees: Employee[] = [];
   patients: Patient[] = [];
-  therapyTypes: string[] = ['Einzel', 'Gruppe', 'Workshop'];
+  locations: Location[] = [];
   selectedTime: string = '00:00';
 
   constructor(
@@ -66,17 +68,17 @@ export class TherapyDialogComponent {
     public dialogRef: MatDialogRef<TherapyDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { therapy?: Therapy },
     private employeeService: EmployeeService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private locationService: LocationService
   ) {
     this.therapy = data.therapy ? { ...data.therapy } : {
       name: '',
       patients: [],
       leadingEmployee: {} as Employee,
-      location: '',
+      location: {} as Location,
       time: new Date(),
       preparationTime: 15,
-      followUpTime: 15,
-      therapyType: ''
+      followUpTime: 15
     };
 
     // Initialisiere selectedTime aus therapy.time
@@ -87,6 +89,7 @@ export class TherapyDialogComponent {
 
     this.loadEmployees();
     this.loadPatients();
+    this.loadLocations();
     moment.locale('de');
     this.dateAdapter.setLocale('de');
   }
@@ -120,15 +123,24 @@ export class TherapyDialogComponent {
     }
   }
 
+  loadLocations(): void {
+    this.locationService.getLocations().subscribe(locations => {
+      this.locations = locations;
+    });
+  }
+
   private isValid(): boolean {
     return !!(
       this.therapy.name &&
       this.therapy.leadingEmployee &&
       this.therapy.patients.length > 0 &&
       this.therapy.location &&
-      this.therapy.time &&
-      this.therapy.therapyType
+      this.therapy.time
     );
+  }
+
+  compareLocations(location1: Location, location2: Location): boolean {
+    return location1?.id === location2?.id;
   }
 
   compareEmployees(employee1: Employee, employee2: Employee): boolean {

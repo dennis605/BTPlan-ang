@@ -22,86 +22,8 @@ import { filter } from 'rxjs/operators';
     MatListModule,
     MatIconModule
   ],
-  template: `
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>Beschäftigungstherapie-Verwaltung</span>
-    </mat-toolbar>
-
-    <mat-sidenav-container (click)="onContainerClick($event)">
-      <mat-sidenav #sidenav="matSidenav" mode="over">
-        <mat-nav-list>
-          <a mat-list-item routerLink="/employees" routerLinkActive="active">
-            <mat-icon>people</mat-icon>
-            <span>Mitarbeiter</span>
-          </a>
-          <a mat-list-item routerLink="/patients" routerLinkActive="active">
-            <mat-icon>person</mat-icon>
-            <span>Patienten</span>
-          </a>
-          <a mat-list-item routerLink="/therapies" routerLinkActive="active">
-            <mat-icon>medical_services</mat-icon>
-            <span>Therapien</span>
-          </a>
-          <a mat-list-item routerLink="/schedule" routerLinkActive="active">
-            <mat-icon>calendar_today</mat-icon>
-            <span>Tagesplan</span>
-          </a>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <div class="content">
-          <router-outlet></router-outlet>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
-  styles: [`
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    mat-toolbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 2;
-    }
-
-    mat-toolbar span {
-      margin-left: 8px;
-    }
-
-    mat-sidenav-container {
-      flex: 1;
-      margin-top: 64px; /* Toolbar height */
-    }
-
-    mat-sidenav {
-      width: 250px;
-      padding-top: 20px;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    mat-nav-list a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .active {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'btplan';
