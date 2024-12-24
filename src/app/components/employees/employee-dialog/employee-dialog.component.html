@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ data.employee ? 'Mitarbeiter bearbeiten' : 'Neuer Mitarbeiter' }}</h2>
+
+<mat-dialog-content>
+  <form #employeeForm="ngForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Vorname</mat-label>
+      <input matInput [(ngModel)]="employee.name" name="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nachname</mat-label>
+      <input matInput [(ngModel)]="employee.surname" name="surname" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Bemerkung</mat-label>
+      <textarea matInput [(ngModel)]="employee.note" name="note" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!employeeForm.form.valid">
+    Speichern
+  </button>
+</mat-dialog-actions>

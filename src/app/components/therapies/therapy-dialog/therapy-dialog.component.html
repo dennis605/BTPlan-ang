@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>{{ data.therapy ? 'Therapie bearbeiten' : 'Neue Therapie' }}</h2>
+
+<mat-dialog-content>
+  <form #therapyForm="ngForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="therapy.name" name="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Leitender Mitarbeiter</mat-label>
+      <mat-select [(ngModel)]="therapy.leadingEmployee" name="leadingEmployee" required
+                [compareWith]="compareEmployees">
+        <mat-option *ngFor="let employee of employees" [value]="employee">
+          {{employee.name}} {{employee.surname}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Teilnehmende Patienten</mat-label>
+      <mat-select [(ngModel)]="therapy.patients" name="patients" required multiple
+                [compareWith]="comparePatients">
+        <mat-option *ngFor="let patient of patients" [value]="patient">
+          {{patient.name}} {{patient.surname}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Ort</mat-label>
+      <input matInput [(ngModel)]="therapy.location" name="location" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Datum & Zeit</mat-label>
+      <input matInput [ngModel]="therapy.time" (ngModelChange)="therapy.time = $event"
+             name="time" [matDatepicker]="picker" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="time-inputs">
+      <mat-form-field appearance="fill">
+        <mat-label>Vorbereitungszeit (Min.)</mat-label>
+        <input matInput type="number" [(ngModel)]="therapy.preparationTime" 
+               name="preparationTime" required min="0">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nachbereitungszeit (Min.)</mat-label>
+        <input matInput type="number" [(ngModel)]="therapy.followUpTime" 
+               name="followUpTime" required min="0">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Art der Therapie</mat-label>
+      <mat-select [(ngModel)]="therapy.therapyType" name="therapyType" required>
+        <mat-option *ngFor="let type of therapyTypes" [value]="type">
+          {{type}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!therapyForm.form.valid">
+    Speichern
+  </button>
+</mat-dialog-actions>
