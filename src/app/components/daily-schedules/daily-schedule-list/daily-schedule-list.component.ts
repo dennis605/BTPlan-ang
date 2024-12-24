@@ -96,7 +96,7 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   onDateChange(event: any): void {
-    this.selectedDate = event.value;
+    this.selectedDate = event.value.toDate();
     this.loadSchedule();
   }
 
