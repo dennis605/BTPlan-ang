@@ -39,22 +39,31 @@ export class DailyScheduleService {
 
     return this.therapyService.getTherapiesByDate(date).pipe(
       map(therapies => {
-        let schedule = this.schedules.find(s => {
+        // Bestehenden Schedule für das Datum finden oder neuen erstellen
+        const schedule = {
+          id: this.schedules.length + 1,
+          date: date,
+          therapies: therapies
+        };
+        
+        // Alten Schedule für dieses Datum entfernen falls vorhanden
+        const existingIndex = this.schedules.findIndex(s => {
           const scheduleDate = new Date(s.date);
           scheduleDate.setHours(0, 0, 0, 0);
           return scheduleDate.getTime() === startOfDay.getTime();
         });
-
-        if (!schedule && therapies.length > 0) {
-          schedule = {
-            id: this.schedules.length + 1,
-            date: date,
-            therapies: therapies
-          };
-          this.addSchedule(schedule);
+        
+        if (existingIndex !== -1) {
+          this.schedules.splice(existingIndex, 1);
         }
-
-        return schedule;
+        
+        // Neuen Schedule hinzufügen
+        if (therapies.length > 0) {
+          this.addSchedule(schedule);
+          return schedule;
+        }
+        
+        return undefined;
       })
     );
   }

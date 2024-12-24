@@ -77,9 +77,10 @@ export class TherapyService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const filteredTherapies = this.therapies.filter(therapy => 
-      therapy.time >= startOfDay && therapy.time <= endOfDay
-    );
+    const filteredTherapies = this.therapies.filter(therapy => {
+      const therapyDate = new Date(therapy.time);
+      return therapyDate >= startOfDay && therapyDate <= endOfDay;
+    });
 
     return of(filteredTherapies);
   }
