@@ -1,36 +1,26 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, of } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
-import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DailyScheduleService {
-  private schedules: DailySchedule[] = [];
-  private schedulesSubject = new BehaviorSubject<DailySchedule[]>([]);
+  private apiUrl = 'http://localhost:3000/dailySchedules';
 
-  constructor(private therapyService: TherapyService) {
-    // Initial dummy data
-    const today = new Date();
-    this.therapyService.getTherapiesByDate(today).subscribe(therapies => {
-      if (therapies.length > 0) {
-        this.addSchedule({
-          id: 1,
-          date: today,
-          therapies: therapies
-        });
-      }
-    });
-  }
+  constructor(
+    private http: HttpClient,
+    private therapyService: TherapyService
+  ) {}
 
   getSchedules(): Observable<DailySchedule[]> {
-    return this.schedulesSubject.asObservable();
+    return this.http.get<DailySchedule[]>(this.apiUrl);
   }
 
-  getSchedule(id: number): Observable<DailySchedule | undefined> {
-    return of(this.schedules.find(schedule => schedule.id === id));
+  getSchedule(id: number): Observable<DailySchedule> {
+    return this.http.get<DailySchedule>(`${this.apiUrl}/${id}`);
   }
 
   getScheduleByDate(date: Date): Observable<DailySchedule | undefined> {
@@ -39,57 +29,29 @@ export class DailyScheduleService {
 
     return this.therapyService.getTherapiesByDate(date).pipe(
       map(therapies => {
-        // Bestehenden Schedule für das Datum finden oder neuen erstellen
-        const schedule = {
-          id: this.schedules.length + 1,
+        if (therapies.length === 0) {
+          return undefined;
+        }
+
+        const schedule: DailySchedule = {
           date: date,
           therapies: therapies
         };
-        
-        // Alten Schedule für dieses Datum entfernen falls vorhanden
-        const existingIndex = this.schedules.findIndex(s => {
-          const scheduleDate = new Date(s.date);
-          scheduleDate.setHours(0, 0, 0, 0);
-          return scheduleDate.getTime() === startOfDay.getTime();
-        });
-        
-        if (existingIndex !== -1) {
-          this.schedules.splice(existingIndex, 1);
-        }
-        
-        // Neuen Schedule hinzufügen
-        if (therapies.length > 0) {
-          this.addSchedule(schedule);
-          return schedule;
-        }
-        
-        return undefined;
+
+        return schedule;
       })
     );
   }
 
-  addSchedule(schedule: DailySchedule): void {
-    // Generate ID if not provided
-    if (!schedule.id) {
-      schedule.id = this.schedules.length + 1;
-    }
-    this.schedules.push(schedule);
-    this.schedulesSubject.next([...this.schedules]);
+  addSchedule(schedule: DailySchedule): Observable<DailySchedule> {
+    return this.http.post<DailySchedule>(this.apiUrl, schedule);
   }
 
-  updateSchedule(schedule: DailySchedule): void {
-    const index = this.schedules.findIndex(s => s.id === schedule.id);
-    if (index !== -1) {
-      this.schedules[index] = schedule;
-      this.schedulesSubject.next([...this.schedules]);
-    }
+  updateSchedule(schedule: DailySchedule): Observable<DailySchedule> {
+    return this.http.put<DailySchedule>(`${this.apiUrl}/${schedule.id}`, schedule);
   }
 
-  deleteSchedule(id: number): void {
-    const index = this.schedules.findIndex(schedule => schedule.id === id);
-    if (index !== -1) {
-      this.schedules.splice(index, 1);
-      this.schedulesSubject.next([...this.schedules]);
-    }
+  deleteSchedule(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

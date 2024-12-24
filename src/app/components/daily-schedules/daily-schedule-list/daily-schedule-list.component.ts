@@ -86,23 +86,31 @@ export class DailyScheduleListComponent implements OnInit {
 
   loadSchedule(): void {
     this.isLoading = true;
-    this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe(schedule => {
-      if (schedule) {
-        // Sortiere Therapien nach Zeit
-        schedule.therapies.sort((a, b) => 
-          new Date(a.time).getTime() - new Date(b.time).getTime()
-        );
-        this.schedules = [schedule];
-      } else {
+    this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe({
+      next: (schedule) => {
+        if (schedule) {
+          // Sortiere Therapien nach Zeit
+          schedule.therapies.sort((a, b) => 
+            new Date(a.time).getTime() - new Date(b.time).getTime()
+          );
+          this.schedules = [schedule];
+        } else {
+          this.schedules = [];
+        }
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden des Tagesplans:', error);
+        alert('Fehler beim Laden des Tagesplans');
         this.schedules = [];
+      },
+      complete: () => {
+        this.isLoading = false;
       }
-      this.isLoading = false;
     });
   }
 
   onDateChange(event: any): void {
     if (event && event.value) {
-      console.log('Datum geändert:', event.value.format('DD.MM.YYYY'));
       this.selectedDate = event.value.toDate();
       this.schedules = []; // Liste leeren
       this.loadSchedule(); // Neue Daten laden
