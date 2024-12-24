@@ -3,13 +3,14 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Location } from '../../../models/location';
 import { MaterialModule } from '../../../material/material.module';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-location-dialog',
   templateUrl: './location-dialog.component.html',
   styleUrls: ['./location-dialog.component.scss'],
   standalone: true,
-  imports: [MaterialModule, ReactiveFormsModule]
+  imports: [MaterialModule, ReactiveFormsModule, CommonModule]
 })
 export class LocationDialogComponent {
   locationForm: FormGroup;
