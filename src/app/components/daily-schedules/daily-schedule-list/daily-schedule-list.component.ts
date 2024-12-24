@@ -9,6 +9,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { DailySchedule } from '../../../models/daily-schedule';
 import { DailyScheduleService } from '../../../services/daily-schedule.service';
@@ -29,7 +30,8 @@ import { DailyScheduleService } from '../../../services/daily-schedule.service';
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
@@ -38,6 +40,7 @@ import { DailyScheduleService } from '../../../services/daily-schedule.service';
 export class DailyScheduleListComponent implements OnInit {
   schedules: DailySchedule[] = [];
   selectedDate: Date = new Date();
+  isLoading = false;
   displayedColumns: string[] = [
     'time',
     'name',
@@ -56,12 +59,18 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   loadSchedule(): void {
+    this.isLoading = true;
     this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe(schedule => {
       if (schedule) {
+        // Sortiere Therapien nach Zeit
+        schedule.therapies.sort((a, b) => 
+          new Date(a.time).getTime() - new Date(b.time).getTime()
+        );
         this.schedules = [schedule];
       } else {
         this.schedules = [];
       }
+      this.isLoading = false;
     });
   }
 

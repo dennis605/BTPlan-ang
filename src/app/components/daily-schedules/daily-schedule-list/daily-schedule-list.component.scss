@@ -1,81 +1,81 @@
-.container {
+.daily-schedule-container {
   padding: 20px;
-}
+  max-width: 1200px;
+  margin: 0 auto;
 
-h2 {
-  margin-bottom: 20px;
-}
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
 
-h3 {
-  margin: 20px 0;
-}
+  .date-selector {
+    margin-bottom: 20px;
+    padding: 15px;
+  }
 
-.date-selector {
-  padding: 20px;
-  margin-bottom: 20px;
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
 
-  mat-form-field {
+  table {
     width: 100%;
+    margin-top: 20px;
+
+    th {
+      font-weight: 500;
+      color: #2c3e50;
+      background-color: #f8f9fa;
+    }
+
+    td {
+      padding: 12px 8px;
+    }
+
+    .mat-column-time {
+      width: 100px;
+    }
+
+    .mat-column-name {
+      min-width: 150px;
+    }
+
+    .mat-column-leadingEmployee {
+      min-width: 150px;
+    }
+
+    .mat-column-location {
+      min-width: 120px;
+    }
+
+    .mat-column-preparationTime,
+    .mat-column-followUpTime {
+      width: 120px;
+      text-align: center;
+    }
+
+    .mat-column-therapyType {
+      min-width: 150px;
+    }
   }
-}
 
-table {
-  width: 100%;
-}
+  .no-schedule {
+    text-align: center;
+    padding: 40px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin-top: 20px;
 
-.mat-column-time {
-  width: 100px;
-}
-
-.mat-column-name {
-  min-width: 150px;
-}
-
-.mat-column-leadingEmployee {
-  min-width: 150px;
-}
-
-.mat-column-patients {
-  min-width: 200px;
-}
-
-.mat-column-location {
-  min-width: 120px;
-}
-
-.mat-column-preparationTime,
-.mat-column-followUpTime {
-  min-width: 120px;
-}
-
-.mat-column-therapyType {
-  min-width: 120px;
-}
-
-mat-chip-set {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-mat-chip {
-  font-size: 12px;
-  height: 24px !important;
-}
-
-.no-schedule {
-  text-align: center;
-  padding: 40px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  margin-top: 20px;
-
-  p {
-    font-size: 16px;
-    color: #666;
+    p {
+      color: #6c757d;
+      font-size: 1.1em;
+    }
   }
-}
 
-.mat-mdc-row:hover {
-  background-color: #f5f5f5;
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
 }

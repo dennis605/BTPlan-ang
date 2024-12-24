@@ -1,4 +1,4 @@
-<div class="container">
+<div class="daily-schedule-container">
   <h2>Tagesplan</h2>
 
   <mat-card class="date-selector">
@@ -11,7 +11,11 @@
     </mat-form-field>
   </mat-card>
 
-  <div *ngIf="schedules.length > 0">
+  <div class="loading-spinner" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && schedules.length > 0">
     <h3>{{ formatDate(selectedDate) }}</h3>
 
     <table mat-table [dataSource]="schedules[0].therapies" class="mat-elevation-z8">
@@ -76,7 +80,7 @@
     </table>
   </div>
 
-  <div *ngIf="schedules.length === 0" class="no-schedule">
+  <div *ngIf="!isLoading && schedules.length === 0" class="no-schedule">
     <p>Keine Therapien für diesen Tag geplant.</p>
   </div>
 </div>
