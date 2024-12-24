@@ -41,12 +41,24 @@ export class LocationListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (result.id) {
-          this.locationService.updateLocation(result).subscribe(() => {
-            this.loadLocations();
+          this.locationService.updateLocation(result).subscribe({
+            next: () => {
+              this.loadLocations();
+            },
+            error: (error) => {
+              console.error('Fehler beim Aktualisieren des Ortes:', error);
+              alert('Fehler beim Aktualisieren des Ortes');
+            }
           });
         } else {
-          this.locationService.addLocation(result).subscribe(() => {
-            this.loadLocations();
+          this.locationService.addLocation(result).subscribe({
+            next: () => {
+              this.loadLocations();
+            },
+            error: (error) => {
+              console.error('Fehler beim Hinzufügen des Ortes:', error);
+              alert('Fehler beim Hinzufügen des Ortes');
+            }
           });
         }
       }
@@ -55,8 +67,14 @@ export class LocationListComponent implements OnInit {
 
   deleteLocation(id: number): void {
     if (confirm('Sind Sie sicher, dass Sie diesen Ort löschen möchten?')) {
-      this.locationService.deleteLocation(id).subscribe(() => {
-        this.loadLocations();
+      this.locationService.deleteLocation(id).subscribe({
+        next: () => {
+          this.loadLocations();
+        },
+        error: (error) => {
+          console.error('Fehler beim Löschen des Ortes:', error);
+          alert('Fehler beim Löschen des Ortes');
+        }
       });
     }
   }
