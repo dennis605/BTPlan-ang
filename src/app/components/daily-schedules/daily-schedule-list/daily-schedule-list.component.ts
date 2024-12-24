@@ -5,7 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import * as moment from 'moment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -27,14 +29,32 @@ import { DailyScheduleService } from '../../../services/daily-schedule.service';
     MatIconModule,
     MatCardModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
     MatProgressSpinnerModule
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: 'DD.MM.YYYY',
+        },
+        display: {
+          dateInput: 'DD.MM.YYYY',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
+      },
+    }
   ]
 })
 export class DailyScheduleListComponent implements OnInit {
@@ -55,6 +75,7 @@ export class DailyScheduleListComponent implements OnInit {
   constructor(private dailyScheduleService: DailyScheduleService) {}
 
   ngOnInit(): void {
+    moment.locale('de');
     this.loadSchedule();
   }
 
