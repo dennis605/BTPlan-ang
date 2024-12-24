@@ -1,54 +1,33 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Employee } from '../models/employee';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
-  private employees: Employee[] = [];
-  private employeesSubject = new BehaviorSubject<Employee[]>([]);
+  private apiUrl = 'http://localhost:3000/employees';
 
-  constructor() {
-    // Initial dummy data
-    this.addEmployee({
-      id: 1,
-      name: 'Max',
-      surname: 'Mustermann',
-      note: 'Therapeut'
-    });
-  }
+  constructor(private http: HttpClient) {}
 
   getEmployees(): Observable<Employee[]> {
-    return this.employeesSubject.asObservable();
+    return this.http.get<Employee[]>(this.apiUrl);
   }
 
-  getEmployee(id: number): Observable<Employee | undefined> {
-    return of(this.employees.find(emp => emp.id === id));
+  getEmployee(id: number): Observable<Employee> {
+    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
   }
 
-  addEmployee(employee: Employee): void {
-    // Generate ID if not provided
-    if (!employee.id) {
-      employee.id = this.employees.length + 1;
-    }
-    this.employees.push(employee);
-    this.employeesSubject.next([...this.employees]);
+  addEmployee(employee: Employee): Observable<Employee> {
+    return this.http.post<Employee>(this.apiUrl, employee);
   }
 
-  updateEmployee(employee: Employee): void {
-    const index = this.employees.findIndex(emp => emp.id === employee.id);
-    if (index !== -1) {
-      this.employees[index] = employee;
-      this.employeesSubject.next([...this.employees]);
-    }
+  updateEmployee(employee: Employee): Observable<Employee> {
+    return this.http.put<Employee>(`${this.apiUrl}/${employee.id}`, employee);
   }
 
-  deleteEmployee(id: number): void {
-    const index = this.employees.findIndex(emp => emp.id === id);
-    if (index !== -1) {
-      this.employees.splice(index, 1);
-      this.employeesSubject.next([...this.employees]);
-    }
+  deleteEmployee(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

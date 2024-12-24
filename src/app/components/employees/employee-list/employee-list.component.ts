@@ -41,7 +41,15 @@ export class EmployeeListComponent implements OnInit {
 
   deleteEmployee(id: number): void {
     if (confirm('Möchten Sie diesen Mitarbeiter wirklich löschen?')) {
-      this.employeeService.deleteEmployee(id);
+      this.employeeService.deleteEmployee(id).subscribe({
+        next: () => {
+          this.loadEmployees();
+        },
+        error: (error) => {
+          console.error('Fehler beim Löschen des Mitarbeiters:', error);
+          alert('Fehler beim Löschen des Mitarbeiters');
+        }
+      });
     }
   }
 
@@ -52,7 +60,15 @@ export class EmployeeListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.employeeService.updateEmployee(result);
+        this.employeeService.updateEmployee(result).subscribe({
+          next: () => {
+            this.loadEmployees();
+          },
+          error: (error) => {
+            console.error('Fehler beim Aktualisieren des Mitarbeiters:', error);
+            alert('Fehler beim Aktualisieren des Mitarbeiters');
+          }
+        });
       }
     });
   }
@@ -64,7 +80,15 @@ export class EmployeeListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.employeeService.addEmployee(result);
+        this.employeeService.addEmployee(result).subscribe({
+          next: () => {
+            this.loadEmployees();
+          },
+          error: (error) => {
+            console.error('Fehler beim Hinzufügen des Mitarbeiters:', error);
+            alert('Fehler beim Hinzufügen des Mitarbeiters');
+          }
+        });
       }
     });
   }
