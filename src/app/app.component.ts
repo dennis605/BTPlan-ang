@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -24,11 +24,14 @@ import { CommonModule } from '@angular/common';
   ],
   template: `
     <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
       <span>Beschäftigungstherapie-Verwaltung</span>
     </mat-toolbar>
 
-    <mat-sidenav-container>
-      <mat-sidenav mode="side" opened>
+    <mat-sidenav-container (click)="onContainerClick($event)">
+      <mat-sidenav #sidenav="matSidenav" mode="over">
         <mat-nav-list>
           <a mat-list-item routerLink="/employees" routerLinkActive="active">
             <mat-icon>people</mat-icon>
@@ -71,6 +74,10 @@ import { CommonModule } from '@angular/common';
       z-index: 2;
     }
 
+    mat-toolbar span {
+      margin-left: 8px;
+    }
+
     mat-sidenav-container {
       flex: 1;
       margin-top: 64px; /* Toolbar height */
@@ -98,4 +105,23 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title = 'btplan';
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+
+  constructor(private router: Router) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (this.sidenav.mode === 'over') {
+        this.sidenav.close();
+      }
+    });
+  }
+
+  onContainerClick(event: MouseEvent): void {
+    // Schließe das Menü nur, wenn außerhalb des Menüs geklickt wurde
+    const clickedElement = event.target as HTMLElement;
+    if (!clickedElement.closest('mat-sidenav')) {
+      this.sidenav.close();
+    }
+  }
 }
