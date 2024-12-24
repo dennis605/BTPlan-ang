@@ -52,7 +52,15 @@ export class TherapyListComponent implements OnInit {
 
   deleteTherapy(id: number): void {
     if (confirm('Möchten Sie diese Therapie wirklich löschen?')) {
-      this.therapyService.deleteTherapy(id);
+      this.therapyService.deleteTherapy(id).subscribe({
+        next: () => {
+          this.loadTherapies();
+        },
+        error: (error) => {
+          console.error('Fehler beim Löschen der Therapie:', error);
+          alert('Fehler beim Löschen der Therapie');
+        }
+      });
     }
   }
 
@@ -63,7 +71,15 @@ export class TherapyListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.therapyService.updateTherapy(result);
+        this.therapyService.updateTherapy(result).subscribe({
+          next: () => {
+            this.loadTherapies();
+          },
+          error: (error) => {
+            console.error('Fehler beim Aktualisieren der Therapie:', error);
+            alert('Fehler beim Aktualisieren der Therapie');
+          }
+        });
       }
     });
   }
@@ -75,7 +91,15 @@ export class TherapyListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.therapyService.addTherapy(result);
+        this.therapyService.addTherapy(result).subscribe({
+          next: () => {
+            this.loadTherapies();
+          },
+          error: (error) => {
+            console.error('Fehler beim Hinzufügen der Therapie:', error);
+            alert('Fehler beim Hinzufügen der Therapie');
+          }
+        });
       }
     });
   }

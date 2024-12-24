@@ -1,78 +1,34 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { Therapy } from '../models/therapy';
-import { EmployeeService } from './employee.service';
-import { PatientService } from './patient.service';
-import { LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TherapyService {
-  private therapies: Therapy[] = [];
-  private therapiesSubject = new BehaviorSubject<Therapy[]>([]);
+  private apiUrl = 'http://localhost:3000/therapies';
 
-  constructor(
-    private employeeService: EmployeeService,
-    private patientService: PatientService,
-    private locationService: LocationService
-  ) {
-    // Initial dummy data
-    this.employeeService.getEmployees().subscribe(employees => {
-      if (employees.length > 0) {
-        this.patientService.getPatients().subscribe(patients => {
-          if (patients.length > 0) {
-            this.locationService.getLocations().subscribe(locations => {
-              if (locations.length > 0) {
-                this.addTherapy({
-                  id: 1,
-                  name: 'Gruppentherapie',
-                  patients: [patients[0]],
-                  leadingEmployee: employees[0],
-                  location: locations[0],
-                  time: new Date(),
-                  preparationTime: 15,
-                  followUpTime: 10
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  }
+  constructor(private http: HttpClient) {}
 
   getTherapies(): Observable<Therapy[]> {
-    return this.therapiesSubject.asObservable();
+    return this.http.get<Therapy[]>(this.apiUrl);
   }
 
-  getTherapy(id: number): Observable<Therapy | undefined> {
-    return of(this.therapies.find(therapy => therapy.id === id));
+  getTherapy(id: number): Observable<Therapy> {
+    return this.http.get<Therapy>(`${this.apiUrl}/${id}`);
   }
 
-  addTherapy(therapy: Therapy): void {
-    // Generate ID if not provided
-    if (!therapy.id) {
-      therapy.id = this.therapies.length + 1;
-    }
-    this.therapies.push(therapy);
-    this.therapiesSubject.next([...this.therapies]);
+  addTherapy(therapy: Therapy): Observable<Therapy> {
+    return this.http.post<Therapy>(this.apiUrl, therapy);
   }
 
-  updateTherapy(therapy: Therapy): void {
-    const index = this.therapies.findIndex(t => t.id === therapy.id);
-    if (index !== -1) {
-      this.therapies[index] = therapy;
-      this.therapiesSubject.next([...this.therapies]);
-    }
+  updateTherapy(therapy: Therapy): Observable<Therapy> {
+    return this.http.put<Therapy>(`${this.apiUrl}/${therapy.id}`, therapy);
   }
 
-  deleteTherapy(id: number): void {
-    const index = this.therapies.findIndex(therapy => therapy.id === id);
-    if (index !== -1) {
-      this.therapies.splice(index, 1);
-      this.therapiesSubject.next([...this.therapies]);
-    }
+  deleteTherapy(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   getTherapiesByDate(date: Date): Observable<Therapy[]> {
@@ -82,11 +38,11 @@ export class TherapyService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const filteredTherapies = this.therapies.filter(therapy => {
-      const therapyDate = new Date(therapy.time);
-      return therapyDate >= startOfDay && therapyDate <= endOfDay;
-    });
-
-    return of(filteredTherapies);
+    return this.getTherapies().pipe(
+      map(therapies => therapies.filter(therapy => {
+        const therapyDate = new Date(therapy.time);
+        return therapyDate >= startOfDay && therapyDate <= endOfDay;
+      }))
+    );
   }
 }
