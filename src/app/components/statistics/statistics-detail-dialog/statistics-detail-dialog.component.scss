@@ -1,0 +1,32 @@
+.date-range {
+  margin-bottom: 20px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+table {
+  width: 100%;
+  margin-bottom: 16px;
+
+  th.mat-header-cell {
+    font-weight: 600;
+  }
+
+  .mat-column-date {
+    width: 100px;
+  }
+
+  .mat-column-name {
+    min-width: 200px;
+  }
+
+  .mat-column-startTime,
+  .mat-column-endTime {
+    width: 100px;
+    text-align: center;
+  }
+
+  .mat-column-duration {
+    width: 100px;
+    text-align: right;
+  }
+}

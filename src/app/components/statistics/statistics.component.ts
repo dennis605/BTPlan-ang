@@ -10,15 +10,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { TherapyService } from '../../services/therapy.service';
 import { PatientService } from '../../services/patient.service';
 import { Patient } from '../../models/patient';
 import { Therapy } from '../../models/therapy';
+import { TherapyDetail } from '../../models/therapy-detail';
+import { StatisticsDetailDialogComponent } from './statistics-detail-dialog/statistics-detail-dialog.component';
 
 interface PatientStatistics {
   patient: Patient;
   totalHours: number;
   therapyCount: number;
+  therapyDetails: TherapyDetail[];
 }
 
 @Component({
@@ -37,21 +42,24 @@ interface PatientStatistics {
     MatInputModule,
     MatButtonModule,
     MatTableModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatIconModule
   ]
 })
 export class StatisticsComponent implements OnInit {
   patients: Patient[] = [];
-  selectedPatient?: Patient;
+  selectedPatients: Patient[] = [];
   startDate: Date = new Date();
   endDate: Date = new Date();
   statistics: PatientStatistics[] = [];
   isLoading = false;
-  displayedColumns: string[] = ['patient', 'therapyCount', 'totalHours'];
+  displayedColumns: string[] = ['patient', 'therapyCount', 'totalHours', 'actions'];
 
   constructor(
     private therapyService: TherapyService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private dialog: MatDialog
   ) {
     // Setze Startdatum auf Anfang des aktuellen Monats
     this.startDate.setDate(1);
@@ -80,9 +88,9 @@ export class StatisticsComponent implements OnInit {
           return therapyDate >= this.startDate && therapyDate <= this.endDate;
         });
 
-        // Wenn ein Patient ausgewählt ist, nur für diesen berechnen
-        const patientsToAnalyze = this.selectedPatient 
-          ? [this.selectedPatient] 
+        // Wenn Patienten ausgewählt sind, nur für diese berechnen
+        const patientsToAnalyze = this.selectedPatients.length > 0
+          ? this.selectedPatients
           : this.patients;
 
         this.statistics = patientsToAnalyze.map(patient => {
@@ -90,17 +98,27 @@ export class StatisticsComponent implements OnInit {
             therapy.patients.some(p => p.id === patient.id)
           );
 
-          const totalMinutes = patientTherapies.reduce((total, therapy) => {
+          const therapyDetails: TherapyDetail[] = patientTherapies.map(therapy => {
             const start = new Date(therapy.startTime);
             const end = new Date(therapy.endTime);
             const durationInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-            return total + durationInMinutes;
-          }, 0);
+            
+            return {
+              date: start,
+              name: therapy.name,
+              startTime: start,
+              endTime: end,
+              duration: durationInMinutes
+            };
+          });
+
+          const totalMinutes = therapyDetails.reduce((total, detail) => total + detail.duration, 0);
 
           return {
             patient,
-            totalHours: Math.round((totalMinutes / 60) * 100) / 100, // Runde auf 2 Dezimalstellen
-            therapyCount: patientTherapies.length
+            totalHours: Math.round((totalMinutes / 60) * 100) / 100,
+            therapyCount: patientTherapies.length,
+            therapyDetails: therapyDetails.sort((a, b) => a.date.getTime() - b.date.getTime())
           };
         });
       },
@@ -114,7 +132,23 @@ export class StatisticsComponent implements OnInit {
     });
   }
 
+  showDetails(stat: PatientStatistics): void {
+    this.dialog.open(StatisticsDetailDialogComponent, {
+      width: '800px',
+      data: {
+        patient: stat.patient,
+        therapyDetails: stat.therapyDetails,
+        startDate: this.startDate,
+        endDate: this.endDate
+      }
+    });
+  }
+
   formatName(patient: Patient): string {
     return `${patient.name} ${patient.surname}`;
+  }
+
+  comparePatients(patient1: Patient, patient2: Patient): boolean {
+    return patient1?.id === patient2?.id;
   }
 }
