@@ -8,33 +8,30 @@
     <thead>
       <tr>
         <th>Zeit</th>
-        <th>Therapie</th>
-        <th>Ort</th>
+        <th>Name</th>
         <th>Leitung</th>
         <th>Teilnehmer</th>
+        <th>Ort</th>
+        <th>Vorbereitung</th>
+        <th>Nachbereitung</th>
+        <th>Kommentare</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let therapy of therapies">
-        <td class="time-cell">
-          {{ formatTime(therapy.startTime) }} - {{ formatTime(therapy.endTime) }}
-          <div class="time-details">
-            Vor: {{ therapy.preparationTime }} Min. | Nach: {{ therapy.followUpTime }} Min.
-          </div>
-        </td>
+        <td>{{ formatTime(therapy.startTime) }} - {{ formatTime(therapy.endTime) }}</td>
         <td>{{ therapy.name }}</td>
-        <td>{{ therapy.location.name }}</td>
         <td>{{ therapy.leadingEmployee.name }} {{ therapy.leadingEmployee.surname }}</td>
         <td class="patients-cell">
           <div *ngFor="let patient of therapy.patients">
             {{ patient.name }} {{ patient.surname }}
           </div>
         </td>
+        <td>{{ therapy.location.name }}</td>
+        <td>{{ therapy.preparationTime }} Min.</td>
+        <td>{{ therapy.followUpTime }} Min.</td>
+        <td>{{ therapy.comments }}</td>
       </tr>
     </tbody>
   </table>
-
-  <div class="print-footer">
-    Ausgedruckt am {{ formatDate(selectedDate) }}
-  </div>
 </div>

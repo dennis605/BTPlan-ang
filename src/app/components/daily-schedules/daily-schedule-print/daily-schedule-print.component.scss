@@ -1,7 +1,13 @@
+@media print {
+  .print-container {
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+}
+
 .print-container {
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
   font-family: Arial, sans-serif;
 }
 
@@ -15,9 +21,9 @@
   }
 
   .date {
-    margin-top: 10px;
-    font-size: 18px;
+    font-size: 16px;
     color: #666;
+    margin-top: 5px;
   }
 }
 
@@ -28,8 +34,9 @@
 
   th, td {
     border: 1px solid #ddd;
-    padding: 12px;
+    padding: 8px;
     text-align: left;
+    font-size: 14px;
   }
 
   th {
@@ -37,20 +44,10 @@
     font-weight: bold;
   }
 
-  .time-cell {
-    white-space: nowrap;
-
-    .time-details {
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-    }
-  }
-
   .patients-cell {
     div {
       margin-bottom: 4px;
-
+      
       &:last-child {
         margin-bottom: 0;
       }
@@ -58,23 +55,24 @@
   }
 }
 
-.print-footer {
-  text-align: right;
-  color: #666;
-  font-size: 12px;
-  margin-top: 30px;
-  padding-top: 10px;
-  border-top: 1px solid #ddd;
-}
-
 @media print {
-  .print-container {
-    padding: 0;
+  body * {
+    visibility: hidden;
+  }
+  
+  .print-container, .print-container * {
+    visibility: visible;
   }
 
-  .therapy-table {
-    th, td {
-      border-color: #000;
-    }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  th {
+    background-color: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
