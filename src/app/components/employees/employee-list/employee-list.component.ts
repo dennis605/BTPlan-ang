@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Employee } from '../../../models/employee';
 import { EmployeeService } from '../../../services/employee.service';
 import { MatTableModule } from '@angular/material/table';
@@ -17,7 +17,8 @@ import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.comp
     CommonModule,
     MatTableModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule
   ]
 })
 export class EmployeeListComponent implements OnInit {

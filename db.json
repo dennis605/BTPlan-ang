@@ -1,30 +1,71 @@
 {
   "employees": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Max",
       "surname": "Mustermann",
       "note": "Therapeut"
+    },
+    {
+      "id": "af9b",
+      "name": "wer",
+      "surname": "ew",
+      "note": ""
+    },
+    {
+      "id": "2277",
+      "name": "rg",
+      "surname": "erge",
+      "note": ""
     }
   ],
   "patients": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Erika",
       "surname": "Musterfrau",
       "note": "Regelmäßige Teilnahme"
+    },
+    {
+      "id": "1db6",
+      "name": "egr",
+      "surname": "erge",
+      "note": ""
+    },
+    {
+      "id": "0099",
+      "name": "erg",
+      "surname": "egre",
+      "note": "egrr"
+    },
+    {
+      "id": "4957",
+      "name": "eg",
+      "surname": "ger",
+      "note": "erg"
+    },
+    {
+      "id": "91f6",
+      "name": "dcnz",
+      "surname": "bt",
+      "note": ""
     }
   ],
   "locations": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Therapieraum 1",
       "description": "Haupttherapieraum im Erdgeschoss"
+    },
+    {
+      "id": null,
+      "name": "noch ein raum",
+      "description": ""
     }
   ],
   "therapies": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Gruppentherapie",
       "patients": [
         {
@@ -48,11 +89,101 @@
       "time": "2024-02-20T10:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
+    },
+    {
+      "id": "57f9",
+      "name": "egeg",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-12-25T23:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "0538",
+      "name": "eht",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "noch ein raum",
+        "description": ""
+      },
+      "time": "2024-12-25T23:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "815c",
+      "name": "4g3g34",
+      "patients": [
+        {
+          "id": "1",
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        },
+        {
+          "id": "91f6",
+          "name": "dcnz",
+          "surname": "bt",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "1",
+        "name": "Max",
+        "surname": "Mustermann",
+        "note": "Therapeut"
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-12-24T23:00:49.916Z",
+      "preparationTime": 15,
+      "followUpTime": 15
     }
   ],
   "dailySchedules": [
     {
-      "id": 1,
+      "id": "1",
       "date": "2024-02-20T00:00:00.000Z",
       "therapies": [
         {
