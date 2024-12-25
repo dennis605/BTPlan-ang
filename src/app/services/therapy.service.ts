@@ -50,11 +50,33 @@ export class TherapyService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    console.log('Filtering therapies for date range:', {
+      date: date.toISOString(),
+      startOfDay: startOfDay.toISOString(),
+      endOfDay: endOfDay.toISOString()
+    });
+
     return this.getTherapies().pipe(
-      map(therapies => therapies.filter(therapy => {
-        const therapyDate = new Date(therapy.startTime);
-        return therapyDate >= startOfDay && therapyDate <= endOfDay;
-      }))
+      map(therapies => {
+        console.log('All therapies:', therapies);
+        
+        const filteredTherapies = therapies.filter(therapy => {
+          const therapyDate = new Date(therapy.startTime);
+          const isInRange = therapyDate >= startOfDay && therapyDate <= endOfDay;
+          
+          console.log('Checking therapy:', {
+            name: therapy.name,
+            startTime: therapy.startTime,
+            therapyDate: therapyDate.toISOString(),
+            isInRange
+          });
+          
+          return isInRange;
+        });
+
+        console.log('Filtered therapies:', filteredTherapies);
+        return filteredTherapies;
+      })
     );
   }
 }

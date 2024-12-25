@@ -8,9 +8,9 @@ export interface Therapy {
   patients: Patient[];
   leadingEmployee: Employee;
   location: Location;
-  startTime: Date;    // Startzeit der Therapie
-  endTime: Date;      // Endzeit der Therapie
-  preparationTime: number; // in minutes
-  followUpTime: number;    // in minutes
-  comment?: string;        // optionales Kommentarfeld
+  startTime: Date | string;    // Startzeit der Therapie
+  endTime: Date | string;      // Endzeit der Therapie
+  preparationTime: number;     // in minutes
+  followUpTime: number;        // in minutes
+  comment?: string;            // optionales Kommentarfeld
 }

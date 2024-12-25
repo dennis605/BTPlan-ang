@@ -126,7 +126,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-02-20T10:00:00.000Z",
+      "startTime": "2024-02-20T10:00:00.000Z",
+      "endTime": "2024-02-20T11:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
     },
@@ -152,7 +153,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-12-25T23:00:00.000Z",
+      "startTime": "2024-12-25T23:00:00.000Z",
+      "endTime": "2024-12-26T00:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 15
     },
@@ -184,7 +186,8 @@
         "name": "noch ein raum",
         "description": ""
       },
-      "time": "2024-12-25T23:00:00.000Z",
+      "startTime": "2024-12-25T23:00:00.000Z",
+      "endTime": "2024-12-26T00:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
@@ -217,7 +220,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-12-24T23:00:49.916Z",
+      "startTime": "2024-12-24T23:00:49.916Z",
+      "endTime": "2024-12-25T00:00:49.916Z",
       "preparationTime": 15,
       "followUpTime": 15
     },
@@ -243,7 +247,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-02-20T10:00:00.000Z",
+      "startTime": "2024-02-20T10:00:00.000Z",
+      "endTime": "2024-02-20T11:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
     },
@@ -269,7 +274,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-02-20T10:00:00.000Z",
+      "startTime": "2024-02-20T10:00:00.000Z",
+      "endTime": "2024-02-20T11:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
     },
@@ -295,7 +301,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "time": "2024-02-20T10:00:00.000Z",
+      "startTime": "2024-02-20T10:00:00.000Z",
+      "endTime": "2024-02-20T11:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
     },
@@ -486,7 +493,8 @@
             "name": "Therapieraum 1",
             "description": "Haupttherapieraum im Erdgeschoss"
           },
-          "time": "2024-02-20T10:00:00.000Z",
+          "startTime": "2024-02-20T10:00:00.000Z",
+          "endTime": "2024-02-20T11:00:00.000Z",
           "preparationTime": 15,
           "followUpTime": 10
         }

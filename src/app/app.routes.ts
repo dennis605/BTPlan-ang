@@ -7,7 +7,7 @@ import { LocationListComponent } from './components/locations/location-list/loca
 import { StatisticsComponent } from './components/statistics/statistics.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/employees', pathMatch: 'full' },
+  { path: '', redirectTo: '/schedule', pathMatch: 'full' },
   { path: 'employees', component: EmployeeListComponent },
   { path: 'patients', component: PatientListComponent },
   { path: 'therapies', component: TherapyListComponent },

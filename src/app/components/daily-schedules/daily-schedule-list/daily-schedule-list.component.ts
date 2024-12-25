@@ -121,8 +121,9 @@ export class DailyScheduleListComponent implements OnInit {
     }
   }
 
-  formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString('de-DE', {
+  formatTime(date: string | Date): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleTimeString('de-DE', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -148,12 +149,89 @@ export class DailyScheduleListComponent implements OnInit {
       });
   }
 
+  private formatTimeForPrint(time: string | Date): string {
+    return moment(time).format('HH:mm');
+  }
+
   printSchedule(): void {
-    const formattedDate = moment(this.selectedDate).format('YYYY-MM-DD');
-    const url = this.router.createUrlTree(['/daily-schedule/print'], {
-      queryParams: { date: formattedDate }
-    }).toString();
+    if (!this.schedules[0]?.therapies.length) {
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Bitte erlaube Pop-ups für diese Seite');
+      return;
+    }
+
+    const therapies = this.schedules[0].therapies;
+    const formattedDate = moment(this.selectedDate).format('DD.MM.YYYY');
+    const formatTime = this.formatTimeForPrint.bind(this);
     
-    window.open(url, '_blank');
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Tagesplan ${formattedDate}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h1 { text-align: center; margin-bottom: 10px; }
+          .date { text-align: center; margin-bottom: 30px; color: #666; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #f5f5f5; }
+          .patients-cell div { margin-bottom: 4px; }
+          @media print {
+            body { margin: 0; }
+            th { background-color: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Tagesplan</h1>
+        <div class="date">${formattedDate}</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Zeit</th>
+              <th>Name</th>
+              <th>Leitung</th>
+              <th>Teilnehmer</th>
+              <th>Ort</th>
+              <th>Vorbereitung</th>
+              <th>Nachbereitung</th>
+              <th>Kommentare</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${therapies.map(therapy => `
+              <tr>
+                <td>${formatTime(therapy.startTime)} - ${formatTime(therapy.endTime)}</td>
+                <td>${therapy.name}</td>
+                <td>${therapy.leadingEmployee?.name} ${therapy.leadingEmployee?.surname}</td>
+                <td class="patients-cell">
+                  ${therapy.patients.map(patient => 
+                    `<div>${patient.name} ${patient.surname}</div>`
+                  ).join('')}
+                </td>
+                <td>${therapy.location?.name}</td>
+                <td>${therapy.preparationTime} Min.</td>
+                <td>${therapy.followUpTime} Min.</td>
+                <td>${therapy.comment || ''}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Warte auf das Laden der Styles
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
   }
 }

@@ -19,16 +19,9 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DailyScheduleListComponent } from './components/daily-schedules/daily-schedule-list/daily-schedule-list.component';
-import { DailyScheduleDetailDialogComponent } from './components/daily-schedules/daily-schedule-detail-dialog/daily-schedule-detail-dialog.component';
-import { DailySchedulePrintComponent } from './components/daily-schedules/daily-schedule-print/daily-schedule-print.component';
-
 @NgModule({
   declarations: [
-    AppComponent,
-    DailyScheduleListComponent,
-    DailyScheduleDetailDialogComponent,
-    DailySchedulePrintComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
