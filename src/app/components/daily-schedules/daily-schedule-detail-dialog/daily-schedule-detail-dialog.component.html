@@ -9,7 +9,13 @@
 
     <div class="detail-row">
       <strong>Zeit:</strong>
-      <span>{{ formatTime(therapy.time) }}</span>
+      <div class="time-info">
+        <span class="time-range">{{ formatTime(therapy.startTime) }} - {{ formatTime(therapy.endTime) }}</span>
+        <div class="time-details">
+          <small>Vorbereitungszeit: {{ therapy.preparationTime }} Minuten</small>
+          <small>Nachbereitungszeit: {{ therapy.followUpTime }} Minuten</small>
+        </div>
+      </div>
     </div>
 
     <div class="detail-row">
@@ -22,21 +28,6 @@
       <span>{{ therapy.location.name }}</span>
     </div>
 
-    <div class="detail-row">
-      <strong>Vorbereitungszeit:</strong>
-      <span>{{ therapy.preparationTime }} Minuten</span>
-    </div>
-
-    <div class="detail-row">
-      <strong>Nachbereitungszeit:</strong>
-      <span>{{ therapy.followUpTime }} Minuten</span>
-    </div>
-
-    <div class="detail-row" *ngIf="therapy.comment">
-      <strong>Kommentar:</strong>
-      <span>{{ therapy.comment }}</span>
-    </div>
-
     <div class="detail-row patients-section">
       <strong>Teilnehmende Patienten:</strong>
       <mat-chip-set>
@@ -44,6 +35,13 @@
           {{ patient.name }} {{ patient.surname }}
         </mat-chip>
       </mat-chip-set>
+    </div>
+
+    <div class="detail-row comment-section" *ngIf="therapy.comment">
+      <strong>Kommentar:</strong>
+      <div class="comment-text">
+        {{ therapy.comment }}
+      </div>
     </div>
   </div>
 </mat-dialog-content>

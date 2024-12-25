@@ -61,7 +61,8 @@ export class TherapyDialogComponent {
   employees: Employee[] = [];
   patients: Patient[] = [];
   locations: Location[] = [];
-  selectedTime: string = '00:00';
+  selectedStartTime: string = '00:00';
+  selectedEndTime: string = '00:00';
 
   constructor(
     private dateAdapter: DateAdapter<any>,
@@ -76,15 +77,18 @@ export class TherapyDialogComponent {
       patients: [],
       leadingEmployee: {} as Employee,
       location: {} as Location,
-      time: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
       preparationTime: 15,
       followUpTime: 15
     };
 
-    // Initialisiere selectedTime aus therapy.time
+    // Initialisiere Start- und Endzeit aus therapy
     if (data.therapy) {
-      const time = new Date(this.therapy.time);
-      this.selectedTime = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+      const startTime = new Date(this.therapy.startTime);
+      const endTime = new Date(this.therapy.endTime);
+      this.selectedStartTime = `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`;
+      this.selectedEndTime = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
     }
 
     this.loadEmployees();
@@ -106,48 +110,52 @@ export class TherapyDialogComponent {
     });
   }
 
-  onCancel(): void {
-    this.dialogRef.close();
-  }
-
-  onSave(): void {
-    if (this.isValid()) {
-      // Kombiniere Datum und Zeit
-      const [hours, minutes] = this.selectedTime.split(':').map(Number);
-      const momentDate = moment(this.therapy.time as Date);
-      momentDate.hours(hours);
-      momentDate.minutes(minutes);
-      this.therapy.time = momentDate.toDate();
-      
-      this.dialogRef.close(this.therapy);
-    }
-  }
-
   loadLocations(): void {
     this.locationService.getLocations().subscribe(locations => {
       this.locations = locations;
     });
   }
 
-  private isValid(): boolean {
+  onCancel(): void {
+    this.dialogRef.close();
+  }
+
+  onSave(): void {
+    if (this.isValid()) {
+      // Aktualisiere Start- und Endzeit
+      const date = moment(this.therapy.startTime).format('YYYY-MM-DD');
+      const [startHours, startMinutes] = this.selectedStartTime.split(':');
+      const [endHours, endMinutes] = this.selectedEndTime.split(':');
+      
+      this.therapy.startTime = new Date(date + 'T' + this.selectedStartTime);
+      this.therapy.endTime = new Date(date + 'T' + this.selectedEndTime);
+
+      this.dialogRef.close(this.therapy);
+    }
+  }
+
+  isValid(): boolean {
     return !!(
       this.therapy.name &&
-      this.therapy.leadingEmployee &&
+      this.therapy.leadingEmployee?.id &&
+      this.therapy.location?.id &&
       this.therapy.patients.length > 0 &&
-      this.therapy.location &&
-      this.therapy.time
+      this.selectedStartTime &&
+      this.selectedEndTime &&
+      typeof this.therapy.preparationTime === 'number' && this.therapy.preparationTime >= 0 &&
+      typeof this.therapy.followUpTime === 'number' && this.therapy.followUpTime >= 0
     );
   }
 
   compareLocations(location1: Location, location2: Location): boolean {
-    return location1?.id === location2?.id;
+    return location1 && location2 ? location1.id === location2.id : location1 === location2;
   }
 
   compareEmployees(employee1: Employee, employee2: Employee): boolean {
-    return employee1?.id === employee2?.id;
+    return employee1 && employee2 ? employee1.id === employee2.id : employee1 === employee2;
   }
 
   comparePatients(patient1: Patient, patient2: Patient): boolean {
-    return patient1?.id === patient2?.id;
+    return patient1 && patient2 ? patient1.id === patient2.id : patient1 === patient2;
   }
 }

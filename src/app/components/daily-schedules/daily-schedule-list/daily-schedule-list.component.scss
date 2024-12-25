@@ -4,47 +4,47 @@
   h2 {
     margin-bottom: 20px;
   }
-}
 
-.date-selector {
-  margin-bottom: 20px;
-  padding: 16px;
-}
-
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
-
-table {
-  width: 100%;
-  margin-top: 20px;
-}
-
-.no-schedule {
-  text-align: center;
-  padding: 20px;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.therapy-row {
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+  .date-selector {
+    margin-bottom: 20px;
+    padding: 16px;
   }
-}
 
-.mat-column-patients {
-  mat-chip-set {
+  .loading-spinner {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
+    justify-content: center;
+    padding: 20px;
   }
 
-  mat-chip {
-    font-size: 12px;
-    height: 24px;
+  .no-schedule {
+    text-align: center;
+    padding: 20px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .therapy-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .mat-column-patients {
+    mat-chip-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    mat-chip {
+      font-size: 12px;
+      height: 24px;
+    }
+  }
+
+  .time-details {
+    color: #666;
+    margin-top: 4px;
   }
 }

@@ -37,7 +37,8 @@ export class TherapyService {
       ...therapy,
       id: undefined,
       name: `${therapy.name}_copy`, // Füge _copy zum Namen hinzu
-      time: new Date(therapy.time) // Erstelle ein neues Date-Objekt
+      startTime: new Date(therapy.startTime),
+      endTime: new Date(therapy.endTime)
     };
     return this.addTherapy(duplicatedTherapy);
   }
@@ -51,7 +52,7 @@ export class TherapyService {
 
     return this.getTherapies().pipe(
       map(therapies => therapies.filter(therapy => {
-        const therapyDate = new Date(therapy.time);
+        const therapyDate = new Date(therapy.startTime);
         return therapyDate >= startOfDay && therapyDate <= endOfDay;
       }))
     );

@@ -43,7 +43,7 @@
     <ng-container matColumnDef="time">
       <th mat-header-cell *matHeaderCellDef>Datum & Zeit</th>
       <td mat-cell *matCellDef="let therapy">
-        {{formatDate(therapy.time)}} {{formatTime(therapy.time)}}
+        {{formatDate(therapy.startTime)}} {{formatTime(therapy.startTime)}} - {{formatTime(therapy.endTime)}}
       </td>
     </ng-container>
 

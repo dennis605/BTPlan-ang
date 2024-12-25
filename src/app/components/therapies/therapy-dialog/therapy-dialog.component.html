@@ -40,29 +40,32 @@
     <div class="date-time-container">
       <mat-form-field appearance="fill" class="date-field">
         <mat-label>Datum</mat-label>
-        <input matInput [ngModel]="therapy.time" (ngModelChange)="therapy.time = $event"
+        <input matInput [ngModel]="therapy.startTime" (ngModelChange)="therapy.startTime = $event"
                name="date" [matDatepicker]="picker" required>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="time-field">
-        <mat-label>Uhrzeit</mat-label>
-        <input matInput type="time" [(ngModel)]="selectedTime" name="time" required>
+        <mat-label>Startzeit</mat-label>
+        <input matInput type="time" [(ngModel)]="selectedStartTime" name="startTime" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="time-field">
+        <mat-label>Endzeit</mat-label>
+        <input matInput type="time" [(ngModel)]="selectedEndTime" name="endTime" required>
       </mat-form-field>
     </div>
 
-    <div class="time-inputs">
-      <mat-form-field appearance="fill">
+    <div class="preparation-time-container">
+      <mat-form-field appearance="fill" class="time-field">
         <mat-label>Vorbereitungszeit (Min.)</mat-label>
-        <input matInput type="number" [(ngModel)]="therapy.preparationTime" 
-               name="preparationTime" required min="0">
+        <input matInput type="number" [(ngModel)]="therapy.preparationTime" name="preparationTime" required min="0">
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" class="time-field">
         <mat-label>Nachbereitungszeit (Min.)</mat-label>
-        <input matInput type="number" [(ngModel)]="therapy.followUpTime" 
-               name="followUpTime" required min="0">
+        <input matInput type="number" [(ngModel)]="therapy.followUpTime" name="followUpTime" required min="0">
       </mat-form-field>
     </div>
 
@@ -70,13 +73,10 @@
       <mat-label>Kommentar</mat-label>
       <textarea matInput [(ngModel)]="therapy.comment" name="comment" rows="3"></textarea>
     </mat-form-field>
-
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Abbrechen</button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!therapyForm.form.valid">
-    Speichern
-  </button>
+  <button mat-button color="primary" (click)="onSave()" [disabled]="!therapyForm.form.valid">Speichern</button>
 </mat-dialog-actions>

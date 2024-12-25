@@ -91,9 +91,9 @@ export class DailyScheduleListComponent implements OnInit {
     this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe({
       next: (schedule) => {
         if (schedule) {
-          // Sortiere Therapien nach Zeit
+          // Sortiere Therapien nach Startzeit
           schedule.therapies.sort((a, b) => 
-            new Date(a.time).getTime() - new Date(b.time).getTime()
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
           );
           this.schedules = [schedule];
         } else {
