@@ -174,16 +174,67 @@ export class DailyScheduleListComponent implements OnInit {
       <head>
         <title>Tagesplan ${formattedDate}</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 20px; }
-          h1 { text-align: center; margin-bottom: 10px; }
-          .date { text-align: center; margin-bottom: 30px; color: #666; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background-color: #f5f5f5; }
-          .patients-cell div { margin-bottom: 4px; }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px;
+            font-size: 12px;
+          }
+          h1 { 
+            text-align: center; 
+            margin-bottom: 10px;
+            font-size: 24px;
+          }
+          .date { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            color: #666;
+            font-size: 16px;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            table-layout: fixed;
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 6px; 
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+          }
+          th { 
+            background-color: #f5f5f5;
+            font-weight: bold;
+          }
+          th:nth-child(1) { width: 15%; } /* Zeit */
+          th:nth-child(2) { width: 15%; } /* Name */
+          th:nth-child(3) { width: 12%; } /* Leitung */
+          th:nth-child(4) { width: 20%; } /* Teilnehmer */
+          th:nth-child(5) { width: 12%; } /* Ort */
+          th:nth-child(6) { width: 8%; }  /* Vorbereitung */
+          th:nth-child(7) { width: 8%; }  /* Nachbereitung */
+          th:nth-child(8) { width: 10%; } /* Kommentare */
+          .patients-cell div { 
+            margin-bottom: 4px;
+            line-height: 1.2;
+          }
           @media print {
-            body { margin: 0; }
-            th { background-color: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { 
+              size: A4 landscape;
+              margin: 1cm;
+            }
+            body { 
+              margin: 0;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            th { 
+              background-color: #f5f5f5 !important;
+            }
+            td {
+              padding: 4px 6px;
+            }
           }
         </style>
       </head>
