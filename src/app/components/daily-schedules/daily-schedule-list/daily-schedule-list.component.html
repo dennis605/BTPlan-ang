@@ -18,6 +18,16 @@
   <div *ngIf="!isLoading && schedules.length > 0">
     <h3>{{ formatDate(selectedDate) }}</h3>
 
+    <button mat-raised-button 
+            color="primary" 
+            (click)="printSchedule()" 
+            [disabled]="schedules[0].therapies.length === 0"
+            aria-label="Tagesplan drucken"
+            matTooltip="Tagesplan drucken">
+      <mat-icon>print</mat-icon>
+      <span>Tagesplan drucken</span>
+    </button>
+
     <table mat-table [dataSource]="schedules[0].therapies" class="mat-elevation-z8">
       <!-- Time Column -->
       <ng-container matColumnDef="time">

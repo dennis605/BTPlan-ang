@@ -9,7 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -17,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { DailySchedule } from '../../../models/daily-schedule';
 import { DailyScheduleService } from '../../../services/daily-schedule.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-daily-schedule-list',
@@ -78,7 +79,8 @@ export class DailyScheduleListComponent implements OnInit {
 
   constructor(
     private dailyScheduleService: DailyScheduleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -144,5 +146,14 @@ export class DailyScheduleListComponent implements OnInit {
           width: '600px'
         });
       });
+  }
+
+  printSchedule(): void {
+    const formattedDate = moment(this.selectedDate).format('YYYY-MM-DD');
+    const url = this.router.createUrlTree(['/daily-schedule/print'], {
+      queryParams: { date: formattedDate }
+    }).toString();
+    
+    window.open(url, '_blank');
   }
 }
