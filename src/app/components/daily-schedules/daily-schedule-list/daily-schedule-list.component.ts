@@ -63,6 +63,7 @@ export class DailyScheduleListComponent implements OnInit {
   schedules: DailySchedule[] = [];
   selectedDate: Date = new Date();
   isLoading = false;
+  // Spalten für die Tabelle
   displayedColumns: string[] = [
     'time',
     'name',
@@ -71,6 +72,7 @@ export class DailyScheduleListComponent implements OnInit {
     'location',
     'preparationTime',
     'followUpTime',
+    'comment',
     'therapyType'
   ];
 

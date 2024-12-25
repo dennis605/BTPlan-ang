@@ -11,4 +11,5 @@ export interface Therapy {
   time: Date;
   preparationTime: number; // in minutes
   followUpTime: number;    // in minutes
+  comment?: string;        // optionales Kommentarfeld
 }

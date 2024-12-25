@@ -32,6 +32,11 @@
       <span>{{ therapy.followUpTime }} Minuten</span>
     </div>
 
+    <div class="detail-row" *ngIf="therapy.comment">
+      <strong>Kommentar:</strong>
+      <span>{{ therapy.comment }}</span>
+    </div>
+
     <div class="detail-row patients-section">
       <strong>Teilnehmende Patienten:</strong>
       <mat-chip-set>

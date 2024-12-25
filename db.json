@@ -146,7 +146,8 @@
       },
       "time": "2024-12-25T23:00:00.000Z",
       "preparationTime": 15,
-      "followUpTime": 15
+      "followUpTime": 15,
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
     },
     {
       "id": "815c",
@@ -257,6 +258,38 @@
       "time": "2024-02-20T10:00:00.000Z",
       "preparationTime": 15,
       "followUpTime": 10
+    },
+    {
+      "id": "621c",
+      "name": "4g3g34",
+      "patients": [
+        {
+          "id": "1",
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        },
+        {
+          "id": "91f6",
+          "name": "dcnz",
+          "surname": "bt",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "1",
+        "name": "Max",
+        "surname": "Mustermann",
+        "note": "Therapeut"
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-12-25T23:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15
     }
   ],
   "dailySchedules": [

@@ -35,6 +35,7 @@ export class TherapyListComponent implements OnInit {
     'time',
     'preparationTime',
     'followUpTime',
+    'comment',
     'actions'
   ];
 
