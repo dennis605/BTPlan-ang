@@ -10,7 +10,7 @@
       "id": "af9b",
       "name": "wer",
       "surname": "ew",
-      "note": ""
+      "note": "scds"
     },
     {
       "id": "2277",
@@ -179,6 +179,84 @@
       "time": "2024-12-24T23:00:49.916Z",
       "preparationTime": 15,
       "followUpTime": 15
+    },
+    {
+      "id": "d5bb",
+      "name": "Gruppentherapie",
+      "patients": [
+        {
+          "id": 1,
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        }
+      ],
+      "leadingEmployee": {
+        "id": 1,
+        "name": "Max",
+        "surname": "Mustermann",
+        "note": "Therapeut"
+      },
+      "location": {
+        "id": 1,
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-02-20T10:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 10
+    },
+    {
+      "id": "6240",
+      "name": "Gruppentherapie_copy",
+      "patients": [
+        {
+          "id": 1,
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        }
+      ],
+      "leadingEmployee": {
+        "id": 1,
+        "name": "Max",
+        "surname": "Mustermann",
+        "note": "Therapeut"
+      },
+      "location": {
+        "id": 1,
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-02-20T10:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 10
+    },
+    {
+      "id": "74d8",
+      "name": "Gruppentherapie_copy_copy",
+      "patients": [
+        {
+          "id": 1,
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        }
+      ],
+      "leadingEmployee": {
+        "id": 1,
+        "name": "Max",
+        "surname": "Mustermann",
+        "note": "Therapeut"
+      },
+      "location": {
+        "id": 1,
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "time": "2024-02-20T10:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 10
     }
   ],
   "dailySchedules": [

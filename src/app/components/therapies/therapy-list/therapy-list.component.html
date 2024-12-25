@@ -63,10 +63,13 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Aktionen</th>
       <td mat-cell *matCellDef="let therapy">
-        <button mat-icon-button color="primary" (click)="editTherapy(therapy)">
+        <button mat-icon-button color="primary" (click)="editTherapy(therapy)" matTooltip="Bearbeiten">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deleteTherapy(therapy.id!)">
+        <button mat-icon-button color="accent" (click)="duplicateTherapy(therapy)" matTooltip="Duplizieren">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteTherapy(therapy.id!)" matTooltip="Löschen">
           <mat-icon>delete</mat-icon>
         </button>
       </td>

@@ -31,6 +31,17 @@ export class TherapyService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  duplicateTherapy(therapy: Therapy): Observable<Therapy> {
+    // Erstelle eine Kopie der Therapie ohne ID
+    const duplicatedTherapy: Therapy = {
+      ...therapy,
+      id: undefined,
+      name: `${therapy.name}_copy`, // Füge _copy zum Namen hinzu
+      time: new Date(therapy.time) // Erstelle ein neues Date-Objekt
+    };
+    return this.addTherapy(duplicatedTherapy);
+  }
+
   getTherapiesByDate(date: Date): Observable<Therapy[]> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);

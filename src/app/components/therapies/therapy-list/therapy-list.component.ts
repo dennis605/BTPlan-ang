@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
 import { TherapyService } from '../../../services/therapy.service';
 import { MatTableModule } from '@angular/material/table';
@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-therapy-list',
@@ -19,7 +20,9 @@ import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.compone
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    MatDialogModule,
+    MatTooltipModule
   ]
 })
 export class TherapyListComponent implements OnInit {
@@ -59,6 +62,20 @@ export class TherapyListComponent implements OnInit {
         error: (error) => {
           console.error('Fehler beim Löschen der Therapie:', error);
           alert('Fehler beim Löschen der Therapie');
+        }
+      });
+    }
+  }
+
+  duplicateTherapy(therapy: Therapy): void {
+    if (confirm('Möchten Sie diese Therapie duplizieren?')) {
+      this.therapyService.duplicateTherapy(therapy).subscribe({
+        next: () => {
+          this.loadTherapies();
+        },
+        error: (error) => {
+          console.error('Fehler beim Duplizieren der Therapie:', error);
+          alert('Fehler beim Duplizieren der Therapie');
         }
       });
     }
@@ -113,10 +130,9 @@ export class TherapyListComponent implements OnInit {
 
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('de-DE', {
-      weekday: 'short',
       year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      month: '2-digit',
+      day: '2-digit'
     });
   }
 }
