@@ -4,6 +4,7 @@ import { PatientListComponent } from './components/patients/patient-list/patient
 import { TherapyListComponent } from './components/therapies/therapy-list/therapy-list.component';
 import { DailyScheduleListComponent } from './components/daily-schedules/daily-schedule-list/daily-schedule-list.component';
 import { LocationListComponent } from './components/locations/location-list/location-list.component';
+import { StatisticsComponent } from './components/statistics/statistics.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/employees', pathMatch: 'full' },
@@ -11,5 +12,6 @@ export const routes: Routes = [
   { path: 'patients', component: PatientListComponent },
   { path: 'therapies', component: TherapyListComponent },
   { path: 'schedule', component: DailyScheduleListComponent },
+  { path: 'statistics', component: StatisticsComponent },
   { path: 'locations', component: LocationListComponent }
 ];

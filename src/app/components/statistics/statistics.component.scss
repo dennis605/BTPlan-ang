@@ -1,0 +1,42 @@
+.statistics-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .filters {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    align-items: flex-start;
+
+    mat-form-field {
+      min-width: 200px;
+    }
+
+    button {
+      margin-top: 4px;
+    }
+  }
+
+  .results {
+    table {
+      width: 100%;
+    }
+
+    th.mat-header-cell {
+      font-weight: 600;
+    }
+
+    .mat-column-therapyCount,
+    .mat-column-totalHours {
+      text-align: center;
+    }
+  }
+
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+}

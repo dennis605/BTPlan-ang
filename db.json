@@ -377,6 +377,86 @@
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "eegereregeger"
+    },
+    {
+      "id": "0fdc",
+      "name": "f43g424_cop_copy",
+      "patients": [
+        {
+          "id": "1",
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        },
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "73f7",
+        "name": "lisa",
+        "surname": "henken",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-25T11:30:00.000Z",
+      "endTime": "2024-12-25T13:20:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "eegereregeger"
+    },
+    {
+      "id": "38e6",
+      "name": "f43g424_cop_copy_copy",
+      "patients": [
+        {
+          "id": "1",
+          "name": "Erika",
+          "surname": "Musterfrau",
+          "note": "Regelmäßige Teilnahme"
+        },
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "73f7",
+        "name": "lisa",
+        "surname": "henken",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-25T11:30:00.000Z",
+      "endTime": "2024-12-25T12:30:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "eegereregeger"
     }
   ],
   "dailySchedules": [
