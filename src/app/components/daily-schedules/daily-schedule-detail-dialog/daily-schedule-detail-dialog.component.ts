@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { Therapy } from '../../../models/therapy';
+import moment from 'moment';
 
 @Component({
   selector: 'app-daily-schedule-detail-dialog',
@@ -25,11 +26,8 @@ export class DailyScheduleDetailDialogComponent {
     @Inject(MAT_DIALOG_DATA) public therapy: Therapy
   ) {}
 
-  formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  formatTime(time: string | Date): string {
+    return moment(time).format('HH:mm');
   }
 
   onClose(): void {
