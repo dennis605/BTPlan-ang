@@ -18,6 +18,8 @@ import { FormsModule } from '@angular/forms';
 import { DailySchedule } from '../../../models/daily-schedule';
 import { DailyScheduleService } from '../../../services/daily-schedule.service';
 import { Router } from '@angular/router';
+import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-daily-schedule-list',
@@ -35,7 +37,8 @@ import { Router } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
@@ -252,6 +255,8 @@ export class DailyScheduleListComponent implements OnInit {
               <th>Vorbereitung</th>
               <th>Nachbereitung</th>
               <th>Kommentare</th>
+               <th>Kommentare</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -284,5 +289,47 @@ export class DailyScheduleListComponent implements OnInit {
     setTimeout(() => {
       printWindow.print();
     }, 250);
+  }
+
+  duplicateSchedule(): void {
+    const dialogRef = this.dialog.open(DuplicateScheduleDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const newDate = new Date(result);
+        const currentSchedule = this.schedules[0];
+        
+        // Erstelle eine tiefe Kopie des aktuellen Tagesplans
+        const duplicatedSchedule: DailySchedule = {
+          date: newDate,
+          therapies: currentSchedule.therapies.map(therapy => {
+            // Berechne Zeitdifferenz zwischen altem und neuem Datum
+            const timeDiff = newDate.getTime() - new Date(this.selectedDate).getTime();
+            
+            // Kopiere die Therapie und passe die Zeiten an
+            const newTherapy = { ...therapy };
+            newTherapy.startTime = new Date(new Date(therapy.startTime).getTime() + timeDiff);
+            newTherapy.endTime = new Date(new Date(therapy.endTime).getTime() + timeDiff);
+            delete newTherapy.id; // ID entfernen, damit eine neue generiert wird
+            
+            return newTherapy;
+          })
+        };
+
+        // Speichere den duplizierten Tagesplan
+        this.dailyScheduleService.addSchedule(duplicatedSchedule).subscribe({
+          next: () => {
+            this.selectedDate = newDate;
+            this.loadSchedule();
+          },
+          error: (error) => {
+            console.error('Fehler beim Duplizieren des Tagesplans:', error);
+            alert('Fehler beim Duplizieren des Tagesplans');
+          }
+        });
+      }
+    });
   }
 }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, of } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
+import { Therapy } from '../models/therapy';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,29 @@ export class DailyScheduleService {
   }
 
   addSchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    return this.http.post<DailySchedule>(this.apiUrl, schedule);
+    // Füge die Therapien einzeln hinzu
+    const therapyObservables = schedule.therapies.map(therapy => 
+      this.therapyService.addTherapy(therapy)
+    );
+
+    // Warte auf alle Therapie-Hinzufügungen
+    return new Observable<DailySchedule>(observer => {
+      Promise.all(therapyObservables.map(obs => 
+        obs.toPromise().then(therapy => therapy as Therapy)
+      )).then(
+        (therapies) => {
+          const newSchedule: DailySchedule = {
+            date: schedule.date,
+            therapies: therapies.filter((t): t is Therapy => t !== undefined)
+          };
+          observer.next(newSchedule);
+          observer.complete();
+        },
+        (error) => {
+          observer.error(error);
+        }
+      );
+    });
   }
 
   updateSchedule(schedule: DailySchedule): Observable<DailySchedule> {

@@ -28,6 +28,17 @@
       <span>Tagesplan drucken</span>
     </button>
 
+    <button mat-raised-button 
+            color="accent" 
+            (click)="duplicateSchedule()" 
+            [disabled]="schedules[0].therapies.length === 0"
+            aria-label="Tagesplan duplizieren"
+            matTooltip="Tagesplan duplizieren"
+            class="ml-2">
+      <mat-icon>content_copy</mat-icon>
+      <span>Tagesplan duplizieren</span>
+    </button>
+
     <table mat-table [dataSource]="schedules[0].therapies" class="mat-elevation-z8">
       <!-- Time Column -->
       <ng-container matColumnDef="time">
