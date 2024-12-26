@@ -20,11 +20,84 @@ import { DailyScheduleService } from '../../../services/daily-schedule.service';
 import { Router } from '@angular/router';
 import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-daily-schedule-list',
   templateUrl: './daily-schedule-list.component.html',
-  styleUrls: ['./daily-schedule-list.component.scss'],
+  styles: [`
+    .daily-schedule-container {
+      padding: 20px;
+    }
+
+    .daily-schedule-container h2 {
+      margin-bottom: 20px;
+    }
+
+    .date-selector {
+      margin-bottom: 20px;
+      padding: 16px;
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .no-schedule {
+      text-align: center;
+      padding: 20px;
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    .therapy-row {
+      transition: background-color 0.2s ease;
+    }
+
+    .therapy-row:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .mat-column-patients mat-chip-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .mat-column-patients mat-chip {
+      font-size: 12px;
+      height: 24px;
+    }
+
+    .time-details {
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .ml-2 {
+      margin-left: 8px;
+    }
+
+    .mat-mdc-table {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .mat-mdc-row:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .mat-column-actions {
+      width: 100px;
+      text-align: right;
+    }
+
+    button[mat-icon-button] {
+      margin: 0 4px;
+    }
+  `],
   standalone: true,
   imports: [
     CommonModule,
@@ -38,7 +111,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatInputModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTooltipModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
@@ -51,10 +125,10 @@ import { MatDialogModule } from '@angular/material/dialog';
       provide: MAT_DATE_FORMATS,
       useValue: {
         parse: {
-          dateInput: 'DD.MM.YYYY',
+          dateInput: 'L',
         },
         display: {
-          dateInput: 'DD.MM.YYYY',
+          dateInput: 'L',
           monthYearLabel: 'MMM YYYY',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'MMMM YYYY',
@@ -67,7 +141,6 @@ export class DailyScheduleListComponent implements OnInit {
   schedules: DailySchedule[] = [];
   selectedDate: Date = new Date();
   isLoading = false;
-  // Spalten für die Tabelle
   displayedColumns: string[] = [
     'time',
     'name',
@@ -77,7 +150,8 @@ export class DailyScheduleListComponent implements OnInit {
     'preparationTime',
     'followUpTime',
     'comment',
-    'therapyType'
+    'therapyType',
+    'actions'
   ];
 
   constructor(
@@ -93,6 +167,7 @@ export class DailyScheduleListComponent implements OnInit {
 
   loadSchedule(): void {
     this.isLoading = true;
+    this.schedules = [];
     this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe({
       next: (schedule) => {
         if (schedule) {
@@ -101,26 +176,20 @@ export class DailyScheduleListComponent implements OnInit {
             new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
           );
           this.schedules = [schedule];
-        } else {
-          this.schedules = [];
         }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Fehler beim Laden des Tagesplans:', error);
-        alert('Fehler beim Laden des Tagesplans');
-        this.schedules = [];
-      },
-      complete: () => {
         this.isLoading = false;
       }
     });
   }
 
   onDateChange(event: any): void {
-    if (event && event.value) {
+    if (event.value) {
       this.selectedDate = event.value.toDate();
-      this.schedules = []; // Liste leeren
-      this.loadSchedule(); // Neue Daten laden
+      this.loadSchedule();
     }
   }
 
@@ -358,5 +427,52 @@ export class DailyScheduleListComponent implements OnInit {
         });
       }
     });
+  }
+
+  editTherapy(therapy: Therapy): void {
+    console.log('Editing therapy:', therapy);
+    const dialogRef = this.dialog.open(EditTherapyDialogComponent, {
+      width: '600px',
+      data: { 
+        therapy: {
+          ...therapy,
+          location: { ...therapy.location },
+          leadingEmployee: { ...therapy.leadingEmployee },
+          patients: therapy.patients.map(p => ({ ...p }))
+        }
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog result:', result);
+      if (result) {
+        this.dailyScheduleService.updateTherapy(result).subscribe({
+          next: () => {
+            console.log('Therapy updated successfully');
+            this.loadSchedule();
+          },
+          error: (error) => {
+            console.error('Error updating therapy:', error);
+            alert('Fehler beim Aktualisieren der Therapie');
+          }
+        });
+      }
+    });
+  }
+
+  deleteTherapy(therapy: Therapy): void {
+    console.log('Deleting therapy:', therapy);
+    if (confirm(`Möchten Sie die Therapie "${therapy.name}" wirklich löschen?`)) {
+      this.dailyScheduleService.deleteTherapy(therapy.id!).subscribe({
+        next: () => {
+          console.log('Therapy deleted successfully');
+          this.loadSchedule();
+        },
+        error: (error) => {
+          console.error('Error deleting therapy:', error);
+          alert('Fehler beim Löschen der Therapie');
+        }
+      });
+    }
   }
 }

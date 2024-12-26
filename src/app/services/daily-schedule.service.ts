@@ -74,7 +74,15 @@ export class DailyScheduleService {
     return this.http.put<DailySchedule>(`${this.apiUrl}/${schedule.id}`, schedule);
   }
 
+  updateTherapy(therapy: Therapy): Observable<Therapy> {
+    return this.therapyService.updateTherapy(therapy);
+  }
+
   deleteSchedule(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  deleteTherapy(therapyId: number): Observable<void> {
+    return this.therapyService.deleteTherapy(therapyId);
   }
 }
