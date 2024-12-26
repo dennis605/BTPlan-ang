@@ -7,13 +7,13 @@
     <mat-card-content>
       <div class="filters">
         <mat-form-field>
-          <mat-label>Patienten</mat-label>
+          <mat-label>Bewohner</mat-label>
           <mat-select [(ngModel)]="selectedPatients" multiple [compareWith]="comparePatients">
             <mat-option *ngFor="let patient of patients" [value]="patient">
               {{ formatName(patient) }}
             </mat-option>
           </mat-select>
-          <mat-hint>Keine Auswahl = Alle Patienten</mat-hint>
+          <mat-hint>Keine Auswahl = Alle Bewohner</mat-hint>
         </mat-form-field>
 
         <mat-form-field>
@@ -37,9 +37,9 @@
 
       <div class="results" *ngIf="!isLoading">
         <table mat-table [dataSource]="statistics" class="mat-elevation-z8">
-          <!-- Patient Column -->
+          <!-- Bewohner Column -->
           <ng-container matColumnDef="patient">
-            <th mat-header-cell *matHeaderCellDef>Patient</th>
+            <th mat-header-cell *matHeaderCellDef>Bewohner</th>
             <td mat-cell *matCellDef="let stat">{{ formatName(stat.patient) }}</td>
           </ng-container>
 

@@ -1,28 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
+import { DailySchedule } from '../../../models/daily-schedule';
+import { DailyScheduleService } from '../../../services/daily-schedule.service';
+import { DailyScheduleDetailDialogComponent } from '../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component';
+import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
+import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
+import { DuplicateTherapyDialogComponent } from '../duplicate-therapy-dialog/duplicate-therapy-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import * as moment from 'moment'; // Fixed moment.js import
+import moment from 'moment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormsModule } from '@angular/forms';
-import { DailySchedule } from '../../../models/daily-schedule';
-import { DailyScheduleService } from '../../../services/daily-schedule.service';
 import { Router } from '@angular/router';
-import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DuplicateTherapyDialogComponent } from '../duplicate-therapy-dialog/duplicate-therapy-dialog.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-daily-schedule-list',
@@ -112,6 +113,7 @@ import { DuplicateTherapyDialogComponent } from '../duplicate-therapy-dialog/dup
     MatInputModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     MatDialogModule,
     MatTooltipModule
   ],
@@ -282,8 +284,8 @@ export class DailyScheduleListComponent implements OnInit {
           }
           th:nth-child(1) { width: 15%; } /* Zeit */
           th:nth-child(2) { width: 15%; } /* Name */
-          th:nth-child(3) { width: 12%; } /* Leitung */
-          th:nth-child(4) { width: 20%; } /* Teilnehmer */
+          th:nth-child(3) { width: 12%; } /* Mitarbeiter */
+          th:nth-child(4) { width: 20%; } /* Bewohner */
           th:nth-child(5) { width: 12%; } /* Ort */
           th:nth-child(6) { width: 8%; }  /* Vorbereitung */
           th:nth-child(7) { width: 8%; }  /* Nachbereitung */
@@ -319,8 +321,8 @@ export class DailyScheduleListComponent implements OnInit {
             <tr>
               <th>Zeit</th>
               <th>Name</th>
-              <th>Leitung</th>
-              <th>Teilnehmer</th>
+              <th>Mitarbeiter</th>
+              <th>Bewohner</th>
               <th>Ort</th>
               <th>Vorbereitung</th>
               <th>Nachbereitung</th>
@@ -457,12 +459,12 @@ export class DailyScheduleListComponent implements OnInit {
         const endDate = new Date(duplicatedTherapy.endTime);
         
         // Set the new date while preserving the time
-        const target = moment.default(targetDate).startOf('day');
-        const startTime = moment.default(startDate).format('HH:mm:ss');
-        const endTime = moment.default(endDate).format('HH:mm:ss');
+        const target = moment(targetDate).startOf('day');
+        const startTime = moment(startDate).format('HH:mm:ss');
+        const endTime = moment(endDate).format('HH:mm:ss');
         
-        duplicatedTherapy.startTime = moment.default(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
-        duplicatedTherapy.endTime = moment.default(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
+        duplicatedTherapy.startTime = moment(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
+        duplicatedTherapy.endTime = moment(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
 
         console.log('Duplicated therapy with new dates:', duplicatedTherapy);
 
@@ -471,8 +473,8 @@ export class DailyScheduleListComponent implements OnInit {
           next: (newTherapy) => {
             console.log('Therapy duplicated successfully:', newTherapy);
             // Refresh the list if the target date is the currently displayed date
-            const targetDateStr = moment.default(targetDate).format('YYYY-MM-DD');
-            const currentDateStr = moment.default(this.selectedDate).format('YYYY-MM-DD');
+            const targetDateStr = moment(targetDate).format('YYYY-MM-DD');
+            const currentDateStr = moment(this.selectedDate).format('YYYY-MM-DD');
             if (targetDateStr === currentDateStr) {
               this.loadDailySchedule();
             }

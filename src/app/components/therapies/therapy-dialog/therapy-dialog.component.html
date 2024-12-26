@@ -8,7 +8,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Leitender Mitarbeiter</mat-label>
+      <mat-label>Mitarbeiter</mat-label>
       <mat-select [(ngModel)]="therapy.leadingEmployee" name="leadingEmployee" required
                 [compareWith]="compareEmployees">
         <mat-option *ngFor="let employee of employees" [value]="employee">
@@ -18,7 +18,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Teilnehmende Patienten</mat-label>
+      <mat-label>Bewohner</mat-label>
       <mat-select [(ngModel)]="therapy.patients" name="patients" required multiple
                 [compareWith]="comparePatients">
         <mat-option *ngFor="let patient of patients" [value]="patient">

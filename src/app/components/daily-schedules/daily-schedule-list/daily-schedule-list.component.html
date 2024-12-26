@@ -59,7 +59,7 @@
 
       <!-- Leading Employee Column -->
       <ng-container matColumnDef="leadingEmployee">
-        <th mat-header-cell *matHeaderCellDef>Leitung</th>
+        <th mat-header-cell *matHeaderCellDef>Mitarbeiter</th>
         <td mat-cell *matCellDef="let therapy">
           {{therapy.leadingEmployee.name}} {{therapy.leadingEmployee.surname}}
         </td>
@@ -67,7 +67,7 @@
 
       <!-- Patients Column -->
       <ng-container matColumnDef="patients">
-        <th mat-header-cell *matHeaderCellDef>Teilnehmer</th>
+        <th mat-header-cell *matHeaderCellDef>Bewohner</th>
         <td mat-cell *matCellDef="let therapy">
           <mat-chip-set>
             <mat-chip *ngFor="let patient of therapy.patients">

@@ -19,7 +19,7 @@
     </div>
 
     <div class="detail-row">
-      <strong>Therapeut:</strong>
+      <strong>Mitarbeiter:</strong>
       <span>{{ therapy.leadingEmployee.name }} {{ therapy.leadingEmployee.surname }}</span>
     </div>
 
@@ -29,7 +29,7 @@
     </div>
 
     <div class="detail-row patients-section">
-      <strong>Teilnehmende Patienten:</strong>
+      <strong>Bewohner:</strong>
       <mat-chip-set>
         <mat-chip *ngFor="let patient of therapy.patients">
           {{ patient.name }} {{ patient.surname }}

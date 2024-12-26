@@ -48,7 +48,7 @@ import { LocationService } from '../../../services/location.service';
         </div>
 
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Leitender Mitarbeiter</mat-label>
+          <mat-label>Mitarbeiter</mat-label>
           <mat-select [(ngModel)]="therapy.leadingEmployee" name="leadingEmployee" required 
                     [compareWith]="compareById">
             <mat-option *ngFor="let employee of employees" [value]="employee">
@@ -58,7 +58,7 @@ import { LocationService } from '../../../services/location.service';
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Patienten</mat-label>
+          <mat-label>Bewohner</mat-label>
           <mat-select [(ngModel)]="therapy.patients" name="patients" multiple required
                     [compareWith]="compareById">
             <mat-option *ngFor="let patient of patients" [value]="patient">
