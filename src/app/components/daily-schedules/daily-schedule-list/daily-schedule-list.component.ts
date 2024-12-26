@@ -153,7 +153,6 @@ export class DailyScheduleListComponent implements OnInit {
     'preparationTime',
     'followUpTime',
     'comment',
-    'therapyType',
     'actions'
   ];
 
@@ -244,113 +243,130 @@ export class DailyScheduleListComponent implements OnInit {
     const formatTime = this.formatTimeForPrint.bind(this);
     
     const printContent = `
-      <!DOCTYPE html>
       <html>
-      <head>
-        <title>Tagesplan ${formattedDate}</title>
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px;
-            font-size: 12px;
-          }
-          h1 { 
-            text-align: center; 
-            margin-bottom: 10px;
-            font-size: 24px;
-          }
-          .date { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            color: #666;
-            font-size: 16px;
-          }
-          table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 20px;
-            table-layout: fixed;
-          }
-          th, td { 
-            border: 1px solid #ddd; 
-            padding: 6px; 
-            text-align: left;
-            vertical-align: top;
-            word-wrap: break-word;
-          }
-          th { 
-            background-color: #f5f5f5;
-            font-weight: bold;
-          }
-          th:nth-child(1) { width: 15%; } /* Zeit */
-          th:nth-child(2) { width: 15%; } /* Name */
-          th:nth-child(3) { width: 12%; } /* Mitarbeiter */
-          th:nth-child(4) { width: 20%; } /* Bewohner */
-          th:nth-child(5) { width: 12%; } /* Ort */
-          th:nth-child(6) { width: 8%; }  /* Vorbereitung */
-          th:nth-child(7) { width: 8%; }  /* Nachbereitung */
-          th:nth-child(8) { width: 10%; } /* Kommentare */
-          .patients-cell div { 
-            margin-bottom: 4px;
-            line-height: 1.2;
-          }
-          @media print {
-            @page { 
-              size: A4 landscape;
-              margin: 1cm;
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              font-size: 12px;
             }
-            body { 
-              margin: 0;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 20px;
+              border-bottom: 2px solid #000;
+              padding-bottom: 10px;
+            }
+            .header-left {
+              display: flex;
+              align-items: center;
+            }
+            .logo {
+              width: 180px;
+              margin-right: 20px;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+            }
+            .header-right {
+              text-align: right;
+              font-size: 16px;
+              font-weight: bold;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px;
+              table-layout: fixed;
+            }
+            th, td { 
+              border: 1px solid #000; 
+              padding: 6px; 
+              text-align: left;
+              vertical-align: top;
+              word-wrap: break-word;
             }
             th { 
-              background-color: #f5f5f5 !important;
+              background-color: #f5f5f5;
+              font-weight: bold;
+              border-bottom: 2px solid #000;
             }
-            td {
-              padding: 4px 6px;
+            th:nth-child(1) { width: 12%; } /* Zeit */
+            th:nth-child(2) { width: 15%; } /* Name */
+            th:nth-child(3) { width: 12%; } /* Mitarbeiter */
+            th:nth-child(4) { width: 20%; } /* Bewohner */
+            th:nth-child(5) { width: 12%; } /* Ort */
+            th:nth-child(6) { width: 8%; }  /* Vorbereitung */
+            th:nth-child(7) { width: 8%; }  /* Nachbereitung */
+            th:nth-child(8) { width: 13%; } /* Kommentare */
+            .patients-cell div { 
+              margin-bottom: 4px;
+              line-height: 1.2;
             }
-          }
-        </style>
-      </head>
-      <body>
-        <h1>Tagesplan</h1>
-        <div class="date">${formattedDate}</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Zeit</th>
-              <th>Name</th>
-              <th>Mitarbeiter</th>
-              <th>Bewohner</th>
-              <th>Ort</th>
-              <th>Vorbereitung</th>
-              <th>Nachbereitung</th>
-              <th>Kommentare</th>
-               <th>Kommentare</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            ${therapies.map(therapy => `
+            @media print {
+              @page { 
+                size: A4 landscape;
+                margin: 1.5cm;
+              }
+              body { 
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              th { 
+                background-color: #f5f5f5 !important;
+              }
+              td {
+                padding: 4px 6px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="header-left">
+              <img src="/assets/images/schloss.jpg" alt="Schloss" class="logo">
+              <div class="title">Tagesplan</div>
+            </div>
+            <div class="header-right">${formattedDate}</div>
+          </div>
+
+          <table>
+            <thead>
               <tr>
-                <td>${formatTime(therapy.startTime)} - ${formatTime(therapy.endTime)}</td>
-                <td>${therapy.name}</td>
-                <td>${therapy.leadingEmployee?.name} ${therapy.leadingEmployee?.surname}</td>
-                <td class="patients-cell">
-                  ${therapy.patients.map(patient => 
-                    `<div>${patient.name} ${patient.surname}</div>`
-                  ).join('')}
-                </td>
-                <td>${therapy.location?.name}</td>
-                <td>${therapy.preparationTime} Min.</td>
-                <td>${therapy.followUpTime} Min.</td>
-                <td>${therapy.comment || ''}</td>
+                <th>Zeit</th>
+                <th>Name</th>
+                <th>Mitarbeiter</th>
+                <th>Bewohner</th>
+                <th>Ort</th>
+                <th>Vorbereitung</th>
+                <th>Nachbereitung</th>
+                <th>Kommentare</th>
               </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </body>
+            </thead>
+            <tbody>
+              ${therapies.map(therapy => `
+                <tr>
+                  <td>${formatTime(therapy.startTime)} - ${formatTime(therapy.endTime)}</td>
+                  <td>${therapy.name}</td>
+                  <td>${therapy.leadingEmployee?.name} ${therapy.leadingEmployee?.surname}</td>
+                  <td class="patients-cell">
+                    ${therapy.patients.map(patient => 
+                      `<div>${patient.name} ${patient.surname}</div>`
+                    ).join('')}
+                  </td>
+                  <td>${therapy.location?.name || ''}</td>
+                  <td>${therapy.preparationTime ? therapy.preparationTime + ' Min.' : ''}</td>
+                  <td>${therapy.followUpTime ? therapy.followUpTime + ' Min.' : ''}</td>
+                  <td>${therapy.comment || ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
       </html>
     `;
 
