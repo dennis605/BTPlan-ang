@@ -298,30 +298,57 @@ export class DailyScheduleListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newDate = new Date(result);
+        console.log('Selected date for duplication:', result);
         const currentSchedule = this.schedules[0];
         
+        if (!currentSchedule || !currentSchedule.therapies.length) {
+          console.error('Kein Tagesplan zum Duplizieren vorhanden');
+          return;
+        }
+
         // Erstelle eine tiefe Kopie des aktuellen Tagesplans
         const duplicatedSchedule: DailySchedule = {
-          date: newDate,
+          date: result,
           therapies: currentSchedule.therapies.map(therapy => {
-            // Berechne Zeitdifferenz zwischen altem und neuem Datum
-            const timeDiff = newDate.getTime() - new Date(this.selectedDate).getTime();
+            // Berechne Zeitdifferenz zwischen altem und neuem Datum in Millisekunden
+            const oldDate = new Date(this.selectedDate);
+            const newDate = new Date(result);
+            oldDate.setHours(0, 0, 0, 0);
+            newDate.setHours(0, 0, 0, 0);
+            const daysDiff = newDate.getTime() - oldDate.getTime();
             
             // Kopiere die Therapie und passe die Zeiten an
-            const newTherapy = { ...therapy };
-            newTherapy.startTime = new Date(new Date(therapy.startTime).getTime() + timeDiff);
-            newTherapy.endTime = new Date(new Date(therapy.endTime).getTime() + timeDiff);
-            delete newTherapy.id; // ID entfernen, damit eine neue generiert wird
+            const newTherapy: Therapy = {
+              ...therapy,
+              id: undefined, // ID entfernen, damit eine neue generiert wird
+              startTime: new Date(new Date(therapy.startTime).getTime() + daysDiff),
+              endTime: new Date(new Date(therapy.endTime).getTime() + daysDiff)
+            };
+            
+            console.log('Duplicated therapy:', {
+              original: {
+                name: therapy.name,
+                startTime: therapy.startTime,
+                endTime: therapy.endTime
+              },
+              new: {
+                name: newTherapy.name,
+                startTime: newTherapy.startTime,
+                endTime: newTherapy.endTime
+              }
+            });
             
             return newTherapy;
           })
         };
 
+        console.log('Duplicated schedule:', duplicatedSchedule);
+
         // Speichere den duplizierten Tagesplan
         this.dailyScheduleService.addSchedule(duplicatedSchedule).subscribe({
-          next: () => {
-            this.selectedDate = newDate;
+          next: (newSchedule) => {
+            console.log('Successfully duplicated schedule:', newSchedule);
+            this.selectedDate = new Date(result);
             this.loadSchedule();
           },
           error: (error) => {

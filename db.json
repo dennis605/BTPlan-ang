@@ -604,6 +604,250 @@
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
+    },
+    {
+      "id": "a8c4",
+      "name": "eht",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "noch ein raum",
+        "description": ""
+      },
+      "startTime": "2024-12-22T10:27:26.569Z",
+      "endTime": "2024-12-22T11:27:26.569Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
+    },
+    {
+      "id": "fee8",
+      "name": "egeg",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-22T10:27:26.569Z",
+      "endTime": "2024-12-22T11:27:26.569Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "f462",
+      "name": "egeg",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-26T10:26:38.495Z",
+      "endTime": "2024-12-26T11:26:38.495Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "0520",
+      "name": "eht",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "noch ein raum",
+        "description": ""
+      },
+      "startTime": "2024-12-26T10:26:38.495Z",
+      "endTime": "2024-12-26T11:26:38.495Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
+    },
+    {
+      "id": "ae4b",
+      "name": "egeg",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-26T23:00:00.000Z",
+      "endTime": "2024-12-27T00:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "e529",
+      "name": "eht",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "noch ein raum",
+        "description": ""
+      },
+      "startTime": "2024-12-26T23:00:00.000Z",
+      "endTime": "2024-12-27T00:00:00.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
+    },
+    {
+      "id": "ba1a",
+      "name": "egeg",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": "1",
+        "name": "Therapieraum 1",
+        "description": "Haupttherapieraum im Erdgeschoss"
+      },
+      "startTime": "2024-12-27T10:26:38.495Z",
+      "endTime": "2024-12-27T11:26:38.495Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "id": "cfc8",
+      "name": "eht",
+      "patients": [
+        {
+          "id": "1db6",
+          "name": "egr",
+          "surname": "erge",
+          "note": ""
+        },
+        {
+          "id": "0099",
+          "name": "erg",
+          "surname": "egre",
+          "note": "egrr"
+        }
+      ],
+      "leadingEmployee": {
+        "id": "af9b",
+        "name": "wer",
+        "surname": "ew",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "noch ein raum",
+        "description": ""
+      },
+      "startTime": "2024-12-27T10:26:38.495Z",
+      "endTime": "2024-12-27T11:26:38.495Z",
+      "preparationTime": 15,
+      "followUpTime": 15,
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
     }
   ],
   "dailySchedules": [
