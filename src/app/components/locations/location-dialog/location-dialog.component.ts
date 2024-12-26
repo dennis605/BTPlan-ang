@@ -21,9 +21,9 @@ export class LocationDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: Location
   ) {
     this.locationForm = this.fb.group({
-      id: [data.id],
-      name: [data.name || '', [Validators.required]],
-      description: [data.description || '']
+      id: [data?.id || null],
+      name: [data?.name || '', [Validators.required]],
+      description: [data?.description || '']
     });
   }
 

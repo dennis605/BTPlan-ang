@@ -90,22 +90,22 @@
   "locations": [
     {
       "id": "1",
-      "name": "Therapieraum 1",
+      "name": "Therapieraum 2",
       "description": "Haupttherapieraum im Erdgeschoss"
     },
     {
-      "id": null,
-      "name": "noch ein raum",
-      "description": ""
+      "id": "2",
+      "name": "Küche",
+      "description": "Große Küche für Kochtherapie"
     },
     {
-      "id": null,
-      "name": "BT Raum",
-      "description": ""
+      "id": "3",
+      "name": "Garten1",
+      "description": "Therapiegarten mit Hochbeeten"
     },
     {
-      "id": null,
-      "name": "Ritersaal",
+      "id": "c81d",
+      "name": "gae",
       "description": ""
     }
   ],

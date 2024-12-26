@@ -11,7 +11,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './location-list.component.html',
   styleUrls: ['./location-list.component.scss'],
   standalone: true,
-  imports: [MaterialModule, CommonModule]
+  imports: [
+    MaterialModule,
+    CommonModule
+  ]
 })
 export class LocationListComponent implements OnInit {
   locations: Location[] = [];
@@ -28,6 +31,7 @@ export class LocationListComponent implements OnInit {
 
   loadLocations(): void {
     this.locationService.getLocations().subscribe(locations => {
+      console.log('Geladene Orte:', locations);
       this.locations = locations;
     });
   }
@@ -35,12 +39,13 @@ export class LocationListComponent implements OnInit {
   openDialog(location?: Location): void {
     const dialogRef = this.dialog.open(LocationDialogComponent, {
       width: '400px',
-      data: location || {}
+      data: location || { id: null, name: '', description: '' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (result.id) {
+          // Ort aktualisieren
           this.locationService.updateLocation(result).subscribe({
             next: () => {
               this.loadLocations();
@@ -51,8 +56,10 @@ export class LocationListComponent implements OnInit {
             }
           });
         } else {
+          // Neuen Ort hinzufügen
           this.locationService.addLocation(result).subscribe({
-            next: () => {
+            next: (newLocation) => {
+              console.log('Neuer Ort erstellt:', newLocation);
               this.loadLocations();
             },
             error: (error) => {
@@ -66,6 +73,11 @@ export class LocationListComponent implements OnInit {
   }
 
   deleteLocation(id: number): void {
+    if (!id) {
+      console.error('Keine gültige ID zum Löschen vorhanden');
+      return;
+    }
+
     if (confirm('Sind Sie sicher, dass Sie diesen Ort löschen möchten?')) {
       this.locationService.deleteLocation(id).subscribe({
         next: () => {
