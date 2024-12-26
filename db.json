@@ -1134,41 +1134,7 @@
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
     },
     {
-      "id": "6346",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-27T10:26:38.495Z",
-      "endTime": "2024-12-27T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "d0bf",
+      "id": "01c3",
       "name": "egegfewew",
       "patients": [
         {
@@ -1189,13 +1155,13 @@
         "name": "Ritersaal",
         "description": ""
       },
-      "startTime": "2024-12-27T10:26:38.495Z",
-      "endTime": "2024-12-27T11:26:38.495Z",
+      "startTime": "2024-12-27T11:26:38+01:00",
+      "endTime": "2024-12-27T12:26:38+01:00",
       "preparationTime": 15,
       "followUpTime": 15
     },
     {
-      "id": "69af",
+      "id": "8bed",
       "name": "eht",
       "patients": [
         {
@@ -1222,8 +1188,8 @@
         "name": "noch ein raum",
         "description": ""
       },
-      "startTime": "2024-12-27T10:26:38.495Z",
-      "endTime": "2024-12-27T11:26:38.495Z",
+      "startTime": "2024-12-27T00:00:00+01:00",
+      "endTime": "2024-12-27T01:00:00+01:00",
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"

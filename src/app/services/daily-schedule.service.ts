@@ -4,12 +4,13 @@ import { Observable, map, of } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
 import { Therapy } from '../models/therapy';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DailyScheduleService {
-  private apiUrl = 'http://localhost:3000/dailySchedules';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(
     private http: HttpClient,
@@ -84,5 +85,21 @@ export class DailyScheduleService {
 
   deleteTherapy(therapyId: number): Observable<void> {
     return this.therapyService.deleteTherapy(therapyId);
+  }
+
+  createTherapy(therapy: Therapy): Observable<Therapy> {
+    // Format dates to ISO strings before sending
+    const formattedTherapy = {
+      ...therapy,
+      startTime: moment.default(therapy.startTime).format(),
+      endTime: moment.default(therapy.endTime).format()
+    };
+    return this.http.post<Therapy>(`${this.apiUrl}/therapies`, formattedTherapy).pipe(
+      map(response => ({
+        ...response,
+        startTime: new Date(response.startTime),
+        endTime: new Date(response.endTime)
+      }))
+    );
   }
 }

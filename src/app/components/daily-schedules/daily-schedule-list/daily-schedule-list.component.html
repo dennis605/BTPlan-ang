@@ -116,6 +116,11 @@
                   matTooltip="Therapie bearbeiten">
             <mat-icon>edit</mat-icon>
           </button>
+          <button mat-icon-button color="primary" 
+                  (click)="duplicateTherapy(therapy)"
+                  matTooltip="Therapie duplizieren">
+            <mat-icon>content_copy</mat-icon>
+          </button>
           <button mat-icon-button color="warn" 
                   (click)="deleteTherapy(therapy)"
                   matTooltip="Therapie löschen">
