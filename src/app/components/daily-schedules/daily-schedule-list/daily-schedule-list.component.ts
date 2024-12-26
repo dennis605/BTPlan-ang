@@ -246,45 +246,73 @@ export class DailyScheduleListComponent implements OnInit {
       <html>
         <head>
           <style>
-            body {
-              font-family: Arial, sans-serif;
-              margin: 20px;
-              font-size: 12px;
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 30px;
+              font-size: 14px;
+              position: relative;
+              min-height: 100vh;
             }
             .header {
               display: flex;
               justify-content: space-between;
               align-items: flex-start;
-              margin-bottom: 20px;
-              border-bottom: 2px solid #000;
-              padding-bottom: 10px;
+              margin-bottom: 30px;
+              border-bottom: 3px solid #000;
+              padding-bottom: 15px;
             }
             .header-left {
               display: flex;
               align-items: center;
             }
+            .logo-container {
+              text-align: center;
+              margin-right: 30px;
+            }
             .logo {
               width: 180px;
-              margin-right: 20px;
+              margin-bottom: 10px;
+            }
+            .logo-text {
+              font-size: 16px;
+              font-weight: bold;
+              line-height: 1.3;
             }
             .title {
-              font-size: 24px;
+              font-size: 36px;
               font-weight: bold;
             }
             .header-right {
               text-align: right;
-              font-size: 16px;
+              font-size: 24px;
               font-weight: bold;
+              margin-top: 20px;
+            }
+            .footer {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              text-align: center;
+              padding: 20px 0;
+            }
+            .footer-logo {
+              width: 120px;
+              opacity: 0.7;
+            }
+            .content {
+              margin-bottom: 160px; /* Platz für Footer */
             }
             table { 
               width: 100%; 
               border-collapse: collapse; 
               margin-top: 20px;
               table-layout: fixed;
+              border: 2px solid #000;
             }
             th, td { 
               border: 1px solid #000; 
-              padding: 6px; 
+              padding: 8px 10px; 
               text-align: left;
               vertical-align: top;
               word-wrap: break-word;
@@ -292,24 +320,29 @@ export class DailyScheduleListComponent implements OnInit {
             th { 
               background-color: #f5f5f5;
               font-weight: bold;
+              font-size: 16px;
               border-bottom: 2px solid #000;
             }
-            th:nth-child(1) { width: 12%; } /* Zeit */
-            th:nth-child(2) { width: 15%; } /* Name */
-            th:nth-child(3) { width: 12%; } /* Mitarbeiter */
-            th:nth-child(4) { width: 20%; } /* Bewohner */
+            td {
+              font-size: 14px;
+              line-height: 1.4;
+            }
+            th:nth-child(1) { width: 10%; } /* Zeit */
+            th:nth-child(2) { width: 18%; } /* Programm */
+            th:nth-child(3) { width: 15%; } /* Mitarbeiter */
+            th:nth-child(4) { width: 22%; } /* Bewohner */
             th:nth-child(5) { width: 12%; } /* Ort */
             th:nth-child(6) { width: 8%; }  /* Vorbereitung */
             th:nth-child(7) { width: 8%; }  /* Nachbereitung */
-            th:nth-child(8) { width: 13%; } /* Kommentare */
+            th:nth-child(8) { width: 12%; } /* Kommentare */
             .patients-cell div { 
-              margin-bottom: 4px;
-              line-height: 1.2;
+              margin-bottom: 6px;
+              line-height: 1.4;
             }
             @media print {
               @page { 
                 size: A4 landscape;
-                margin: 1.5cm;
+                margin: 2cm;
               }
               body { 
                 margin: 0;
@@ -318,54 +351,64 @@ export class DailyScheduleListComponent implements OnInit {
               }
               th { 
                 background-color: #f5f5f5 !important;
-              }
-              td {
-                padding: 4px 6px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
               }
             }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div class="header-left">
-              <img src="/assets/images/schloss.jpg" alt="Schloss" class="logo">
-              <div class="title">Tagesplan</div>
+          <div class="content">
+            <div class="header">
+              <div class="header-left">
+                <div class="logo-container">
+                  <img src="/assets/images/schloss.jpg" alt="Schloss" class="logo">
+                  <div class="logo-text">
+                    Schloss Binau<br>
+                    Private Pflege
+                  </div>
+                </div>
+                <div class="title">Tagesplan</div>
+              </div>
+              <div class="header-right">${formattedDate}</div>
             </div>
-            <div class="header-right">${formattedDate}</div>
-          </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Zeit</th>
-                <th>Name</th>
-                <th>Mitarbeiter</th>
-                <th>Bewohner</th>
-                <th>Ort</th>
-                <th>Vorbereitung</th>
-                <th>Nachbereitung</th>
-                <th>Kommentare</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${therapies.map(therapy => `
+            <table>
+              <thead>
                 <tr>
-                  <td>${formatTime(therapy.startTime)} - ${formatTime(therapy.endTime)}</td>
-                  <td>${therapy.name}</td>
-                  <td>${therapy.leadingEmployee?.name} ${therapy.leadingEmployee?.surname}</td>
-                  <td class="patients-cell">
-                    ${therapy.patients.map(patient => 
-                      `<div>${patient.name} ${patient.surname}</div>`
-                    ).join('')}
-                  </td>
-                  <td>${therapy.location?.name || ''}</td>
-                  <td>${therapy.preparationTime ? therapy.preparationTime + ' Min.' : ''}</td>
-                  <td>${therapy.followUpTime ? therapy.followUpTime + ' Min.' : ''}</td>
-                  <td>${therapy.comment || ''}</td>
+                  <th>Zeit</th>
+                  <th>Programm</th>
+                  <th>Mitarbeiter</th>
+                  <th>Bewohner</th>
+                  <th>Ort</th>
+                  <th>Vorbereitung</th>
+                  <th>Nachbereitung</th>
+                  <th>Kommentare</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${therapies.map(therapy => `
+                  <tr>
+                    <td>${formatTime(therapy.startTime)} - ${formatTime(therapy.endTime)}</td>
+                    <td>${therapy.name}</td>
+                    <td>${therapy.leadingEmployee?.name} ${therapy.leadingEmployee?.surname}</td>
+                    <td class="patients-cell">
+                      ${therapy.patients.map(patient => 
+                        `<div>${patient.name} ${patient.surname}</div>`
+                      ).join('')}
+                    </td>
+                    <td>${therapy.location?.name || ''}</td>
+                    <td>${therapy.preparationTime ? therapy.preparationTime + ' Min.' : ''}</td>
+                    <td>${therapy.followUpTime ? therapy.followUpTime + ' Min.' : ''}</td>
+                    <td>${therapy.comment || ''}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div class="footer">
+            <img src="/assets/images/schloss.jpg" alt="Schloss" class="footer-logo">
+          </div>
         </body>
       </html>
     `;

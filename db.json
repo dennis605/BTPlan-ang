@@ -1187,6 +1187,33 @@
       "endTime": "2024-12-27T11:26:38.495Z",
       "preparationTime": 15,
       "followUpTime": 15
+    },
+    {
+      "id": "ac31",
+      "name": "egegfewew",
+      "patients": [
+        {
+          "id": "91f6",
+          "name": "dcnz",
+          "surname": "bt",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "fc53",
+        "name": "test1",
+        "surname": "er",
+        "note": ""
+      },
+      "location": {
+        "id": null,
+        "name": "Ritersaal",
+        "description": ""
+      },
+      "startTime": "2024-12-30T11:26:38+01:00",
+      "endTime": "2024-12-30T12:26:38+01:00",
+      "preparationTime": 15,
+      "followUpTime": 15
     }
   ],
   "dailySchedules": [
