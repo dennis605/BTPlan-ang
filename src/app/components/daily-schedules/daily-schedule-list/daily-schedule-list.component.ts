@@ -128,12 +128,12 @@ import { FormsModule } from '@angular/forms';
       provide: MAT_DATE_FORMATS,
       useValue: {
         parse: {
-          dateInput: 'L',
+          dateInput: 'DD.MM.YYYY',
         },
         display: {
-          dateInput: 'L',
+          dateInput: 'DD.MM.YYYY',
           monthYearLabel: 'MMM YYYY',
-          dateA11yLabel: 'LL',
+          dateA11yLabel: 'DD.MM.YYYY',
           monthYearA11yLabel: 'MMMM YYYY',
         },
       },
