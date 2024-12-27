@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, forkJoin } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
 import { Therapy } from '../models/therapy';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -46,29 +46,23 @@ export class DailyScheduleService {
   }
 
   addSchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    // Füge die Therapien einzeln hinzu
-    const therapyObservables = schedule.therapies.map(therapy => 
-      this.therapyService.addTherapy(therapy)
-    );
-
-    // Warte auf alle Therapie-Hinzufügungen
-    return new Observable<DailySchedule>(observer => {
-      Promise.all(therapyObservables.map(obs => 
-        obs.toPromise().then(therapy => therapy as Therapy)
-      )).then(
-        (therapies) => {
-          const newSchedule: DailySchedule = {
-            date: schedule.date,
-            therapies: therapies.filter((t): t is Therapy => t !== undefined)
-          };
-          observer.next(newSchedule);
-          observer.complete();
-        },
-        (error) => {
-          observer.error(error);
-        }
-      );
+    // Erstelle ein Array von Observables für jede Therapie
+    const therapyObservables = schedule.therapies.map(therapy => {
+      const formattedTherapy = {
+        ...therapy,
+        startTime: moment(therapy.startTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        endTime: moment(therapy.endTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+      };
+      return this.therapyService.addTherapy(formattedTherapy);
     });
+
+    // Verwende forkJoin statt Promise.all
+    return forkJoin(therapyObservables).pipe(
+      map(therapies => ({
+        date: schedule.date,
+        therapies: therapies
+      }))
+    );
   }
 
   updateSchedule(schedule: DailySchedule): Observable<DailySchedule> {
@@ -88,11 +82,10 @@ export class DailyScheduleService {
   }
 
   createTherapy(therapy: Therapy): Observable<Therapy> {
-    // Format dates to ISO strings before sending
     const formattedTherapy = {
       ...therapy,
-      startTime: moment.default(therapy.startTime).format(),
-      endTime: moment.default(therapy.endTime).format()
+      startTime: moment(therapy.startTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      endTime: moment(therapy.endTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
     };
     return this.http.post<Therapy>(`${this.apiUrl}/therapies`, formattedTherapy).pipe(
       map(response => ({

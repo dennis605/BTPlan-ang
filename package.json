@@ -9,7 +9,9 @@
     "test": "ng test",
     "server": "json-server --watch db.json",
     "dev": "concurrently \"npm run server\" \"npm run start\"",
-    "electron": "ng build && electron ."
+    "electron": "ng build && electron .",
+    "build:nw": "ng build",
+    "start:nw": "npm run build:nw && cd dist/btplan/browser && nw ."
   },
   "private": true,
   "dependencies": {
@@ -43,6 +45,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "nw": "^0.83.0-sdk",
     "sass": "^1.83.0",
     "typescript": "~5.6.2"
   }

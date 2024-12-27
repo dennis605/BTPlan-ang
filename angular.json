@@ -27,7 +27,22 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/browser",
+                "output": "/browser"
+              },
+              {
+                "glob": "package.json",
+                "input": "src",
+                "output": "."
+              },
+              {
+                "glob": "manifest.json",
+                "input": "src",
+                "output": "."
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -39,8 +54,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "3mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",

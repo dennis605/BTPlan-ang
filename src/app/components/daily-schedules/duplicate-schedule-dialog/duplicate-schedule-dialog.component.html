@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Tagesplan duplizieren</h2>
+
+<mat-dialog-content>
+  <p>Bitte wählen Sie das Datum aus, zu dem der Tagesplan kopiert werden soll:</p>
+  
+  <mat-form-field appearance="fill">
+    <mat-label>Zieldatum</mat-label>
+    <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate">
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="onConfirm()">Duplizieren</button>
+</mat-dialog-actions>
