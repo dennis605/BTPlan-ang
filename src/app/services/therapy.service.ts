@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Therapy } from '../models/therapy';
 import { environment } from '../../environments/environment';
 
@@ -14,9 +15,14 @@ export class TherapyService {
 
   getTherapies(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Therapy[]> {
     let params = new HttpParams();
+    
     if (sortField) {
-      params = params.set('_sort', sortField).set('_order', sortOrder);
+      // JSON Server verwendet _sort und _order für Sortierung
+      params = params
+        .set('_sort', sortField)
+        .set('_order', sortOrder);
     }
+    
     return this.http.get<Therapy[]>(this.apiUrl, { params });
   }
 
@@ -40,7 +46,7 @@ export class TherapyService {
     // Erstelle eine Kopie der Therapie ohne ID
     const duplicatedTherapy: Therapy = {
       ...therapy,
-      id: undefined,
+      id: undefined, // ID wird vom Server generiert
       name: `${therapy.name}_copy`, // Füge _copy zum Namen hinzu
       startTime: new Date(therapy.startTime),
       endTime: new Date(therapy.endTime)

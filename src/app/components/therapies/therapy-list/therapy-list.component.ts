@@ -1,27 +1,49 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
 import { TherapyService } from '../../../services/therapy.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
-import { MatChipsModule } from '@angular/material/chips';
 import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-therapy-list',
   templateUrl: './therapy-list.component.html',
-  styleUrls: ['./therapy-list.component.scss'],
+  styles: [`
+    .container {
+      padding: 20px;
+    }
+    .add-button {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+    }
+    .mat-column-actions {
+      width: 100px;
+      text-align: center;
+    }
+    .mat-chip-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+  `],
   standalone: true,
   imports: [
     CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule,
+    MatSortModule,
     MatDialogModule,
+    MatChipsModule,
     MatTooltipModule
   ]
 })
@@ -38,6 +60,8 @@ export class TherapyListComponent implements OnInit {
     'comment',
     'actions'
   ];
+  
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private therapyService: TherapyService,
@@ -52,6 +76,27 @@ export class TherapyListComponent implements OnInit {
     this.therapyService.getTherapies().subscribe(therapies => {
       this.therapies = therapies;
     });
+  }
+
+  onSort(event: Sort) {
+    if (!event.active || event.direction === '') {
+      // Wenn keine Sortierung aktiv ist oder die Sortierung aufgehoben wurde
+      this.loadTherapies();
+      return;
+    }
+
+    this.therapyService.getTherapies(event.active, event.direction as 'asc' | 'desc')
+      .subscribe(therapies => {
+        this.therapies = therapies;
+      });
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('de-DE');
+  }
+
+  formatTime(date: string): string {
+    return new Date(date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
   deleteTherapy(id: number): void {
@@ -119,21 +164,6 @@ export class TherapyListComponent implements OnInit {
           }
         });
       }
-    });
-  }
-
-  formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
     });
   }
 }
