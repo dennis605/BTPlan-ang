@@ -37,6 +37,12 @@
       "name": "helmut",
       "surname": "grau",
       "note": ""
+    },
+    {
+      "id": "db66",
+      "name": "testbew",
+      "surname": "drei",
+      "note": ""
     }
   ],
   "locations": [
@@ -57,12 +63,7 @@
     },
     {
       "id": "c81d",
-      "name": "gaeef",
-      "description": ""
-    },
-    {
-      "id": "0e11",
-      "name": "testort",
+      "name": "tesort",
       "description": ""
     }
   ],
@@ -204,19 +205,31 @@
     },
     {
       "id": "e560",
-      "name": "egeg",
+      "name": "egeger_neu",
       "patients": [
         {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
+          "id": "bd3b",
+          "name": "Bewohner",
+          "surname": "zwei",
+          "note": ""
+        },
+        {
+          "id": "dda1",
+          "name": "helmut",
+          "surname": "pauker",
+          "note": ""
+        },
+        {
+          "id": "83fb",
+          "name": "helmut",
+          "surname": "grau",
           "note": ""
         }
       ],
       "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
+        "id": "73f7",
+        "name": "Lisa",
+        "surname": "Henken",
         "note": ""
       },
       "location": {
@@ -224,8 +237,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "startTime": "2024-12-30T10:40:49.222Z",
-      "endTime": "2024-12-30T11:40:49.222Z",
+      "startTime": "2024-12-30T10:40:00.000Z",
+      "endTime": "2024-12-30T11:40:00.000Z",
       "preparationTime": 15,
       "followUpTime": 15
     },

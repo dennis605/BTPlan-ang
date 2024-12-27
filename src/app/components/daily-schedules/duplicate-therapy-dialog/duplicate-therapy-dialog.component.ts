@@ -9,7 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { Therapy } from '../../../models/therapy';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-duplicate-therapy-dialog',
@@ -87,7 +87,7 @@ export class DuplicateTherapyDialogComponent {
     this.targetDate.setDate(this.targetDate.getDate() + 1);
     
     // Initialize moment locale
-    moment.locale('de');
+    dayjs.locale('de');
   }
 
   onCancel(): void {

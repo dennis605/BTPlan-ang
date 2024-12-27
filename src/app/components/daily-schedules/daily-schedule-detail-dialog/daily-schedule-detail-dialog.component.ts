@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { Therapy } from '../../../models/therapy';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-daily-schedule-detail-dialog',
@@ -31,7 +31,7 @@ export class DailyScheduleDetailDialogComponent {
   }
 
   formatTime(time: string | Date): string {
-    return moment(time).format('HH:mm');
+    return dayjs(time).format('HH:mm');
   }
 
   onClose(): void {

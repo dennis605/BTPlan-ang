@@ -11,36 +11,17 @@ import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/mat
 
 @Component({
   selector: 'app-duplicate-schedule-dialog',
-  template: `
-    <h2 mat-dialog-title>Tagesplan duplizieren</h2>
-    <mat-dialog-content>
-      <p>Bitte wählen Sie das Datum für den duplizierten Tagesplan:</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Neues Datum</mat-label>
-        <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" required>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Abbrechen</button>
-      <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="!selectedDate">
-        Duplizieren
-      </button>
-    </mat-dialog-actions>
-  `,
   standalone: true,
   imports: [
     CommonModule,
+    MatDialogModule,
     MatButtonModule,
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule,
-    MatDialogModule
+    FormsModule
   ],
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
@@ -60,13 +41,15 @@ import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/mat
         },
       },
     }
-  ]
+  ],
+  templateUrl: './duplicate-schedule-dialog.component.html',
+  styleUrls: ['./duplicate-schedule-dialog.component.scss']
 })
 export class DuplicateScheduleDialogComponent {
   selectedDate: Date = new Date();
 
   constructor(
-    private dialogRef: MatDialogRef<DuplicateScheduleDialogComponent>
+    public dialogRef: MatDialogRef<DuplicateScheduleDialogComponent>
   ) {}
 
   onCancel(): void {

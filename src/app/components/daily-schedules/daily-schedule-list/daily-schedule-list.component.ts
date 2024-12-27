@@ -15,7 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -163,7 +163,7 @@ export class DailyScheduleListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    moment.locale('de');
+    dayjs.locale('de');
     this.loadDailySchedule();
   }
 
@@ -196,11 +196,13 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   formatTime(date: string | Date): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  formatTimeForPrint(date: string | Date): string {
+    return this.formatTime(date);
   }
 
   formatDate(date: Date): string {
@@ -223,23 +225,19 @@ export class DailyScheduleListComponent implements OnInit {
       });
   }
 
-  private formatTimeForPrint(time: string | Date): string {
-    return moment(time).format('HH:mm');
-  }
-
   printSchedule(): void {
     if (!this.schedules[0]?.therapies.length) {
       return;
     }
 
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open('', '_blank') as Window | null;
     if (!printWindow) {
       alert('Bitte erlaube Pop-ups für diese Seite');
       return;
     }
 
     const therapies = this.schedules[0].therapies;
-    const formattedDate = moment(this.selectedDate).format('DD.MM.YYYY');
+    const formattedDate = dayjs(this.selectedDate).format('DD.MM.YYYY');
     const formatTime = this.formatTimeForPrint.bind(this);
     
     const printContent = `
@@ -518,12 +516,12 @@ export class DailyScheduleListComponent implements OnInit {
         const endDate = new Date(duplicatedTherapy.endTime);
         
         // Set the new date while preserving the time
-        const target = moment(targetDate).startOf('day');
-        const startTime = moment(startDate).format('HH:mm:ss');
-        const endTime = moment(endDate).format('HH:mm:ss');
+        const target = dayjs(targetDate).startOf('day');
+        const startTime = dayjs(startDate).format('HH:mm:ss');
+        const endTime = dayjs(endDate).format('HH:mm:ss');
         
-        duplicatedTherapy.startTime = moment(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
-        duplicatedTherapy.endTime = moment(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
+        duplicatedTherapy.startTime = dayjs(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
+        duplicatedTherapy.endTime = dayjs(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
 
         console.log('Duplicated therapy with new dates:', duplicatedTherapy);
 
@@ -532,8 +530,8 @@ export class DailyScheduleListComponent implements OnInit {
           next: (newTherapy) => {
             console.log('Therapy duplicated successfully:', newTherapy);
             // Refresh the list if the target date is the currently displayed date
-            const targetDateStr = moment(targetDate).format('YYYY-MM-DD');
-            const currentDateStr = moment(this.selectedDate).format('YYYY-MM-DD');
+            const targetDateStr = dayjs(targetDate).format('YYYY-MM-DD');
+            const currentDateStr = dayjs(this.selectedDate).format('YYYY-MM-DD');
             if (targetDateStr === currentDateStr) {
               this.loadDailySchedule();
             }

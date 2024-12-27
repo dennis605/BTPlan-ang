@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Therapy } from '../../../models/therapy';
 import { Employee } from '../../../models/employee';
 import { Patient } from '../../../models/patient';
@@ -94,7 +94,7 @@ export class TherapyDialogComponent {
     this.loadEmployees();
     this.loadPatients();
     this.loadLocations();
-    moment.locale('de');
+    dayjs.locale('de');
     this.dateAdapter.setLocale('de');
   }
 
@@ -123,7 +123,7 @@ export class TherapyDialogComponent {
   onSave(): void {
     if (this.isValid()) {
       // Aktualisiere Start- und Endzeit
-      const date = moment(this.therapy.startTime).format('YYYY-MM-DD');
+      const date = dayjs(this.therapy.startTime).format('YYYY-MM-DD');
       const [startHours, startMinutes] = this.selectedStartTime.split(':');
       const [endHours, endMinutes] = this.selectedEndTime.split(':');
       
