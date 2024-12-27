@@ -1,17 +1,47 @@
 {
-  "name": "myapp",
+  "name": "btplan",
   "version": "0.0.0",
+  "main": "electron/main.js",
   "scripts": {
+    "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "ng": "ng",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "server": "json-server --watch db.json",
     "dev": "concurrently \"npm run server\" \"npm run start\"",
-    "electron": "ng build && electron .",
-    "build:nw": "ng build",
-    "start:nw": "npm run build:nw && cd dist/btplan/browser && nw ."
+    "electron:dev": "ng build && tsc electron/main.ts && electron .",
+    "electron:build": "ng build && tsc electron/main.ts && electron-builder build",
+    "dist": "ng build && tsc electron/main.ts && electron-builder build -mw --dir"
+  },
+  "build": {
+    "appId": "com.btplan.app",
+    "productName": "BTPlan",
+    "directories": {
+      "output": "release",
+      "buildResources": "dist/btplan/browser"
+    },
+    "files": [
+      "electron/main.js",
+      "dist/btplan/browser/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "db.json",
+        "to": "db.json"
+      },
+      {
+        "from": "dist/btplan/browser",
+        "to": "browser"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": "nsis"
+    }
   },
   "private": true,
   "dependencies": {
@@ -27,7 +57,10 @@
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
     "dayjs": "^1.11.10",
+    "express": "^4.18.2",
+    "json-server": "^0.17.0",
     "moment": "^2.30.1",
+    "pkg": "^5.8.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -38,14 +71,14 @@
     "@angular/compiler-cli": "^19.0.0",
     "@types/jasmine": "~5.1.0",
     "concurrently": "^9.1.0",
-    "electron": "^28.1.0",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "nw": "^0.83.0-sdk",
     "sass": "^1.83.0",
     "typescript": "~5.6.2"
   }

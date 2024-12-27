@@ -5,12 +5,13 @@ import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
 import { Therapy } from '../models/therapy';
 import moment from 'moment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DailyScheduleService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = `${environment.apiUrl}/api/dailySchedules`;
 
   constructor(
     private http: HttpClient,

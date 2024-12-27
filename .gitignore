@@ -41,5 +41,20 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Electron & pkg specific
+/release
+/browser
+*.exe
+*.app
+*.dmg
+*.zip
+*.pkg
+*.blockmap
+*.asar
+/electron/main.js
+/portable-node
 
-portable-node
+# Environment
+.env
+.env.*
+!.env.example
