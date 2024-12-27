@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Therapy } from '../models/therapy';
 import { environment } from '../../environments/environment';
@@ -12,8 +12,12 @@ export class TherapyService {
 
   constructor(private http: HttpClient) {}
 
-  getTherapies(): Observable<Therapy[]> {
-    return this.http.get<Therapy[]>(this.apiUrl);
+  getTherapies(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Therapy[]> {
+    let params = new HttpParams();
+    if (sortField) {
+      params = params.set('_sort', sortField).set('_order', sortOrder);
+    }
+    return this.http.get<Therapy[]>(this.apiUrl, { params });
   }
 
   getTherapy(id: number): Observable<Therapy> {

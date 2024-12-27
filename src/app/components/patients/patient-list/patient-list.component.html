@@ -6,22 +6,22 @@
     Bewohner hinzufügen
   </button>
 
-  <table mat-table [dataSource]="patients" class="mat-elevation-z8">
+  <table mat-table [dataSource]="patients" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
     <!-- Name Column -->
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Vorname</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
       <td mat-cell *matCellDef="let patient">{{patient.name}}</td>
     </ng-container>
 
     <!-- Surname Column -->
     <ng-container matColumnDef="surname">
-      <th mat-header-cell *matHeaderCellDef>Nachname</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nachname</th>
       <td mat-cell *matCellDef="let patient">{{patient.surname}}</td>
     </ng-container>
 
     <!-- Note Column -->
     <ng-container matColumnDef="note">
-      <th mat-header-cell *matHeaderCellDef>Bemerkung</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Bemerkung</th>
       <td mat-cell *matCellDef="let patient">{{patient.note}}</td>
     </ng-container>
 
@@ -29,10 +29,10 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Aktionen</th>
       <td mat-cell *matCellDef="let patient">
-        <button mat-icon-button color="primary" (click)="editPatient(patient)">
+        <button mat-icon-button (click)="editPatient(patient)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deletePatient(patient.id!)">
+        <button mat-icon-button color="warn" (click)="deletePatient(patient.id)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>

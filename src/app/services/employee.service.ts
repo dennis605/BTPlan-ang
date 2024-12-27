@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Employee } from '../models/employee';
 import { environment } from '../../environments/environment';
@@ -12,8 +12,12 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  getEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.apiUrl);
+  getEmployees(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Employee[]> {
+    let params = new HttpParams();
+    if (sortField) {
+      params = params.set('_sort', sortField).set('_order', sortOrder);
+    }
+    return this.http.get<Employee[]>(this.apiUrl, { params });
   }
 
   getEmployee(id: number): Observable<Employee> {

@@ -19,9 +19,12 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SortHeaderComponent } from './components/sort-header/sort-header.component';
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SortHeaderComponent
   ],
   imports: [
     BrowserModule,

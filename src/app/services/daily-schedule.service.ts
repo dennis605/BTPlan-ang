@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, of, forkJoin } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
 import { TherapyService } from './therapy.service';
@@ -18,8 +18,12 @@ export class DailyScheduleService {
     private therapyService: TherapyService
   ) {}
 
-  getSchedules(): Observable<DailySchedule[]> {
-    return this.http.get<DailySchedule[]>(this.apiUrl);
+  getDailySchedules(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<DailySchedule[]> {
+    let params = new HttpParams();
+    if (sortField) {
+      params = params.set('_sort', sortField).set('_order', sortOrder);
+    }
+    return this.http.get<DailySchedule[]>(this.apiUrl, { params });
   }
 
   getSchedule(id: number): Observable<DailySchedule> {

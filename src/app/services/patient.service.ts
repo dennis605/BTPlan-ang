@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Patient } from '../models/patient';
 import { environment } from '../../environments/environment';
@@ -12,8 +12,17 @@ export class PatientService {
 
   constructor(private http: HttpClient) {}
 
-  getPatients(): Observable<Patient[]> {
-    return this.http.get<Patient[]>(this.apiUrl);
+  getPatients(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Patient[]> {
+    let params = new HttpParams();
+    
+    if (sortField) {
+      // JSON Server verwendet _sort und _order für Sortierung
+      params = params
+        .set('_sort', sortField)
+        .set('_order', sortOrder);
+    }
+    
+    return this.http.get<Patient[]>(this.apiUrl, { params });
   }
 
   getPatient(id: number): Observable<Patient> {
