@@ -1,77 +1,29 @@
 {
   "employees": [
     {
-      "id": "1",
-      "name": "Max",
-      "surname": "Mustermann",
-      "note": "Therapeut"
-    },
-    {
-      "id": "af9b",
-      "name": "wer",
-      "surname": "ew",
-      "note": "scds"
-    },
-    {
-      "id": "2277",
-      "name": "rg",
-      "surname": "erge",
-      "note": ""
-    },
-    {
       "id": "73f7",
-      "name": "lisa",
-      "surname": "henken",
+      "name": "Lisa",
+      "surname": "Henken",
       "note": ""
     },
     {
       "id": "8cff",
-      "name": "romy",
-      "surname": "stieb",
-      "note": ""
-    },
-    {
-      "id": "fc53",
-      "name": "test1",
-      "surname": "er",
+      "name": "Romy",
+      "surname": "Streib",
       "note": ""
     }
   ],
   "patients": [
     {
-      "id": "1",
-      "name": "Erika",
-      "surname": "Musterfrau",
-      "note": "Regelmäßige Teilnahme"
-    },
-    {
-      "id": "1db6",
-      "name": "egr",
-      "surname": "erge",
-      "note": ""
-    },
-    {
-      "id": "0099",
-      "name": "erg",
-      "surname": "egre",
-      "note": "egrr"
-    },
-    {
-      "id": "4957",
-      "name": "eg",
-      "surname": "ger",
-      "note": "erg"
-    },
-    {
       "id": "91f6",
-      "name": "dcnz",
-      "surname": "bt",
+      "name": "Bewohner",
+      "surname": "eins",
       "note": ""
     },
     {
       "id": "bd3b",
-      "name": "wfhbbewj",
-      "surname": "kbwrg",
+      "name": "Bewohner",
+      "surname": "zwei",
       "note": ""
     },
     {
@@ -105,243 +57,16 @@
     },
     {
       "id": "c81d",
-      "name": "gae",
+      "name": "gaeef",
+      "description": ""
+    },
+    {
+      "id": "0e11",
+      "name": "testort",
       "description": ""
     }
   ],
   "therapies": [
-    {
-      "id": "815c",
-      "name": "4g3g34",
-      "patients": [
-        {
-          "id": "1",
-          "name": "Erika",
-          "surname": "Musterfrau",
-          "note": "Regelmäßige Teilnahme"
-        },
-        {
-          "id": "91f6",
-          "name": "dcnz",
-          "surname": "bt",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "1",
-        "name": "Max",
-        "surname": "Mustermann",
-        "note": "Therapeut"
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-24T23:00:49.916Z",
-      "endTime": "2024-12-25T00:00:49.916Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "6094",
-      "name": "f43g424",
-      "patients": [
-        {
-          "id": "1",
-          "name": "Erika",
-          "surname": "Musterfrau",
-          "note": "Regelmäßige Teilnahme"
-        },
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-25T11:30:00.000Z",
-      "endTime": "2024-12-25T13:20:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "e102",
-      "name": "f43g424_cop",
-      "patients": [
-        {
-          "id": "1",
-          "name": "Erika",
-          "surname": "Musterfrau",
-          "note": "Regelmäßige Teilnahme"
-        },
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-25T11:30:00.000Z",
-      "endTime": "2024-12-25T13:20:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "eegereregeger"
-    },
-    {
-      "id": "0fdc",
-      "name": "f43g424_cop_copy",
-      "patients": [
-        {
-          "id": "1",
-          "name": "Erika",
-          "surname": "Musterfrau",
-          "note": "Regelmäßige Teilnahme"
-        },
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-25T11:30:00.000Z",
-      "endTime": "2024-12-25T13:20:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "eegereregeger"
-    },
-    {
-      "id": "38e6",
-      "name": "Sturzprifilaxe",
-      "patients": [
-        {
-          "id": "1",
-          "name": "Erika",
-          "surname": "Musterfrau",
-          "note": "Regelmäßige Teilnahme"
-        },
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-25T11:30:00.000Z",
-      "endTime": "2024-12-25T12:30:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "eegereregeger"
-    },
-    {
-      "id": "0b7b",
-      "name": "Montag - Kochen",
-      "patients": [
-        {
-          "id": "dda1",
-          "name": "helmut",
-          "surname": "pauker",
-          "note": ""
-        },
-        {
-          "id": "83fb",
-          "name": "helmut",
-          "surname": "grau",
-          "note": ""
-        },
-        {
-          "id": "7b7b",
-          "name": "pat1",
-          "surname": "rf",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-29T09:00:00.000Z",
-      "endTime": "2024-12-29T12:30:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "keiner"
-    },
     {
       "id": "2711",
       "name": "Montag - Kochen_copy",
@@ -656,128 +381,6 @@
       },
       "startTime": "2024-12-26T10:26:38.495Z",
       "endTime": "2024-12-26T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "d511",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-27T23:00:00.000Z",
-      "endTime": "2024-12-28T00:00:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "a906",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-27T23:00:00.000Z",
-      "endTime": "2024-12-28T00:00:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "4b80",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-28T10:26:38.495Z",
-      "endTime": "2024-12-28T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "c155",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-28T10:26:38.495Z",
-      "endTime": "2024-12-28T11:26:38.495Z",
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
@@ -1128,214 +731,83 @@
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
     },
     {
-      "id": "07e7",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-27T10:26:38.495Z",
-      "endTime": "2024-12-27T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "6317",
-      "name": "egegfewew",
-      "patients": [
-        {
-          "id": "91f6",
-          "name": "dcnz",
-          "surname": "bt",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "fc53",
-        "name": "test1",
-        "surname": "er",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "Ritersaal",
-        "description": ""
-      },
-      "startTime": "2024-12-27T10:26:38.495Z",
-      "endTime": "2024-12-27T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
       "id": "ac31",
       "name": "egegfewew",
       "patients": [
         {
           "id": "91f6",
-          "name": "dcnz",
-          "surname": "bt",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "fc53",
-        "name": "test1",
-        "surname": "er",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "Ritersaal",
-        "description": ""
-      },
-      "startTime": "2024-12-30T11:26:38+01:00",
-      "endTime": "2024-12-30T12:26:38+01:00",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "4b68",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
+          "name": "Bewohner",
+          "surname": "eins",
           "note": ""
         },
         {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-28T23:00:00.000Z",
-      "endTime": "2024-12-29T00:00:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "3aee",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-28T23:00:00.000Z",
-      "endTime": "2024-12-29T00:00:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "734f",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-29T10:26:38.495Z",
-      "endTime": "2024-12-29T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "32d9",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
+          "id": "bd3b",
+          "name": "Bewohner",
+          "surname": "zwei",
           "note": ""
         },
         {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
+          "id": "dda1",
+          "name": "helmut",
+          "surname": "pauker",
+          "note": ""
+        },
+        {
+          "id": "83fb",
+          "name": "helmut",
+          "surname": "grau",
+          "note": ""
         }
       ],
       "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
+        "id": "8cff",
+        "name": "Romy",
+        "surname": "Streib",
         "note": ""
       },
       "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
+        "id": "2",
+        "name": "Küche",
+        "description": "Große Küche für Kochtherapie"
       },
-      "startTime": "2024-12-29T10:26:38.495Z",
-      "endTime": "2024-12-29T11:26:38.495Z",
+      "startTime": "2024-12-30T10:26:38.000Z",
+      "endTime": "2024-12-30T11:26:38.000Z",
+      "preparationTime": 15,
+      "followUpTime": 15
+    },
+    {
+      "name": "eht_copy",
+      "patients": [
+        {
+          "id": "91f6",
+          "name": "Bewohner",
+          "surname": "eins",
+          "note": ""
+        },
+        {
+          "id": "83fb",
+          "name": "helmut",
+          "surname": "grau",
+          "note": ""
+        }
+      ],
+      "leadingEmployee": {
+        "id": "73f7",
+        "name": "Lisa",
+        "surname": "Henken",
+        "note": ""
+      },
+      "location": {
+        "id": "2",
+        "name": "Küche",
+        "description": "Große Küche für Kochtherapie"
+      },
+      "startTime": "2024-12-29T10:40:00.000Z",
+      "endTime": "2024-12-29T11:40:00.000Z",
       "preparationTime": 15,
       "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
+      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe",
+      "id": "NSMc11F"
     }
   ],
   "dailySchedules": [

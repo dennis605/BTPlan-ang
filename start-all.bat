@@ -1,0 +1,6 @@
+@echo off
+echo Starte json-server...
+start cmd /k "portable-node\node.exe node_modules\.bin\json-server --watch db.json --port 3000"
+echo Starte Angular-App...
+start cmd /k "portable-node\node.exe node_modules\.bin\ng serve"
+pause
