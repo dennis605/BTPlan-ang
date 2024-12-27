@@ -14,9 +14,14 @@ export class EmployeeService {
 
   getEmployees(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Employee[]> {
     let params = new HttpParams();
+    
     if (sortField) {
-      params = params.set('_sort', sortField).set('_order', sortOrder);
+      // JSON Server verwendet _sort und _order für Sortierung
+      params = params
+        .set('_sort', sortField)
+        .set('_order', sortOrder);
     }
+    
     return this.http.get<Employee[]>(this.apiUrl, { params });
   }
 
