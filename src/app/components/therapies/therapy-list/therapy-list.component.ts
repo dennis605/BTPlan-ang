@@ -11,6 +11,9 @@ import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.compone
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SelectionModel } from '@angular/cdk/collections';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-therapy-list',
@@ -19,11 +22,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     .container {
       padding: 20px;
     }
-    .add-button {
+    .action-buttons {
       margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
     }
     table {
       width: 100%;
+    }
+    .mat-column-select {
+      width: 48px;
+      padding-right: 8px;
     }
     .mat-column-actions {
       width: 100px;
@@ -44,22 +53,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSortModule,
     MatDialogModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCheckboxModule
   ]
 })
 export class TherapyListComponent implements OnInit {
   therapies: Therapy[] = [];
-  displayedColumns: string[] = [
-    'name',
-    'leadingEmployee',
-    'patients',
-    'location',
-    'time',
-    'preparationTime',
-    'followUpTime',
-    'comment',
-    'actions'
-  ];
+  displayedColumns: string[] = ['select', 'name', 'leadingEmployee', 'patients', 'location', 'time', 'preparationTime', 'followUpTime', 'comment', 'actions'];
+  selection = new SelectionModel<Therapy>(true, []);
   
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -75,12 +76,62 @@ export class TherapyListComponent implements OnInit {
   loadTherapies(): void {
     this.therapyService.getTherapies().subscribe(therapies => {
       this.therapies = therapies;
+      this.selection.clear();
     });
+  }
+
+  /** Ob alle Zeilen ausgewählt sind */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.therapies.length;
+    return numSelected === numRows;
+  }
+
+  /** Auswahl aller Zeilen umschalten */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.therapies.forEach(row => this.selection.select(row));
+  }
+
+  /** Text für die Checkbox in der Header-Zeile */
+  checkboxLabel(row?: Therapy): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'Alle abwählen' : 'Alle auswählen'}`;
+    }
+    return `${this.selection.isSelected(row) ? 'Abwählen' : 'Auswählen'}`;
+  }
+
+  /** Ausgewählte Therapien löschen */
+  deleteSelected() {
+    if (this.selection.selected.length === 0) return;
+
+    const message = this.selection.selected.length === 1
+      ? 'Möchten Sie diese Therapie wirklich löschen?'
+      : `Möchten Sie diese ${this.selection.selected.length} Therapien wirklich löschen?`;
+
+    if (confirm(message)) {
+      // Nur Therapien mit gültiger ID löschen
+      const deleteObservables = this.selection.selected
+        .filter(therapy => therapy.id !== undefined)
+        .map(therapy => this.therapyService.deleteTherapy(therapy.id!));
+
+      if (deleteObservables.length > 0) {
+        forkJoin(deleteObservables).subscribe({
+          next: () => {
+            this.loadTherapies();
+          },
+          error: (error) => {
+            console.error('Fehler beim Löschen der Therapien:', error);
+            alert('Fehler beim Löschen der Therapien');
+          }
+        });
+      }
+    }
   }
 
   onSort(event: Sort) {
     if (!event.active || event.direction === '') {
-      // Wenn keine Sortierung aktiv ist oder die Sortierung aufgehoben wurde
       this.loadTherapies();
       return;
     }

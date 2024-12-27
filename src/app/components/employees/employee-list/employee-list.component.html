@@ -1,12 +1,40 @@
 <div class="container">
   <h2>Mitarbeiter</h2>
   
-  <button mat-raised-button color="primary" (click)="addEmployee()" class="add-button">
-    <mat-icon>add</mat-icon>
-    Mitarbeiter hinzufügen
-  </button>
+  <div class="action-buttons">
+    <button mat-raised-button color="primary" (click)="addEmployee()">
+      <mat-icon>add</mat-icon>
+      Mitarbeiter hinzufügen
+    </button>
+    
+    <button mat-raised-button color="warn" 
+            [disabled]="selection.selected.length === 0"
+            (click)="deleteSelected()"
+            [matTooltip]="selection.selected.length === 0 ? 'Wählen Sie Mitarbeiter zum Löschen aus' : 'Ausgewählte Mitarbeiter löschen'">
+      <mat-icon>delete</mat-icon>
+      {{ selection.selected.length === 0 ? 'Löschen' : selection.selected.length + ' Mitarbeiter löschen' }}
+    </button>
+  </div>
 
   <table mat-table [dataSource]="employees" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
+    <!-- Checkbox Column -->
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                     [checked]="selection.hasValue() && isAllSelected()"
+                     [indeterminate]="selection.hasValue() && !isAllSelected()"
+                     [aria-label]="checkboxLabel()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                     (change)="$event ? selection.toggle(row) : null"
+                     [checked]="selection.isSelected(row)"
+                     [aria-label]="checkboxLabel(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
     <!-- Name Column -->
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
@@ -29,16 +57,18 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Aktionen</th>
       <td mat-cell *matCellDef="let employee">
-        <button mat-icon-button (click)="editEmployee(employee)">
+        <button mat-icon-button (click)="editEmployee(employee)" matTooltip="Bearbeiten">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deleteEmployee(employee.id)">
+        <button mat-icon-button color="warn" (click)="deleteEmployee(employee.id)" matTooltip="Löschen">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        (click)="selection.toggle(row)">
+    </tr>
   </table>
 </div>

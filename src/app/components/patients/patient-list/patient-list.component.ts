@@ -8,6 +8,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { PatientDialogComponent } from '../patient-dialog/patient-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-patient-list',
@@ -19,8 +24,17 @@ import { PatientDialogComponent } from '../patient-dialog/patient-dialog.compone
     .add-button {
       margin-bottom: 20px;
     }
+    .action-buttons {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
     table {
       width: 100%;
+    }
+    .mat-column-select {
+      width: 48px;
+      padding-right: 8px;
     }
     .mat-column-actions {
       width: 100px;
@@ -33,12 +47,16 @@ import { PatientDialogComponent } from '../patient-dialog/patient-dialog.compone
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSortModule
+    MatSortModule,
+    MatDialogModule,
+    MatCheckboxModule,
+    MatTooltipModule
   ]
 })
 export class PatientListComponent implements OnInit {
   patients: Patient[] = [];
-  displayedColumns: string[] = ['name', 'surname', 'note', 'actions'];
+  displayedColumns: string[] = ['select', 'name', 'surname', 'note', 'actions'];
+  selection = new SelectionModel<Patient>(true, []);
   
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -54,12 +72,62 @@ export class PatientListComponent implements OnInit {
   loadPatients(): void {
     this.patientService.getPatients().subscribe(patients => {
       this.patients = patients;
+      this.selection.clear();
     });
+  }
+
+  /** Ob alle Zeilen ausgewählt sind */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.patients.length;
+    return numSelected === numRows;
+  }
+
+  /** Auswahl aller Zeilen umschalten */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.patients.forEach(row => this.selection.select(row));
+  }
+
+  /** Text für die Checkbox in der Header-Zeile */
+  checkboxLabel(row?: Patient): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'Alle abwählen' : 'Alle auswählen'}`;
+    }
+    return `${this.selection.isSelected(row) ? 'Abwählen' : 'Auswählen'}`;
+  }
+
+  /** Ausgewählte Patienten löschen */
+  deleteSelected() {
+    if (this.selection.selected.length === 0) return;
+
+    const message = this.selection.selected.length === 1
+      ? 'Möchten Sie diesen Patienten wirklich löschen?'
+      : `Möchten Sie diese ${this.selection.selected.length} Patienten wirklich löschen?`;
+
+    if (confirm(message)) {
+      // Nur Patienten mit gültiger ID löschen
+      const deleteObservables = this.selection.selected
+        .filter(patient => patient.id !== undefined)
+        .map(patient => this.patientService.deletePatient(patient.id!));
+
+      if (deleteObservables.length > 0) {
+        forkJoin(deleteObservables).subscribe({
+          next: () => {
+            this.loadPatients();
+          },
+          error: (error) => {
+            console.error('Fehler beim Löschen der Patienten:', error);
+            alert('Fehler beim Löschen der Patienten');
+          }
+        });
+      }
+    }
   }
 
   onSort(event: Sort) {
     if (!event.active || event.direction === '') {
-      // Wenn keine Sortierung aktiv ist oder die Sortierung aufgehoben wurde
       this.loadPatients();
       return;
     }
