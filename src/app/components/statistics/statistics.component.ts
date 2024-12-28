@@ -123,8 +123,8 @@ export class StatisticsComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Fehler beim Laden der Therapien:', error);
-        alert('Fehler beim Laden der Therapien');
+        console.error('Fehler beim Laden des Programms:', error);
+        alert('Fehler beim Laden der Programme ');
       },
       complete: () => {
         this.isLoading = false;
