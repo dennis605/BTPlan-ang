@@ -73,8 +73,6 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Therapy>;
   displayedColumns: string[] = ['select', 'name', 'leadingEmployee', 'patients', 'location', 'time', 'preparationTime', 'followUpTime', 'comment', 'actions'];
   selection = new SelectionModel<Therapy>(true, []);
-  isLoading = false;
-  therapies: Therapy[] = [];
   
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -117,19 +115,9 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   loadTherapies(): void {
-    this.isLoading = true;
-    this.therapyService.getTherapies().subscribe({
-      next: (therapies) => {
-        this.therapies = therapies;
-        this.dataSource.data = therapies;
-      },
-      error: (error) => {
-        console.error('Fehler beim Laden der Therapien:', error);
-        alert('Fehler beim Laden der Therapien');
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
+    this.therapyService.getTherapies().subscribe(therapies => {
+      this.dataSource.data = therapies;
+      this.selection.clear();
     });
   }
 
@@ -155,77 +143,44 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     return `${this.selection.isSelected(row) ? 'Abwählen' : 'Auswählen'}`;
   }
 
-  deleteSelectedTherapies(): void {
-    const selectedTherapies = this.selection.selected;
-    if (selectedTherapies.length === 0) {
-      alert('Bitte wählen Sie mindestens eine Therapie aus.');
-      return;
-    }
+  /** Ausgewählte Therapien löschen */
+  deleteSelected() {
+    if (this.selection.selected.length === 0) return;
 
-    if (confirm(`Möchten Sie ${selectedTherapies.length} Therapie(n) wirklich löschen?`)) {
-      const deleteRequests = selectedTherapies.map(therapy =>
-        this.therapyService.deleteTherapyById(therapy.id!)
-      );
+    const message = this.selection.selected.length === 1
+      ? 'Möchten Sie diese Therapie wirklich löschen?'
+      : `Möchten Sie diese ${this.selection.selected.length} Therapien wirklich löschen?`;
 
-      forkJoin(deleteRequests).subscribe({
-        next: () => {
-          this.selection.clear();
-          this.loadTherapies();
-        },
-        error: (error) => {
-          console.error('Fehler beim Löschen der Therapien:', error);
-          alert('Fehler beim Löschen der Therapien');
-        }
-      });
+    if (confirm(message)) {
+      // Nur Therapien mit gültiger ID löschen
+      const deleteObservables = this.selection.selected
+        .filter(therapy => therapy.id !== undefined)
+        .map(therapy => this.therapyService.deleteTherapy(therapy.id!));
+
+      if (deleteObservables.length > 0) {
+        forkJoin(deleteObservables).subscribe({
+          next: () => {
+            this.loadTherapies();
+          },
+          error: (error) => {
+            console.error('Fehler beim Löschen der Therapien:', error);
+            alert('Fehler beim Löschen der Therapien');
+          }
+        });
+      }
     }
   }
 
   onSort(event: Sort) {
-    const data = this.dataSource.data.slice();
     if (!event.active || event.direction === '') {
-      this.dataSource.data = data;
+      this.loadTherapies();
       return;
     }
 
-    this.dataSource.data = data.sort((a, b) => {
-      const isAsc = event.direction === 'asc';
-      switch (event.active) {
-        case 'name':
-          return this.compare(a.name, b.name, isAsc);
-        case 'leadingEmployee':
-          return this.compare(a.leadingEmployee?.name, b.leadingEmployee?.name, isAsc);
-        case 'location':
-          return this.compare(a.location?.name, b.location?.name, isAsc);
-        case 'startTime':
-          return this.compare(
-            a.startTime ? new Date(a.startTime).getTime() : undefined,
-            b.startTime ? new Date(b.startTime).getTime() : undefined,
-            isAsc
-          );
-        case 'endTime':
-          return this.compare(
-            a.endTime ? new Date(a.endTime).getTime() : undefined,
-            b.endTime ? new Date(b.endTime).getTime() : undefined,
-            isAsc
-          );
-        case 'preparationTime':
-          return this.compare(a.preparationTime, b.preparationTime, isAsc);
-        case 'followUpTime':
-          return this.compare(a.followUpTime, b.followUpTime, isAsc);
-        default:
-          return 0;
-      }
-    });
-  }
-
-  private compare(a: number | string | undefined, b: number | string | undefined, isAsc: boolean): number {
-    // Wenn beide undefined sind, sind sie gleich
-    if (a === undefined && b === undefined) return 0;
-    // undefined-Werte kommen ans Ende
-    if (a === undefined) return 1;
-    if (b === undefined) return -1;
-    // Normale Sortierung für definierte Werte
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    this.therapyService.getTherapies(event.active, event.direction as 'asc' | 'desc')
+      .subscribe(therapies => {
+        this.dataSource.data = therapies;
+      });
   }
 
   formatDate(date: string): string {
@@ -236,9 +191,9 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     return new Date(date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
-  deleteTherapy(therapy: Therapy): void {
-    if (confirm(`Möchten Sie die Therapie "${therapy.name}" wirklich löschen?`)) {
-      this.therapyService.deleteTherapyById(therapy.id!).subscribe({
+  deleteTherapy(id: number): void {
+    if (confirm('Möchten Sie diese Therapie wirklich löschen?')) {
+      this.therapyService.deleteTherapy(id).subscribe({
         next: () => {
           this.loadTherapies();
         },
@@ -250,15 +205,28 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  duplicateTherapy(therapy: Therapy): void {
+    if (confirm('Möchten Sie diese Therapie duplizieren?')) {
+      this.therapyService.duplicateTherapy(therapy).subscribe({
+        next: () => {
+          this.loadTherapies();
+        },
+        error: (error) => {
+          console.error('Fehler beim Duplizieren der Therapie:', error);
+          alert('Fehler beim Duplizieren der Therapie');
+        }
+      });
+    }
+  }
+
   editTherapy(therapy: Therapy): void {
     const dialogRef = this.dialog.open(TherapyDialogComponent, {
-      width: '600px',
-      data: { therapy: { ...therapy } }
+      data: { therapy: therapy }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.therapyService.updateTherapyById(result).subscribe({
+        this.therapyService.updateTherapy(result).subscribe({
           next: () => {
             this.loadTherapies();
           },
@@ -271,39 +239,20 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  duplicateTherapy(therapy: Therapy): void {
-    const newTherapy = {
-      ...therapy,
-      id: undefined,
-      name: `${therapy.name} (Kopie)`
-    };
-
-    this.therapyService.createTherapy(newTherapy).subscribe({
-      next: () => {
-        this.loadTherapies();
-      },
-      error: (error) => {
-        console.error('Fehler beim Duplizieren der Therapie:', error);
-        alert('Fehler beim Duplizieren der Therapie');
-      }
-    });
-  }
-
   addTherapy(): void {
     const dialogRef = this.dialog.open(TherapyDialogComponent, {
-      width: '600px',
       data: { therapy: null }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.therapyService.createTherapy(result).subscribe({
+        this.therapyService.addTherapy(result).subscribe({
           next: () => {
             this.loadTherapies();
           },
           error: (error) => {
-            console.error('Fehler beim Erstellen der Therapie:', error);
-            alert('Fehler beim Erstellen der Therapie');
+            console.error('Fehler beim Hinzufügen der Therapie:', error);
+            alert('Fehler beim Hinzufügen der Therapie');
           }
         });
       }

@@ -21,7 +21,12 @@ export class LocationService {
   }
 
   addLocation(location: Location): Observable<Location> {
-    return this.http.post<Location>(this.apiUrl, location);
+    // Generate a random 4-character hex ID (similar to other IDs in db.json)
+    const newLocation = {
+      ...location,
+      id: Math.random().toString(16).substring(2, 6)
+    };
+    return this.http.post<Location>(this.apiUrl, newLocation);
   }
 
   updateLocation(location: Location): Observable<Location> {

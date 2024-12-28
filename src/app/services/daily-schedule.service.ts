@@ -1,74 +1,103 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, of } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map, of, forkJoin } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
+import { TherapyService } from './therapy.service';
 import { Therapy } from '../models/therapy';
+import moment from 'moment';
 import { environment } from '../../environments/environment';
-import dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DailyScheduleService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/dailySchedules`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private therapyService: TherapyService
+  ) {}
 
-  getSchedules(): Observable<DailySchedule[]> {
-    return this.http.get<DailySchedule[]>(`${this.apiUrl}/dailySchedules`);
+  getDailySchedules(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<DailySchedule[]> {
+    let params = new HttpParams();
+    if (sortField) {
+      params = params.set('_sort', sortField).set('_order', sortOrder);
+    }
+    return this.http.get<DailySchedule[]>(this.apiUrl, { params });
   }
 
   getSchedule(id: number): Observable<DailySchedule> {
-    return this.http.get<DailySchedule>(`${this.apiUrl}/dailySchedules/${id}`);
+    return this.http.get<DailySchedule>(`${this.apiUrl}/${id}`);
   }
 
-  getScheduleByDate(date: Date): Observable<DailySchedule | null> {
-    const formattedDate = dayjs(date).format('YYYY-MM-DD');
-    return this.http.get<DailySchedule[]>(`${this.apiUrl}/dailySchedules`).pipe(
-      map(schedules => {
-        const schedule = schedules.find(s => 
-          dayjs(s.date).format('YYYY-MM-DD') === formattedDate
-        );
-        return schedule || null;
+  getScheduleByDate(date: Date): Observable<DailySchedule | undefined> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    return this.therapyService.getTherapiesByDate(date).pipe(
+      map(therapies => {
+        if (therapies.length === 0) {
+          return undefined;
+        }
+
+        const schedule: DailySchedule = {
+          date: date,
+          therapies: therapies
+        };
+
+        return schedule;
       })
     );
   }
 
   addSchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    return this.http.post<DailySchedule>(`${this.apiUrl}/dailySchedules`, schedule);
-  }
+    // Erstelle ein Array von Observables für jede Therapie
+    const therapyObservables = schedule.therapies.map(therapy => {
+      const formattedTherapy = {
+        ...therapy,
+        startTime: moment(therapy.startTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        endTime: moment(therapy.endTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+      };
+      return this.therapyService.addTherapy(formattedTherapy);
+    });
 
-  updateSchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    return this.http.put<DailySchedule>(`${this.apiUrl}/dailySchedules/${schedule.id}`, schedule);
-  }
-
-  deleteSchedule(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/dailySchedules/${id}`);
-  }
-
-  // Therapie-bezogene Methoden
-  getTherapies(): Observable<Therapy[]> {
-    return this.http.get<Therapy[]>(`${this.apiUrl}/therapies`);
-  }
-
-  getTherapiesByDate(date: Date): Observable<Therapy[]> {
-    const formattedDate = dayjs(date).format('YYYY-MM-DD');
-    return this.http.get<Therapy[]>(`${this.apiUrl}/therapies`).pipe(
-      map(therapies => therapies.filter(therapy => 
-        dayjs(therapy.startTime).format('YYYY-MM-DD') === formattedDate
-      ))
+    // Verwende forkJoin statt Promise.all
+    return forkJoin(therapyObservables).pipe(
+      map(therapies => ({
+        date: schedule.date,
+        therapies: therapies
+      }))
     );
   }
 
-  createTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.post<Therapy>(`${this.apiUrl}/therapies`, therapy);
+  updateSchedule(schedule: DailySchedule): Observable<DailySchedule> {
+    return this.http.put<DailySchedule>(`${this.apiUrl}/${schedule.id}`, schedule);
   }
 
   updateTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.put<Therapy>(`${this.apiUrl}/therapies/${therapy.id}`, therapy);
+    return this.therapyService.updateTherapy(therapy);
   }
 
-  deleteTherapy(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/therapies/${id}`);
+  deleteSchedule(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  deleteTherapy(therapyId: number): Observable<void> {
+    return this.therapyService.deleteTherapy(therapyId);
+  }
+
+  createTherapy(therapy: Therapy): Observable<Therapy> {
+    const formattedTherapy = {
+      ...therapy,
+      startTime: moment(therapy.startTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      endTime: moment(therapy.endTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+    };
+    return this.http.post<Therapy>(`${this.apiUrl}/therapies`, formattedTherapy).pipe(
+      map(response => ({
+        ...response,
+        startTime: new Date(response.startTime),
+        endTime: new Date(response.endTime)
+      }))
+    );
   }
 }

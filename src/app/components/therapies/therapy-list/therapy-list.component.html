@@ -14,10 +14,11 @@
     </button>
     
     <button mat-raised-button color="warn" 
-            [disabled]="!selection.hasValue()"
-            (click)="deleteSelectedTherapies()">
+            [disabled]="selection.selected.length === 0"
+            (click)="deleteSelected()"
+            [matTooltip]="selection.selected.length === 0 ? 'Wählen Sie Therapien zum Löschen aus' : 'Ausgewählte Therapien löschen'">
       <mat-icon>delete</mat-icon>
-      Ausgewählte löschen
+      {{ selection.selected.length === 0 ? 'Löschen' : selection.selected.length + ' Therapien löschen' }}
     </button>
   </div>
 
