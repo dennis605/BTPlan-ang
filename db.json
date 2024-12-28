@@ -339,33 +339,6 @@
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
     },
     {
-      "id": "37c4",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-09T10:26:38.495Z",
-      "endTime": "2024-12-09T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
       "id": "668d",
       "name": "eht",
       "patients": [

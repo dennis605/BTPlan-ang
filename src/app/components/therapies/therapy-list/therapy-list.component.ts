@@ -148,8 +148,8 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     if (this.selection.selected.length === 0) return;
 
     const message = this.selection.selected.length === 1
-      ? 'Möchten Sie diese Therapie wirklich löschen?'
-      : `Möchten Sie diese ${this.selection.selected.length} Therapien wirklich löschen?`;
+      ? 'Möchten Sie dieses Programm wirklich löschen?'
+      : `Möchten Sie diese ${this.selection.selected.length} Programme wirklich löschen?`;
 
     if (confirm(message)) {
       // Nur Therapien mit gültiger ID löschen
@@ -163,8 +163,8 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
             this.loadTherapies();
           },
           error: (error) => {
-            console.error('Fehler beim Löschen der Therapien:', error);
-            alert('Fehler beim Löschen der Therapien');
+            console.error('Fehler beim Löschen des Programms:', error);
+            alert('Fehler beim Löschen des Programms');
           }
         });
       }
@@ -192,28 +192,28 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   deleteTherapy(id: number): void {
-    if (confirm('Möchten Sie diese Therapie wirklich löschen?')) {
+    if (confirm('Möchten Sie dieses Programm wirklich löschen?')) {
       this.therapyService.deleteTherapy(id).subscribe({
         next: () => {
           this.loadTherapies();
         },
         error: (error) => {
-          console.error('Fehler beim Löschen der Therapie:', error);
-          alert('Fehler beim Löschen der Therapie');
+          console.error('Fehler beim Löschen des Programms:', error);
+          alert('Fehler beim Löschen des Programms');
         }
       });
     }
   }
 
   duplicateTherapy(therapy: Therapy): void {
-    if (confirm('Möchten Sie diese Therapie duplizieren?')) {
+    if (confirm('Möchten Sie dieses Programm duplizieren?')) {
       this.therapyService.duplicateTherapy(therapy).subscribe({
         next: () => {
           this.loadTherapies();
         },
         error: (error) => {
-          console.error('Fehler beim Duplizieren der Therapie:', error);
-          alert('Fehler beim Duplizieren der Therapie');
+          console.error('Fehler beim Duplizieren des Programms:', error);
+          alert('Fehler beim Duplizieren des Programms');
         }
       });
     }
@@ -231,8 +231,8 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
             this.loadTherapies();
           },
           error: (error) => {
-            console.error('Fehler beim Aktualisieren der Therapie:', error);
-            alert('Fehler beim Aktualisieren der Therapie');
+            console.error('Fehler beim Aktualisieren des Programms:', error);
+            alert('Fehler beim Aktualisieren der Programms');
           }
         });
       }
@@ -251,8 +251,8 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
             this.loadTherapies();
           },
           error: (error) => {
-            console.error('Fehler beim Hinzufügen der Therapie:', error);
-            alert('Fehler beim Hinzufügen der Therapie');
+            console.error('Fehler beim Hinzufügen des Programms:', error);
+            alert('Fehler beim Hinzufügen des Programms');
           }
         });
       }
