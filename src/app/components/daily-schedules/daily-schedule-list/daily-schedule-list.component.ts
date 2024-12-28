@@ -164,6 +164,7 @@ export class DailyScheduleListComponent implements OnInit {
 
   ngOnInit(): void {
     dayjs.locale('de');
+    this.selectedDate = new Date(); // Setze das Datum auf heute
     this.loadDailySchedule();
   }
 
