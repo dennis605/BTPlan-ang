@@ -1,70 +1,45 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { Therapy } from '../models/therapy';
 import { environment } from '../../environments/environment';
+import * as dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TherapyService {
-  private apiUrl = `${environment.apiUrl}/api/therapies`;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  getTherapies(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Therapy[]> {
-    let params = new HttpParams();
-    
-    if (sortField) {
-      // JSON Server verwendet _sort und _order für Sortierung
-      params = params
-        .set('_sort', sortField)
-        .set('_order', sortOrder);
-    }
-    
-    return this.http.get<Therapy[]>(this.apiUrl, { params });
-  }
-
-  getTherapy(id: number): Observable<Therapy> {
-    return this.http.get<Therapy>(`${this.apiUrl}/${id}`);
-  }
-
-  addTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.post<Therapy>(this.apiUrl, therapy);
-  }
-
-  updateTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.put<Therapy>(`${this.apiUrl}/${therapy.id}`, therapy);
-  }
-
-  deleteTherapy(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  duplicateTherapy(therapy: Therapy): Observable<Therapy> {
-    // Erstelle eine Kopie der Therapie ohne ID
-    const duplicatedTherapy: Therapy = {
-      ...therapy,
-      id: undefined, // ID wird vom Server generiert
-      name: `${therapy.name}_copy`, // Füge _copy zum Namen hinzu
-      startTime: new Date(therapy.startTime),
-      endTime: new Date(therapy.endTime)
-    };
-    return this.addTherapy(duplicatedTherapy);
+  getTherapies(): Observable<Therapy[]> {
+    return this.http.get<Therapy[]>(`${this.apiUrl}/therapies`);
   }
 
   getTherapiesByDate(date: Date): Observable<Therapy[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    return this.http.get<Therapy[]>(this.apiUrl).pipe(
-        map(therapies => therapies.filter(therapy => {
-            const therapyDate = new Date(therapy.startTime);
-            return therapyDate >= startOfDay && therapyDate <= endOfDay;
-        }))
+    const targetDate = dayjs(date).format('YYYY-MM-DD');
+    return this.http.get<Therapy[]>(`${this.apiUrl}/therapies`).pipe(
+      map(therapies => therapies.filter(therapy => {
+        const therapyDate = dayjs(therapy.startTime).format('YYYY-MM-DD');
+        return therapyDate === targetDate;
+      }))
     );
+  }
+
+  getTherapyById(id: number): Observable<Therapy> {
+    return this.http.get<Therapy>(`${this.apiUrl}/therapies/${id}`);
+  }
+
+  createTherapy(therapy: Therapy): Observable<Therapy> {
+    return this.http.post<Therapy>(`${this.apiUrl}/therapies`, therapy);
+  }
+
+  updateTherapyById(therapy: Therapy): Observable<Therapy> {
+    return this.http.put<Therapy>(`${this.apiUrl}/therapies/${therapy.id}`, therapy);
+  }
+
+  deleteTherapyById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/therapies/${id}`);
   }
 }

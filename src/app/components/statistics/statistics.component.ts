@@ -18,6 +18,10 @@ import { Patient } from '../../models/patient';
 import { Therapy } from '../../models/therapy';
 import { TherapyDetail } from '../../models/therapy-detail';
 import { StatisticsDetailDialogComponent } from './statistics-detail-dialog/statistics-detail-dialog.component';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(isBetween);
 
 interface PatientStatistics {
   patient: Patient;
@@ -84,8 +88,10 @@ export class StatisticsComponent implements OnInit {
     this.therapyService.getTherapies().subscribe({
       next: (therapies) => {
         const filteredTherapies = therapies.filter(therapy => {
-          const therapyDate = new Date(therapy.startTime);
-          return therapyDate >= this.startDate && therapyDate <= this.endDate;
+          const therapyDate = dayjs(therapy.startTime);
+          const start = dayjs(this.startDate).startOf('day');
+          const end = dayjs(this.endDate).endOf('day');
+          return therapyDate.isBetween(start, end, 'day', '[]');
         });
 
         // Wenn Patienten ausgewählt sind, nur für diese berechnen
@@ -99,16 +105,17 @@ export class StatisticsComponent implements OnInit {
           );
 
           const therapyDetails: TherapyDetail[] = patientTherapies.map(therapy => {
-            const start = new Date(therapy.startTime);
-            const end = new Date(therapy.endTime);
-            const durationInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+            const start = dayjs(therapy.startTime);
+            const end = dayjs(therapy.endTime);
+            const durationInMinutes = end.diff(start, 'minute');
+            const totalDuration = durationInMinutes + (therapy.preparationTime || 0) + (therapy.followUpTime || 0);
             
             return {
-              date: start,
+              date: start.toDate(),
               name: therapy.name,
-              startTime: start,
-              endTime: end,
-              duration: durationInMinutes
+              startTime: start.toDate(),
+              endTime: end.toDate(),
+              duration: totalDuration
             };
           });
 
@@ -121,6 +128,11 @@ export class StatisticsComponent implements OnInit {
             therapyDetails: therapyDetails.sort((a, b) => a.date.getTime() - b.date.getTime())
           };
         });
+
+        // Sortiere die Statistik nach Patientennamen
+        this.statistics.sort((a, b) => 
+          this.formatName(a.patient).localeCompare(this.formatName(b.patient))
+        );
       },
       error: (error) => {
         console.error('Fehler beim Laden der Therapien:', error);

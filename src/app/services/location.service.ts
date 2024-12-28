@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class LocationService {
-  private apiUrl = `${environment.apiUrl}/api/locations`;
+  private apiUrl = `${environment.apiUrl}/locations`;
 
   constructor(private http: HttpClient) {}
 
@@ -21,12 +21,7 @@ export class LocationService {
   }
 
   addLocation(location: Location): Observable<Location> {
-    // Generate a random 4-character hex ID (similar to other IDs in db.json)
-    const newLocation = {
-      ...location,
-      id: Math.random().toString(16).substring(2, 6)
-    };
-    return this.http.post<Location>(this.apiUrl, newLocation);
+    return this.http.post<Location>(this.apiUrl, location);
   }
 
   updateLocation(location: Location): Observable<Location> {

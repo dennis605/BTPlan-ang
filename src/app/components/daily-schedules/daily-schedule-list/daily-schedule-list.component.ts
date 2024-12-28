@@ -1,39 +1,81 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Therapy } from '../../../models/therapy';
-import { DailySchedule } from '../../../models/daily-schedule';
-import { DailyScheduleService } from '../../../services/daily-schedule.service';
-import { DailyScheduleDetailDialogComponent } from '../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component';
-import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
-import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
-import { DuplicateTherapyDialogComponent } from '../duplicate-therapy-dialog/duplicate-therapy-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
-import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
-import dayjs from 'dayjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
-import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FormsModule } from '@angular/forms';
+import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { Router } from '@angular/router';
+import dayjs from 'dayjs';
+import 'dayjs/locale/de';
+import { DailySchedule } from '../../../models/daily-schedule';
+import { Therapy } from '../../../models/therapy';
+import { DailyScheduleService } from '../../../services/daily-schedule.service';
+import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
+import { DuplicateTherapyDialogComponent } from '../duplicate-therapy-dialog/duplicate-therapy-dialog.component';
+import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
+import { DailyScheduleDetailDialogComponent } from '../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component';
+import { forkJoin } from 'rxjs';
+import { TherapyService } from '../../../services/therapy.service';
 
 @Component({
   selector: 'app-daily-schedule-list',
   templateUrl: './daily-schedule-list.component.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatTooltipModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
+    },
+    {
+      provide: MAT_DATE_FORMATS,
+      useValue: {
+        parse: {
+          dateInput: 'DD.MM.YYYY',
+        },
+        display: {
+          dateInput: 'DD.MM.YYYY',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'DD.MM.YYYY',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
+      },
+    }
+  ],
   styles: [`
     .daily-schedule-container {
       padding: 20px;
     }
 
-    .daily-schedule-container h2 {
+    h2 {
       margin-bottom: 20px;
     }
 
@@ -56,10 +98,6 @@ import { FormsModule } from '@angular/forms';
 
     .therapy-row {
       transition: background-color 0.2s ease;
-    }
-
-    .therapy-row:hover {
-      background-color: rgba(0, 0, 0, 0.04);
     }
 
     .mat-column-patients mat-chip-set {
@@ -99,46 +137,7 @@ import { FormsModule } from '@angular/forms';
     button[mat-icon-button] {
       margin: 0 4px;
     }
-  `],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatDialogModule,
-    MatTooltipModule
-  ],
-  providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
-    {
-      provide: DateAdapter,
-      useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]
-    },
-    {
-      provide: MAT_DATE_FORMATS,
-      useValue: {
-        parse: {
-          dateInput: 'DD.MM.YYYY',
-        },
-        display: {
-          dateInput: 'DD.MM.YYYY',
-          monthYearLabel: 'MMM YYYY',
-          dateA11yLabel: 'DD.MM.YYYY',
-          monthYearA11yLabel: 'MMMM YYYY',
-        },
-      },
-    }
-  ]
+  `]
 })
 export class DailyScheduleListComponent implements OnInit {
   schedules: DailySchedule[] = [];
@@ -159,12 +158,13 @@ export class DailyScheduleListComponent implements OnInit {
   constructor(
     private dailyScheduleService: DailyScheduleService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private therapyService: TherapyService
   ) {}
 
   ngOnInit(): void {
     dayjs.locale('de');
-    this.selectedDate = new Date(); // Setze das Datum auf heute
+    this.selectedDate = new Date();
     this.loadDailySchedule();
   }
 
@@ -174,7 +174,6 @@ export class DailyScheduleListComponent implements OnInit {
     this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe({
       next: (schedule) => {
         if (schedule) {
-          // Sortiere Therapien nach Startzeit
           schedule.therapies.sort((a, b) => 
             new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
           );
@@ -202,10 +201,6 @@ export class DailyScheduleListComponent implements OnInit {
     return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
-  formatTimeForPrint(date: string | Date): string {
-    return this.formatTime(date);
-  }
-
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('de-DE', {
       weekday: 'long',
@@ -215,15 +210,8 @@ export class DailyScheduleListComponent implements OnInit {
     });
   }
 
-  openTherapyDetails(therapy: Therapy): void {
-    import('../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component')
-      .then(m => m.DailyScheduleDetailDialogComponent)
-      .then(component => {
-        this.dialog.open(component, {
-          data: therapy,
-          width: '600px'
-        });
-      });
+  formatTimeForPrint(date: string | Date): string {
+    return this.formatTime(date);
   }
 
   printSchedule(): void {
@@ -421,6 +409,17 @@ export class DailyScheduleListComponent implements OnInit {
     }, 250);
   }
 
+  openTherapyDetails(therapy: Therapy): void {
+    import('../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component')
+      .then(m => m.DailyScheduleDetailDialogComponent)
+      .then(component => {
+        this.dialog.open(component, {
+          data: therapy,
+          width: '600px'
+        });
+      });
+  }
+
   duplicateSchedule(): void {
     const dialogRef = this.dialog.open(DuplicateScheduleDialogComponent, {
       width: '400px'
@@ -436,54 +435,48 @@ export class DailyScheduleListComponent implements OnInit {
           return;
         }
 
-        // Erstelle eine tiefe Kopie des aktuellen Tagesplans
-        const duplicatedSchedule: DailySchedule = {
-          date: result,
-          therapies: currentSchedule.therapies.map(therapy => {
-            // Berechne Zeitdifferenz zwischen altem und neuem Datum in Millisekunden
-            const oldDate = new Date(this.selectedDate);
-            const newDate = new Date(result);
-            oldDate.setHours(0, 0, 0, 0);
-            newDate.setHours(0, 0, 0, 0);
-            const daysDiff = newDate.getTime() - oldDate.getTime();
-            
-            // Kopiere die Therapie und passe die Zeiten an
-            const newTherapy: Therapy = {
-              ...therapy,
-              id: undefined, // ID entfernen, damit eine neue generiert wird
-              startTime: new Date(new Date(therapy.startTime).getTime() + daysDiff),
-              endTime: new Date(new Date(therapy.endTime).getTime() + daysDiff)
+        // Zuerst alle Therapien erstellen
+        const therapyRequests = currentSchedule.therapies.map(therapy => {
+          const oldDate = new Date(this.selectedDate);
+          const newDate = new Date(result);
+          oldDate.setHours(0, 0, 0, 0);
+          newDate.setHours(0, 0, 0, 0);
+          const daysDiff = newDate.getTime() - oldDate.getTime();
+          
+          const newTherapy: Therapy = {
+            ...therapy,
+            id: undefined,
+            startTime: new Date(new Date(therapy.startTime).getTime() + daysDiff),
+            endTime: new Date(new Date(therapy.endTime).getTime() + daysDiff)
+          };
+          
+          return this.therapyService.createTherapy(newTherapy);
+        });
+
+        // Warte auf alle Therapie-Erstellungen
+        forkJoin(therapyRequests).subscribe({
+          next: (newTherapies) => {
+            // Erstelle den Tagesplan mit den neuen Therapien
+            const duplicatedSchedule: DailySchedule = {
+              date: result,
+              therapies: newTherapies
             };
-            
-            console.log('Duplicated therapy:', {
-              original: {
-                name: therapy.name,
-                startTime: therapy.startTime,
-                endTime: therapy.endTime
+
+            this.dailyScheduleService.addSchedule(duplicatedSchedule).subscribe({
+              next: (newSchedule) => {
+                console.log('Successfully duplicated schedule:', newSchedule);
+                this.selectedDate = new Date(result);
+                this.loadDailySchedule();
               },
-              new: {
-                name: newTherapy.name,
-                startTime: newTherapy.startTime,
-                endTime: newTherapy.endTime
+              error: (error) => {
+                console.error('Fehler beim Duplizieren des Tagesplans:', error);
+                alert('Fehler beim Duplizieren des Tagesplans');
               }
             });
-            
-            return newTherapy;
-          })
-        };
-
-        console.log('Duplicated schedule:', duplicatedSchedule);
-
-        // Speichere den duplizierten Tagesplan
-        this.dailyScheduleService.addSchedule(duplicatedSchedule).subscribe({
-          next: (newSchedule) => {
-            console.log('Successfully duplicated schedule:', newSchedule);
-            this.selectedDate = new Date(result);
-            this.loadDailySchedule();
           },
           error: (error) => {
-            console.error('Fehler beim Duplizieren des Tagesplans:', error);
-            alert('Fehler beim Duplizieren des Tagesplans');
+            console.error('Fehler beim Erstellen der Therapien:', error);
+            alert('Fehler beim Erstellen der Therapien');
           }
         });
       }
@@ -491,7 +484,6 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   duplicateTherapy(therapy: Therapy): void {
-    console.log('Duplicating therapy:', therapy);
     const dialogRef = this.dialog.open(DuplicateTherapyDialogComponent, {
       width: '400px',
       data: { therapy }
@@ -501,10 +493,9 @@ export class DailyScheduleListComponent implements OnInit {
       if (targetDate) {
         console.log('Target date for duplication:', targetDate);
         
-        // Create a deep copy of the therapy
         const duplicatedTherapy: Therapy = {
           ...therapy,
-          id: undefined, // Remove ID so a new one will be generated
+          id: undefined,
           startTime: new Date(therapy.startTime),
           endTime: new Date(therapy.endTime),
           location: { ...therapy.location },
@@ -512,11 +503,9 @@ export class DailyScheduleListComponent implements OnInit {
           patients: therapy.patients.map(p => ({ ...p }))
         };
 
-        // Update the date while keeping the same time
         const startDate = new Date(duplicatedTherapy.startTime);
         const endDate = new Date(duplicatedTherapy.endTime);
         
-        // Set the new date while preserving the time
         const target = dayjs(targetDate).startOf('day');
         const startTime = dayjs(startDate).format('HH:mm:ss');
         const endTime = dayjs(endDate).format('HH:mm:ss');
@@ -524,13 +513,9 @@ export class DailyScheduleListComponent implements OnInit {
         duplicatedTherapy.startTime = dayjs(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
         duplicatedTherapy.endTime = dayjs(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
 
-        console.log('Duplicated therapy with new dates:', duplicatedTherapy);
-
-        // Save the duplicated therapy
         this.dailyScheduleService.createTherapy(duplicatedTherapy).subscribe({
           next: (newTherapy) => {
             console.log('Therapy duplicated successfully:', newTherapy);
-            // Refresh the list if the target date is the currently displayed date
             const targetDateStr = dayjs(targetDate).format('YYYY-MM-DD');
             const currentDateStr = dayjs(this.selectedDate).format('YYYY-MM-DD');
             if (targetDateStr === currentDateStr) {
@@ -539,7 +524,7 @@ export class DailyScheduleListComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error duplicating therapy:', error);
-            // Show error message to user
+            alert('Fehler beim Duplizieren der Therapie');
           }
         });
       }
@@ -547,7 +532,6 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   editTherapy(therapy: Therapy): void {
-    console.log('Editing therapy:', therapy);
     const dialogRef = this.dialog.open(EditTherapyDialogComponent, {
       width: '600px',
       data: { 
@@ -561,7 +545,6 @@ export class DailyScheduleListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog result:', result);
       if (result) {
         this.dailyScheduleService.updateTherapy(result).subscribe({
           next: () => {
@@ -578,9 +561,8 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   deleteTherapy(therapy: Therapy): void {
-    console.log('Deleting therapy:', therapy);
     if (confirm(`Möchten Sie die Therapie "${therapy.name}" wirklich löschen?`)) {
-      this.dailyScheduleService.deleteTherapy(therapy.id!).subscribe({
+      this.dailyScheduleService.deleteTherapy(therapy.id!.toString()).subscribe({
         next: () => {
           console.log('Therapy deleted successfully');
           this.loadDailySchedule();
