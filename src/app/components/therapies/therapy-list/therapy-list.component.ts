@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
 import { TherapyService } from '../../../services/therapy.service';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
@@ -14,6 +14,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
 import { forkJoin } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-therapy-list',
@@ -26,6 +29,10 @@ import { forkJoin } from 'rxjs';
       margin-bottom: 20px;
       display: flex;
       gap: 10px;
+    }
+    .search-field {
+      width: 100%;
+      margin-bottom: 20px;
     }
     table {
       width: 100%;
@@ -47,6 +54,7 @@ import { forkJoin } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -54,11 +62,13 @@ import { forkJoin } from 'rxjs';
     MatDialogModule,
     MatChipsModule,
     MatTooltipModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule
   ]
 })
 export class TherapyListComponent implements OnInit {
-  therapies: Therapy[] = [];
+  dataSource: MatTableDataSource<Therapy>;
   displayedColumns: string[] = ['select', 'name', 'leadingEmployee', 'patients', 'location', 'time', 'preparationTime', 'followUpTime', 'comment', 'actions'];
   selection = new SelectionModel<Therapy>(true, []);
   
@@ -67,15 +77,35 @@ export class TherapyListComponent implements OnInit {
   constructor(
     private therapyService: TherapyService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.dataSource = new MatTableDataSource<Therapy>([]);
+  }
 
   ngOnInit(): void {
     this.loadTherapies();
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = (data: Therapy, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      return data.name.toLowerCase().includes(searchStr) ||
+             (data.leadingEmployee?.name?.toLowerCase()?.includes(searchStr) || false) ||
+             (data.leadingEmployee?.surname?.toLowerCase()?.includes(searchStr) || false) ||
+             (data.location?.name?.toLowerCase()?.includes(searchStr) || false) ||
+             data.patients.some(p => 
+               (p?.name?.toLowerCase()?.includes(searchStr) || false) || 
+               (p?.surname?.toLowerCase()?.includes(searchStr) || false)
+             ) ||
+             (data.comment?.toLowerCase()?.includes(searchStr) || false);
+    };
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   loadTherapies(): void {
     this.therapyService.getTherapies().subscribe(therapies => {
-      this.therapies = therapies;
+      this.dataSource.data = therapies;
       this.selection.clear();
     });
   }
@@ -83,7 +113,7 @@ export class TherapyListComponent implements OnInit {
   /** Ob alle Zeilen ausgewählt sind */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.therapies.length;
+    const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
 
@@ -91,7 +121,7 @@ export class TherapyListComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.therapies.forEach(row => this.selection.select(row));
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
   /** Text für die Checkbox in der Header-Zeile */
@@ -138,7 +168,7 @@ export class TherapyListComponent implements OnInit {
 
     this.therapyService.getTherapies(event.active, event.direction as 'asc' | 'desc')
       .subscribe(therapies => {
-        this.therapies = therapies;
+        this.dataSource.data = therapies;
       });
   }
 

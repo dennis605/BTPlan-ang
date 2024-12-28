@@ -1,6 +1,12 @@
 <div class="container">
   <h2>Therapien</h2>
   
+  <mat-form-field class="search-field">
+    <mat-label>Suchen</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="z.B. Name, Mitarbeiter, Bewohner..." #input>
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
   <div class="action-buttons">
     <button mat-raised-button color="primary" (click)="addTherapy()">
       <mat-icon>add</mat-icon>
@@ -16,7 +22,7 @@
     </button>
   </div>
 
-  <table mat-table [dataSource]="therapies" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
     <!-- Checkbox Column -->
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
