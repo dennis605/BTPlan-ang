@@ -11,12 +11,6 @@
       "name": "Romy",
       "surname": "Streib",
       "note": ""
-    },
-    {
-      "id": "daab",
-      "name": "ma",
-      "surname": "Eins",
-      "note": ""
     }
   ],
   "patients": [
@@ -301,94 +295,6 @@
       },
       "startTime": "2024-12-22T10:27:26.569Z",
       "endTime": "2024-12-22T11:27:26.569Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "id": "fee8",
-      "name": "egeg",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2024-12-22T10:27:26.569Z",
-      "endTime": "2024-12-22T11:27:26.569Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "f462",
-      "name": "egegfewew",
-      "patients": [
-        {
-          "id": "91f6",
-          "name": "dcnz",
-          "surname": "bt",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "fc53",
-        "name": "test1",
-        "surname": "er",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "Ritersaal",
-        "description": ""
-      },
-      "startTime": "2024-12-26T10:26:38.495Z",
-      "endTime": "2024-12-26T11:26:38.495Z",
-      "preparationTime": 15,
-      "followUpTime": 15
-    },
-    {
-      "id": "0520",
-      "name": "eht",
-      "patients": [
-        {
-          "id": "1db6",
-          "name": "egr",
-          "surname": "erge",
-          "note": ""
-        },
-        {
-          "id": "0099",
-          "name": "erg",
-          "surname": "egre",
-          "note": "egrr"
-        }
-      ],
-      "leadingEmployee": {
-        "id": "af9b",
-        "name": "wer",
-        "surname": "ew",
-        "note": ""
-      },
-      "location": {
-        "id": null,
-        "name": "noch ein raum",
-        "description": ""
-      },
-      "startTime": "2024-12-26T10:26:38.495Z",
-      "endTime": "2024-12-26T11:26:38.495Z",
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
