@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
 import { TherapyService } from '../../../services/therapy.service';
@@ -69,7 +69,7 @@ import { FormsModule } from '@angular/forms';
     MatPaginatorModule
   ]
 })
-export class TherapyListComponent implements OnInit {
+export class TherapyListComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Therapy>;
   displayedColumns: string[] = ['select', 'name', 'leadingEmployee', 'patients', 'location', 'time', 'preparationTime', 'followUpTime', 'comment', 'actions'];
   selection = new SelectionModel<Therapy>(true, []);
@@ -86,8 +86,6 @@ export class TherapyListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTherapies();
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
     this.dataSource.filterPredicate = (data: Therapy, filter: string) => {
       const searchStr = filter.toLowerCase();
       return data.name.toLowerCase().includes(searchStr) ||
@@ -100,6 +98,11 @@ export class TherapyListComponent implements OnInit {
              ) ||
              (data.comment?.toLowerCase()?.includes(searchStr) || false);
     };
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   applyFilter(event: Event) {
