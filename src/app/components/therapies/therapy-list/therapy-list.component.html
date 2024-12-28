@@ -120,4 +120,8 @@
         (click)="selection.toggle(row)">
     </tr>
   </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                 aria-label="Seiten auswählen">
+  </mat-paginator>
 </div>

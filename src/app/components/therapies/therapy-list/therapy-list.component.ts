@@ -6,6 +6,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -64,7 +65,8 @@ import { FormsModule } from '@angular/forms';
     MatTooltipModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatPaginatorModule
   ]
 })
 export class TherapyListComponent implements OnInit {
@@ -73,6 +75,7 @@ export class TherapyListComponent implements OnInit {
   selection = new SelectionModel<Therapy>(true, []);
   
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private therapyService: TherapyService,
@@ -84,6 +87,7 @@ export class TherapyListComponent implements OnInit {
   ngOnInit(): void {
     this.loadTherapies();
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
     this.dataSource.filterPredicate = (data: Therapy, filter: string) => {
       const searchStr = filter.toLowerCase();
       return data.name.toLowerCase().includes(searchStr) ||
@@ -101,6 +105,10 @@ export class TherapyListComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   loadTherapies(): void {
