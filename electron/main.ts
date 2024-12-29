@@ -1,8 +1,8 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as Lowdb from 'lowdb';
-import * as FileSync from 'lowdb/adapters/FileSync';
+const lowdb = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
 
 interface Database {
   employees: any[];
@@ -12,7 +12,7 @@ interface Database {
   dailySchedules: any[];
 }
 
-let db: Lowdb.LowdbSync<Database>;
+let db: any;
 
 async function createWindow() {
   // Initialisiere die Datenbank
@@ -31,8 +31,8 @@ async function createWindow() {
     }));
   }
 
-  const adapter = new FileSync.default<Database>(dbPath);
-  db = Lowdb.default(adapter);
+  const adapter = new FileSync(dbPath);
+  db = lowdb(adapter);
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -71,7 +71,11 @@ async function createWindow() {
   ipcMain.handle('db-update', (event, { collection, id, updates }: { collection: keyof Database; id: string; updates: any }) => {
     const items = db.get(collection);
     if (Array.isArray(items.value())) {
-      items.find({ id: id }).assign(updates).write();
+      const item = items.find({ id: id }).value();
+      if (item) {
+        Object.assign(item, updates);
+        db.write();
+      }
       return updates;
     }
     throw new Error(`Collection ${collection} ist kein Array`);
