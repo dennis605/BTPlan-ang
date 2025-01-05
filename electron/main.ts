@@ -11,7 +11,10 @@ dbManager = new DatabaseManager();
 // IPC Handler für Datenbankoperationen
 ipcMain.handle('db-get', async (event, collection) => {
   try {
-    return await dbManager.find(collection);
+    console.log(`Lade Daten aus Collection ${collection}...`);
+    const result = await dbManager.find(collection);
+    console.log(`Gefundene Daten in ${collection}:`, result);
+    return result;
   } catch (error) {
     console.error(`Fehler beim Laden von ${collection}:`, error);
     throw error;
@@ -20,7 +23,10 @@ ipcMain.handle('db-get', async (event, collection) => {
 
 ipcMain.handle('db-add', async (event, { collection, item }) => {
   try {
-    return await dbManager.insert(collection, item);
+    console.log(`Füge Datensatz zu ${collection} hinzu:`, item);
+    const result = await dbManager.insert(collection, item);
+    console.log(`Datensatz hinzugefügt:`, result);
+    return result;
   } catch (error) {
     console.error(`Fehler beim Hinzufügen zu ${collection}:`, error);
     throw error;
