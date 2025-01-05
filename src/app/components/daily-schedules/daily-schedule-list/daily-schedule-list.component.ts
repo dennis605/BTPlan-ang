@@ -171,21 +171,10 @@ export class DailyScheduleListComponent implements OnInit {
   loadDailySchedule(): void {
     this.isLoading = true;
     this.schedules = [];
-    this.dailyScheduleService.getDailySchedules().pipe(
-      map((schedules: DailySchedule[]) => schedules.find(s => 
-        dayjs(s.date).format('YYYY-MM-DD') === dayjs(this.selectedDate).format('YYYY-MM-DD')
-      ))
-    ).subscribe({
+    this.dailyScheduleService.getScheduleByDate(new Date(this.selectedDate)).subscribe({
       next: (schedule) => {
         if (schedule) {
-          // Sortiere Therapien nach Startzeit
-          const sortedTherapies = [...schedule.therapies].sort((a, b) => 
-            dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
-          );
-          this.schedules = [{
-            ...schedule,
-            therapies: sortedTherapies
-          }];
+          this.schedules = [schedule];
         }
         this.isLoading = false;
       },

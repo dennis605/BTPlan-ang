@@ -16,17 +16,26 @@ export class TherapyService {
   }
 
   getTherapiesByDate(date: Date): Observable<Therapy[]> {
+    console.log('Suche Therapien für Datum:', date);
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    console.log('Zeitraum:', startOfDay, 'bis', endOfDay);
+
     return this.getTherapies().pipe(
-      map(therapies => therapies.filter(therapy => {
-        const therapyDate = new Date(therapy.startTime);
-        return therapyDate >= startOfDay && therapyDate <= endOfDay;
-      }))
+      map(therapies => {
+        console.log('Alle Therapien:', therapies);
+        const filteredTherapies = therapies.filter(therapy => {
+          const therapyDate = new Date(therapy.startTime);
+          console.log('Prüfe Therapie:', therapy.name, 'Datum:', therapyDate);
+          return therapyDate >= startOfDay && therapyDate <= endOfDay;
+        });
+        console.log('Gefilterte Therapien:', filteredTherapies);
+        return filteredTherapies;
+      })
     );
   }
 
