@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 import { DatabaseManager } from './database';
 
 let dbManager: DatabaseManager;
@@ -46,6 +47,29 @@ ipcMain.handle('db-delete', async (event, { collection, id }) => {
   }
 });
 
+async function migrateDataIfNeeded() {
+  const migrationFlagPath = path.join(app.getPath('userData'), 'migration-completed');
+  
+  // Prüfe, ob die Migration bereits durchgeführt wurde
+  if (!fs.existsSync(migrationFlagPath)) {
+    const jsonPath = app.isPackaged
+      ? path.join(process.resourcesPath, 'db.json')
+      : path.join(__dirname, '..', 'db.json');
+
+    if (fs.existsSync(jsonPath)) {
+      try {
+        await dbManager.migrateFromJson(jsonPath);
+        console.log('Datenmigration erfolgreich');
+        
+        // Erstelle die Flag-Datei, um anzuzeigen, dass die Migration abgeschlossen ist
+        fs.writeFileSync(migrationFlagPath, new Date().toISOString());
+      } catch (error) {
+        console.error('Fehler bei der Datenmigration:', error);
+      }
+    }
+  }
+}
+
 async function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -57,17 +81,8 @@ async function createWindow() {
     }
   });
 
-  // Migriere Daten aus der JSON-Datei, wenn sie existiert
-  const jsonPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'db.json')
-    : path.join(__dirname, '..', 'db.json');
-
-  try {
-    await dbManager.migrateFromJson(jsonPath);
-    console.log('Datenmigration erfolgreich');
-  } catch (error) {
-    console.error('Fehler bei der Datenmigration:', error);
-  }
+  // Führe die Datenmigration durch, wenn nötig
+  await migrateDataIfNeeded();
 
   // Lade die Angular App
   const browserPath = app.isPackaged
