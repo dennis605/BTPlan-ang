@@ -54,25 +54,21 @@ ipcMain.handle('db-delete', async (event, { collection, id }) => {
 });
 
 async function migrateDataIfNeeded() {
-  const migrationFlagPath = path.join(app.getPath('userData'), 'migration-completed');
-  
-  // Prüfe, ob die Migration bereits durchgeführt wurde
-  if (!fs.existsSync(migrationFlagPath)) {
-    const jsonPath = app.isPackaged
-      ? path.join(process.resourcesPath, 'db.json')
-      : path.join(__dirname, '..', 'db.json');
+  const jsonPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'db.json')
+    : path.join(__dirname, '..', 'db.json');
 
-    if (fs.existsSync(jsonPath)) {
-      try {
-        await dbManager.migrateFromJson(jsonPath);
-        console.log('Datenmigration erfolgreich');
-        
-        // Erstelle die Flag-Datei, um anzuzeigen, dass die Migration abgeschlossen ist
-        fs.writeFileSync(migrationFlagPath, new Date().toISOString());
-      } catch (error) {
-        console.error('Fehler bei der Datenmigration:', error);
-      }
+  console.log('Suche nach db.json:', jsonPath);
+
+  if (fs.existsSync(jsonPath)) {
+    try {
+      console.log('db.json gefunden, starte Migration...');
+      await dbManager.migrateFromJson(jsonPath);
+    } catch (error) {
+      console.error('Fehler bei der Datenmigration:', error);
     }
+  } else {
+    console.log('db.json nicht gefunden');
   }
 }
 

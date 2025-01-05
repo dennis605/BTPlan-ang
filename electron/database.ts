@@ -77,23 +77,34 @@ export class DatabaseManager {
     // Methode zum Migrieren der JSON-Daten
     async migrateFromJson(jsonPath: string): Promise<void> {
         try {
-            const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+            console.log('Starte Migration von:', jsonPath);
+            const jsonContent = fs.readFileSync(jsonPath, 'utf8');
+            console.log('JSON-Inhalt gelesen');
+            const jsonData = JSON.parse(jsonContent);
+            console.log('JSON geparst:', Object.keys(jsonData));
 
             // Lösche alte Daten
-            await Promise.all(Object.keys(this.db).map(collection => 
-                this.remove(collection as keyof Database, {}, { multi: true })
-            ));
+            for (const collection of Object.keys(this.db)) {
+                console.log(`Lösche alte Daten aus ${collection}...`);
+                await this.remove(collection as keyof Database, {}, { multi: true });
+            }
 
             // Füge neue Daten ein
             for (const [collection, data] of Object.entries(jsonData)) {
                 if (Array.isArray(data)) {
-                    await Promise.all(data.map(item => 
-                        this.insert(collection as keyof Database, item)
-                    ));
+                    console.log(`Füge ${data.length} Einträge in ${collection} ein...`);
+                    for (const item of data) {
+                        try {
+                            await this.insert(collection as keyof Database, item);
+                        } catch (err) {
+                            console.error(`Fehler beim Einfügen in ${collection}:`, err);
+                            console.error('Problematischer Datensatz:', item);
+                        }
+                    }
                 }
             }
 
-            console.log('Datenmigration abgeschlossen');
+            console.log('Datenmigration erfolgreich abgeschlossen');
         } catch (error) {
             console.error('Fehler bei der Datenmigration:', error);
             throw error;

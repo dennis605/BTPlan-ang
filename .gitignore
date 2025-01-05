@@ -43,7 +43,6 @@ Thumbs.db
 
 # Electron & pkg specific
 /release
-/browser
 *.exe
 *.app
 *.dmg
@@ -51,7 +50,6 @@ Thumbs.db
 *.pkg
 *.blockmap
 *.asar
-/electron/main.js
 /portable-node
 
 # Environment

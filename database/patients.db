@@ -1,1 +1,13 @@
 {"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
+{"id":"91f6","name":"Bewohner","surname":"eins","note":"","_id":"ioVVKxbJzsU4i7WX"}
+{"id":"83fb","name":"helmut","surname":"grau","note":"","_id":"H0SzEsWC7lFCxy1z"}
+{"id":"db66","name":"testbew","surname":"dreie","note":"","_id":"BKZ3qUC0Ux5z9Ii0"}
+{"id":"35f5","name":"bewohner","surname":"vier","note":"","_id":"YOiZM30MlqMSWz9r"}
+{"$$deleted":true,"_id":"BKZ3qUC0Ux5z9Ii0"}
+{"$$deleted":true,"_id":"H0SzEsWC7lFCxy1z"}
+{"$$deleted":true,"_id":"YOiZM30MlqMSWz9r"}
+{"$$deleted":true,"_id":"ioVVKxbJzsU4i7WX"}
+{"id":"91f6","name":"Bewohner","surname":"eins","note":"","_id":"kBPN6azgRqmYTIRZ"}
+{"id":"83fb","name":"helmut","surname":"grau","note":"","_id":"e9mQ0hPg6tOtupK3"}
+{"id":"db66","name":"testbew","surname":"dreie","note":"","_id":"8rfYuE3O1jblL5lp"}
+{"id":"35f5","name":"bewohner","surname":"vier","note":"","_id":"ROo3DbY5neorFXho"}

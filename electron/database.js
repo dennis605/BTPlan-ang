@@ -124,55 +124,68 @@ var DatabaseManager = /** @class */ (function () {
     // Methode zum Migrieren der JSON-Daten
     DatabaseManager.prototype.migrateFromJson = function (jsonPath) {
         return __awaiter(this, void 0, void 0, function () {
-            var jsonData, _loop_1, _i, _a, _b, collection, data, error_1;
-            var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var jsonContent, jsonData, _i, _a, collection, _b, _c, _d, collection, data, _e, data_1, item, err_1, error_1;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
-                        _c.trys.push([0, 6, , 7]);
-                        jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-                        // Lösche alte Daten
-                        return [4 /*yield*/, Promise.all(Object.keys(this.db).map(function (collection) {
-                                return _this.remove(collection, {}, { multi: true });
-                            }))];
+                        _f.trys.push([0, 13, , 14]);
+                        console.log('Starte Migration von:', jsonPath);
+                        jsonContent = fs.readFileSync(jsonPath, 'utf8');
+                        console.log('JSON-Inhalt gelesen');
+                        jsonData = JSON.parse(jsonContent);
+                        console.log('JSON geparst:', Object.keys(jsonData));
+                        _i = 0, _a = Object.keys(this.db);
+                        _f.label = 1;
                     case 1:
-                        // Lösche alte Daten
-                        _c.sent();
-                        _loop_1 = function (collection, data) {
-                            return __generator(this, function (_d) {
-                                switch (_d.label) {
-                                    case 0:
-                                        if (!Array.isArray(data)) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, Promise.all(data.map(function (item) {
-                                                return _this.insert(collection, item);
-                                            }))];
-                                    case 1:
-                                        _d.sent();
-                                        _d.label = 2;
-                                    case 2: return [2 /*return*/];
-                                }
-                            });
-                        };
-                        _i = 0, _a = Object.entries(jsonData);
-                        _c.label = 2;
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        collection = _a[_i];
+                        console.log("L\u00F6sche alte Daten aus ".concat(collection, "..."));
+                        return [4 /*yield*/, this.remove(collection, {}, { multi: true })];
                     case 2:
-                        if (!(_i < _a.length)) return [3 /*break*/, 5];
-                        _b = _a[_i], collection = _b[0], data = _b[1];
-                        return [5 /*yield**/, _loop_1(collection, data)];
+                        _f.sent();
+                        _f.label = 3;
                     case 3:
-                        _c.sent();
-                        _c.label = 4;
-                    case 4:
                         _i++;
-                        return [3 /*break*/, 2];
+                        return [3 /*break*/, 1];
+                    case 4:
+                        _b = 0, _c = Object.entries(jsonData);
+                        _f.label = 5;
                     case 5:
-                        console.log('Datenmigration abgeschlossen');
-                        return [3 /*break*/, 7];
+                        if (!(_b < _c.length)) return [3 /*break*/, 12];
+                        _d = _c[_b], collection = _d[0], data = _d[1];
+                        if (!Array.isArray(data)) return [3 /*break*/, 11];
+                        console.log("F\u00FCge ".concat(data.length, " Eintr\u00E4ge in ").concat(collection, " ein..."));
+                        _e = 0, data_1 = data;
+                        _f.label = 6;
                     case 6:
-                        error_1 = _c.sent();
+                        if (!(_e < data_1.length)) return [3 /*break*/, 11];
+                        item = data_1[_e];
+                        _f.label = 7;
+                    case 7:
+                        _f.trys.push([7, 9, , 10]);
+                        return [4 /*yield*/, this.insert(collection, item)];
+                    case 8:
+                        _f.sent();
+                        return [3 /*break*/, 10];
+                    case 9:
+                        err_1 = _f.sent();
+                        console.error("Fehler beim Einf\u00FCgen in ".concat(collection, ":"), err_1);
+                        console.error('Problematischer Datensatz:', item);
+                        return [3 /*break*/, 10];
+                    case 10:
+                        _e++;
+                        return [3 /*break*/, 6];
+                    case 11:
+                        _b++;
+                        return [3 /*break*/, 5];
+                    case 12:
+                        console.log('Datenmigration erfolgreich abgeschlossen');
+                        return [3 /*break*/, 14];
+                    case 13:
+                        error_1 = _f.sent();
                         console.error('Fehler bei der Datenmigration:', error_1);
                         throw error_1;
-                    case 7: return [2 /*return*/];
+                    case 14: return [2 /*return*/];
                 }
             });
         });
