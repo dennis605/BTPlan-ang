@@ -406,8 +406,8 @@
         "name": "Therapieraum 1",
         "description": "Haupttherapieraum im Erdgeschoss"
       },
-      "startTime": "2025-01-03T09:00:00.000Z",
-      "endTime": "2025-01-03T12:30:00.000Z",
+      "startTime": "2025-01-05T09:00:00.000Z",
+      "endTime": "2025-01-05T12:30:00.000Z",
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "keiner"
@@ -1132,40 +1132,6 @@
       "preparationTime": 15,
       "followUpTime": 15,
       "comment": "qjbrjeqhbreqhjrbhbjbrjebjgbqejbrqjhrbqrbgqe"
-    },
-    {
-      "name": "Montag - Kochen_copy_copy",
-      "patients": [
-        {
-          "id": "83fb",
-          "name": "helmut",
-          "surname": "grau",
-          "note": ""
-        },
-        {
-          "id": "7b7b",
-          "name": "pat1",
-          "surname": "rf",
-          "note": ""
-        }
-      ],
-      "leadingEmployee": {
-        "id": "73f7",
-        "name": "lisa",
-        "surname": "henken",
-        "note": ""
-      },
-      "location": {
-        "id": "1",
-        "name": "Therapieraum 1",
-        "description": "Haupttherapieraum im Erdgeschoss"
-      },
-      "startTime": "2025-01-05T09:00:00.000Z",
-      "endTime": "2025-01-05T12:30:00.000Z",
-      "preparationTime": 15,
-      "followUpTime": 15,
-      "comment": "keiner",
-      "id": "DvNNRYp"
     }
   ],
   "dailySchedules": [
