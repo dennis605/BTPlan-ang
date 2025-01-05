@@ -1,0 +1,10 @@
+{"id":"2","name":"Küche","description":"Große Küche für Kochtherapie","_id":"HXQ0nhBRDpdtmLVC"}
+{"id":"3","name":"Garten1","description":"Therapiegarten mit Hochbeeten","_id":"R99Lq4U75sAD6J1I"}
+{"id":"1","name":"Therapieraum 2","description":"Haupttherapieraum im Erdgeschoss","_id":"rOelCr9HJLpgUBPW"}
+{"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
+{"$$deleted":true,"_id":"HXQ0nhBRDpdtmLVC"}
+{"$$deleted":true,"_id":"R99Lq4U75sAD6J1I"}
+{"$$deleted":true,"_id":"rOelCr9HJLpgUBPW"}
+{"id":"1","name":"Therapieraum 2","description":"Haupttherapieraum im Erdgeschoss","_id":"zmKxeqBw8QkqPMQU"}
+{"id":"2","name":"Küche","description":"Große Küche für Kochtherapie","_id":"ttA3BrR20jQYtdcw"}
+{"id":"3","name":"Garten1","description":"Therapiegarten mit Hochbeeten","_id":"35hQLF6qP3ZLx0zo"}

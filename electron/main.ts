@@ -4,6 +4,48 @@ import { DatabaseManager } from './database';
 
 let dbManager: DatabaseManager;
 
+// Initialisiere die Datenbank
+dbManager = new DatabaseManager();
+
+// IPC Handler für Datenbankoperationen
+ipcMain.handle('db-get', async (event, collection) => {
+  try {
+    return await dbManager.find(collection);
+  } catch (error) {
+    console.error(`Fehler beim Laden von ${collection}:`, error);
+    throw error;
+  }
+});
+
+ipcMain.handle('db-add', async (event, { collection, item }) => {
+  try {
+    return await dbManager.insert(collection, item);
+  } catch (error) {
+    console.error(`Fehler beim Hinzufügen zu ${collection}:`, error);
+    throw error;
+  }
+});
+
+ipcMain.handle('db-update', async (event, { collection, id, updates }) => {
+  try {
+    await dbManager.update(collection, { id }, { $set: updates });
+    return updates;
+  } catch (error) {
+    console.error(`Fehler beim Aktualisieren in ${collection}:`, error);
+    throw error;
+  }
+});
+
+ipcMain.handle('db-delete', async (event, { collection, id }) => {
+  try {
+    await dbManager.remove(collection, { id });
+    return id;
+  } catch (error) {
+    console.error(`Fehler beim Löschen aus ${collection}:`, error);
+    throw error;
+  }
+});
+
 async function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -14,9 +56,6 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   });
-
-  // Initialisiere die Datenbank
-  dbManager = new DatabaseManager();
 
   // Migriere Daten aus der JSON-Datei, wenn sie existiert
   const jsonPath = app.isPackaged
@@ -29,45 +68,6 @@ async function createWindow() {
   } catch (error) {
     console.error('Fehler bei der Datenmigration:', error);
   }
-
-  // IPC Handler für Datenbankoperationen
-  ipcMain.handle('db-get', async (event, collection) => {
-    try {
-      return await dbManager.find(collection);
-    } catch (error) {
-      console.error(`Fehler beim Laden von ${collection}:`, error);
-      throw error;
-    }
-  });
-
-  ipcMain.handle('db-add', async (event, { collection, item }) => {
-    try {
-      return await dbManager.insert(collection, item);
-    } catch (error) {
-      console.error(`Fehler beim Hinzufügen zu ${collection}:`, error);
-      throw error;
-    }
-  });
-
-  ipcMain.handle('db-update', async (event, { collection, id, updates }) => {
-    try {
-      await dbManager.update(collection, { id }, { $set: updates });
-      return updates;
-    } catch (error) {
-      console.error(`Fehler beim Aktualisieren in ${collection}:`, error);
-      throw error;
-    }
-  });
-
-  ipcMain.handle('db-delete', async (event, { collection, id }) => {
-    try {
-      await dbManager.remove(collection, { id });
-      return id;
-    } catch (error) {
-      console.error(`Fehler beim Löschen aus ${collection}:`, error);
-      throw error;
-    }
-  });
 
   // Lade die Angular App
   const browserPath = app.isPackaged
