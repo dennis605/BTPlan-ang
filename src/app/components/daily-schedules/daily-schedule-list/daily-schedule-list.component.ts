@@ -24,6 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-daily-schedule-list',
@@ -142,7 +143,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class DailyScheduleListComponent implements OnInit {
   schedules: DailySchedule[] = [];
-  selectedDate: Date = new Date();
+  selectedDate: string = dayjs().startOf('day').toISOString();
   isLoading = false;
   displayedColumns: string[] = [
     'time',
@@ -164,21 +165,27 @@ export class DailyScheduleListComponent implements OnInit {
 
   ngOnInit(): void {
     dayjs.locale('de');
-    this.selectedDate = new Date(); // Setze das Datum auf heute
     this.loadDailySchedule();
   }
 
   loadDailySchedule(): void {
     this.isLoading = true;
     this.schedules = [];
-    this.dailyScheduleService.getScheduleByDate(this.selectedDate).subscribe({
+    this.dailyScheduleService.getDailySchedules().pipe(
+      map((schedules: DailySchedule[]) => schedules.find(s => 
+        dayjs(s.date).format('YYYY-MM-DD') === dayjs(this.selectedDate).format('YYYY-MM-DD')
+      ))
+    ).subscribe({
       next: (schedule) => {
         if (schedule) {
           // Sortiere Therapien nach Startzeit
-          schedule.therapies.sort((a, b) => 
-            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          const sortedTherapies = [...schedule.therapies].sort((a, b) => 
+            dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
           );
-          this.schedules = [schedule];
+          this.schedules = [{
+            ...schedule,
+            therapies: sortedTherapies
+          }];
         }
         this.isLoading = false;
       },
@@ -189,41 +196,24 @@ export class DailyScheduleListComponent implements OnInit {
     });
   }
 
-  onDateChange(event: any): void {
+  onDateChange(event: { value: { toDate: () => Date } }): void {
     if (event.value) {
-      this.selectedDate = event.value.toDate();
+      this.selectedDate = dayjs(event.value.toDate()).startOf('day').toISOString();
       this.loadDailySchedule();
     }
   }
 
-  formatTime(date: string | Date): string {
+  formatTime(date: string): string {
     if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return dayjs(date).format('HH:mm');
   }
 
-  formatTimeForPrint(date: string | Date): string {
+  formatTimeForPrint(date: string): string {
     return this.formatTime(date);
   }
 
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('de-DE', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  openTherapyDetails(therapy: Therapy): void {
-    import('../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component')
-      .then(m => m.DailyScheduleDetailDialogComponent)
-      .then(component => {
-        this.dialog.open(component, {
-          data: therapy,
-          width: '600px'
-        });
-      });
+  formatDate(date: string): string {
+    return dayjs(date).format('dddd, D. MMMM YYYY');
   }
 
   printSchedule(): void {
@@ -421,6 +411,17 @@ export class DailyScheduleListComponent implements OnInit {
     }, 250);
   }
 
+  openTherapyDetails(therapy: Therapy): void {
+    import('../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component')
+      .then(m => m.DailyScheduleDetailDialogComponent)
+      .then(component => {
+        this.dialog.open(component, {
+          data: therapy,
+          width: '600px'
+        });
+      });
+  }
+
   duplicateSchedule(): void {
     const dialogRef = this.dialog.open(DuplicateScheduleDialogComponent, {
       width: '400px'
@@ -428,57 +429,32 @@ export class DailyScheduleListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Selected date for duplication:', result);
         const currentSchedule = this.schedules[0];
-        
         if (!currentSchedule || !currentSchedule.therapies.length) {
           console.error('Kein Tagesplan zum Duplizieren vorhanden');
           return;
         }
 
-        // Erstelle eine tiefe Kopie des aktuellen Tagesplans
         const duplicatedSchedule: DailySchedule = {
-          date: result,
+          id: crypto.randomUUID(),
+          date: dayjs(result).toISOString(),
           therapies: currentSchedule.therapies.map(therapy => {
-            // Berechne Zeitdifferenz zwischen altem und neuem Datum in Millisekunden
-            const oldDate = new Date(this.selectedDate);
-            const newDate = new Date(result);
-            oldDate.setHours(0, 0, 0, 0);
-            newDate.setHours(0, 0, 0, 0);
-            const daysDiff = newDate.getTime() - oldDate.getTime();
+            const oldDate = dayjs(this.selectedDate).startOf('day');
+            const newDate = dayjs(result).startOf('day');
+            const daysDiff = newDate.diff(oldDate, 'millisecond');
             
-            // Kopiere die Therapie und passe die Zeiten an
-            const newTherapy: Therapy = {
+            return {
               ...therapy,
-              id: undefined, // ID entfernen, damit eine neue generiert wird
-              startTime: new Date(new Date(therapy.startTime).getTime() + daysDiff),
-              endTime: new Date(new Date(therapy.endTime).getTime() + daysDiff)
+              id: crypto.randomUUID(),
+              startTime: dayjs(therapy.startTime).add(daysDiff, 'millisecond').toISOString(),
+              endTime: dayjs(therapy.endTime).add(daysDiff, 'millisecond').toISOString()
             };
-            
-            console.log('Duplicated therapy:', {
-              original: {
-                name: therapy.name,
-                startTime: therapy.startTime,
-                endTime: therapy.endTime
-              },
-              new: {
-                name: newTherapy.name,
-                startTime: newTherapy.startTime,
-                endTime: newTherapy.endTime
-              }
-            });
-            
-            return newTherapy;
           })
         };
 
-        console.log('Duplicated schedule:', duplicatedSchedule);
-
-        // Speichere den duplizierten Tagesplan
-        this.dailyScheduleService.addSchedule(duplicatedSchedule).subscribe({
-          next: (newSchedule) => {
-            console.log('Successfully duplicated schedule:', newSchedule);
-            this.selectedDate = new Date(result);
+        this.dailyScheduleService.addDailySchedule(duplicatedSchedule).subscribe({
+          next: () => {
+            this.selectedDate = dayjs(result).toISOString();
             this.loadDailySchedule();
           },
           error: (error) => {
@@ -491,7 +467,6 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   duplicateTherapy(therapy: Therapy): void {
-    console.log('Duplicating therapy:', therapy);
     const dialogRef = this.dialog.open(DuplicateTherapyDialogComponent, {
       width: '400px',
       data: { therapy }
@@ -499,47 +474,36 @@ export class DailyScheduleListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(targetDate => {
       if (targetDate) {
-        console.log('Target date for duplication:', targetDate);
-        
-        // Create a deep copy of the therapy
         const duplicatedTherapy: Therapy = {
           ...therapy,
-          id: undefined, // Remove ID so a new one will be generated
-          startTime: new Date(therapy.startTime),
-          endTime: new Date(therapy.endTime),
-          location: { ...therapy.location },
-          leadingEmployee: { ...therapy.leadingEmployee },
-          patients: therapy.patients.map(p => ({ ...p }))
+          id: crypto.randomUUID(),
+          startTime: dayjs(therapy.startTime)
+            .year(dayjs(targetDate).year())
+            .month(dayjs(targetDate).month())
+            .date(dayjs(targetDate).date())
+            .toISOString(),
+          endTime: dayjs(therapy.endTime)
+            .year(dayjs(targetDate).year())
+            .month(dayjs(targetDate).month())
+            .date(dayjs(targetDate).date())
+            .toISOString()
         };
 
-        // Update the date while keeping the same time
-        const startDate = new Date(duplicatedTherapy.startTime);
-        const endDate = new Date(duplicatedTherapy.endTime);
-        
-        // Set the new date while preserving the time
-        const target = dayjs(targetDate).startOf('day');
-        const startTime = dayjs(startDate).format('HH:mm:ss');
-        const endTime = dayjs(endDate).format('HH:mm:ss');
-        
-        duplicatedTherapy.startTime = dayjs(target.format('YYYY-MM-DD') + ' ' + startTime).toDate();
-        duplicatedTherapy.endTime = dayjs(target.format('YYYY-MM-DD') + ' ' + endTime).toDate();
+        const newSchedule: DailySchedule = {
+          id: crypto.randomUUID(),
+          date: dayjs(targetDate).startOf('day').toISOString(),
+          therapies: [duplicatedTherapy]
+        };
 
-        console.log('Duplicated therapy with new dates:', duplicatedTherapy);
-
-        // Save the duplicated therapy
-        this.dailyScheduleService.createTherapy(duplicatedTherapy).subscribe({
-          next: (newTherapy) => {
-            console.log('Therapy duplicated successfully:', newTherapy);
-            // Refresh the list if the target date is the currently displayed date
-            const targetDateStr = dayjs(targetDate).format('YYYY-MM-DD');
-            const currentDateStr = dayjs(this.selectedDate).format('YYYY-MM-DD');
-            if (targetDateStr === currentDateStr) {
+        this.dailyScheduleService.addDailySchedule(newSchedule).subscribe({
+          next: () => {
+            if (dayjs(targetDate).format('YYYY-MM-DD') === dayjs(this.selectedDate).format('YYYY-MM-DD')) {
               this.loadDailySchedule();
             }
           },
           error: (error) => {
             console.error('Error duplicating therapy:', error);
-            // Show error message to user
+            alert('Fehler beim Duplizieren der Therapie');
           }
         });
       }
@@ -547,25 +511,25 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   editTherapy(therapy: Therapy): void {
-    console.log('Editing therapy:', therapy);
     const dialogRef = this.dialog.open(EditTherapyDialogComponent, {
       width: '600px',
-      data: { 
-        therapy: {
-          ...therapy,
-          location: { ...therapy.location },
-          leadingEmployee: { ...therapy.leadingEmployee },
-          patients: therapy.patients.map(p => ({ ...p }))
-        }
-      }
+      data: { therapy }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog result:', result);
       if (result) {
-        this.dailyScheduleService.updateTherapy(result).subscribe({
+        const currentSchedule = this.schedules[0];
+        if (!currentSchedule) return;
+
+        const updatedSchedule: DailySchedule = {
+          ...currentSchedule,
+          therapies: currentSchedule.therapies.map(t => 
+            t.id === result.id ? result : t
+          )
+        };
+
+        this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe({
           next: () => {
-            console.log('Therapy updated successfully');
             this.loadDailySchedule();
           },
           error: (error) => {
@@ -578,11 +542,17 @@ export class DailyScheduleListComponent implements OnInit {
   }
 
   deleteTherapy(therapy: Therapy): void {
-    console.log('Deleting therapy:', therapy);
     if (confirm(`Möchten Sie die Therapie "${therapy.name}" wirklich löschen?`)) {
-      this.dailyScheduleService.deleteTherapy(therapy.id!).subscribe({
+      const currentSchedule = this.schedules[0];
+      if (!currentSchedule) return;
+
+      const updatedSchedule: DailySchedule = {
+        ...currentSchedule,
+        therapies: currentSchedule.therapies.filter(t => t.id !== therapy.id)
+      };
+
+      this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe({
         next: () => {
-          console.log('Therapy deleted successfully');
           this.loadDailySchedule();
         },
         error: (error) => {
