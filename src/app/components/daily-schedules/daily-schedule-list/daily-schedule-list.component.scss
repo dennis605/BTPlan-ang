@@ -1,0 +1,45 @@
+.schedule-card {
+  margin: 16px;
+  padding: 16px;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.date-picker {
+  width: 200px;
+}
+
+.schedule-actions {
+  button {
+    margin-left: 8px;
+  }
+}
+
+.schedule-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
