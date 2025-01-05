@@ -240,7 +240,10 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
 
   loadTherapies(): void {
     this.therapyService.getTherapies().subscribe(therapies => {
-      this.dataSource.data = therapies;
+      // Sortiere die Therapien nach Erstellungsdatum absteigend
+      this.dataSource.data = therapies.sort((a, b) => 
+        new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+      );
       this.selection.clear();
     });
   }
@@ -316,16 +319,20 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   duplicateTherapy(therapy: Therapy): void {
+    const duplicatedTherapy = {
+      ...therapy,
+      id: crypto.randomUUID(),
+      name: `${therapy.name}_copy`,
+      startTime: new Date().toISOString() // Setze aktuelle Zeit für neue Sortierung
+    };
+    
     const dialogRef = this.dialog.open(TherapyDialogComponent, {
-      data: { therapy: null }
+      data: { therapy: duplicatedTherapy }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.therapyService.addTherapy({
-          ...result,
-          id: crypto.randomUUID()
-        }).subscribe({
+        this.therapyService.addTherapy(result).subscribe({
           next: () => {
             this.loadTherapies();
           },
