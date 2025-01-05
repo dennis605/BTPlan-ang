@@ -1,39 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Location } from '../models/location';
-import { environment } from '../../environments/environment';
+import { ElectronService } from './electron.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocationService {
-  private apiUrl = `${environment.apiUrl}/locations`;
+  private readonly collection = 'locations';
 
-  constructor(private http: HttpClient) {}
+  constructor(private electronService: ElectronService) {}
 
   getLocations(): Observable<Location[]> {
-    return this.http.get<Location[]>(this.apiUrl);
+    return this.electronService.getAll<Location>(this.collection);
   }
 
-  getLocation(id: number): Observable<Location> {
-    return this.http.get<Location>(`${this.apiUrl}/${id}`);
+  getLocation(id: string): Observable<Location | null> {
+    return this.electronService.getAll<Location>(this.collection)
+      .pipe(
+        map(locations => locations.find(loc => loc.id === id) || null)
+      );
   }
 
   addLocation(location: Location): Observable<Location> {
-    // Generate a random 4-character hex ID (similar to other IDs in db.json)
-    const newLocation = {
+    // Generiere eine neue ID für neue Standorte
+    const locationToAdd: Location = {
       ...location,
-      id: Math.random().toString(16).substring(2, 6)
+      id: location.id || crypto.randomUUID()
     };
-    return this.http.post<Location>(this.apiUrl, newLocation);
+    return this.electronService.add<Location>(this.collection, locationToAdd);
   }
 
   updateLocation(location: Location): Observable<Location> {
-    return this.http.put<Location>(`${this.apiUrl}/${location.id}`, location);
+    const id = location.id;
+    return this.electronService.update<Location>(this.collection, id, location);
   }
 
-  deleteLocation(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteLocation(id: string): Observable<string> {
+    return this.electronService.delete(this.collection, id);
   }
 }

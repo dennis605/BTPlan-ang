@@ -1,7 +1,7 @@
 import { Therapy } from './therapy';
 
 export interface DailySchedule {
-  id?: number;
-  date: Date;
+  id: string;
+  date: string;  // ISO 8601 Format (YYYY-MM-DDTHH:mm:ss.sssZ)
   therapies: Therapy[];
 }

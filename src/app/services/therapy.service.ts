@@ -1,93 +1,75 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
 import { Therapy } from '../models/therapy';
-import { environment } from '../../environments/environment';
+import { ElectronService } from './electron.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TherapyService {
-  private apiUrl = `${environment.apiUrl}/therapies`;
+  private readonly collection = 'therapies';
 
-  constructor(private http: HttpClient) {}
+  constructor(private electronService: ElectronService) {}
 
-  getTherapies(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Therapy[]> {
-    let params = new HttpParams();
-    
-    if (sortField) {
-      // JSON Server verwendet _sort und _order für Sortierung
-      params = params
-        .set('_sort', sortField)
-        .set('_order', sortOrder);
-    }
-    
-    return this.http.get<Therapy[]>(this.apiUrl, { params });
+  getTherapies(): Observable<Therapy[]> {
+    return this.electronService.getAll<Therapy>(this.collection)
+      .pipe(
+        map(therapies => therapies.map(therapy => ({
+          ...therapy,
+          startTime: therapy.startTime,
+          endTime: therapy.endTime
+        })))
+      );
   }
 
-  getTherapy(id: number): Observable<Therapy> {
-    return this.http.get<Therapy>(`${this.apiUrl}/${id}`);
+  getTherapy(id: string): Observable<Therapy | null> {
+    return this.electronService.getAll<Therapy>(this.collection)
+      .pipe(
+        map(therapies => {
+          const therapy = therapies.find(t => t.id === id);
+          if (!therapy) return null;
+          return {
+            ...therapy,
+            startTime: therapy.startTime,
+            endTime: therapy.endTime
+          };
+        })
+      );
   }
 
   addTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.post<Therapy>(this.apiUrl, therapy);
+    // Generiere eine neue ID für neue Therapien
+    const therapyToAdd: Therapy = {
+      ...therapy,
+      id: therapy.id || crypto.randomUUID(),
+      startTime: new Date(therapy.startTime).toISOString(),
+      endTime: new Date(therapy.endTime).toISOString()
+    };
+    return this.electronService.add<Therapy>(this.collection, therapyToAdd);
   }
 
   updateTherapy(therapy: Therapy): Observable<Therapy> {
-    return this.http.put<Therapy>(`${this.apiUrl}/${therapy.id}`, therapy);
+    const id = therapy.id;
+    const therapyToUpdate: Therapy = {
+      ...therapy,
+      startTime: new Date(therapy.startTime).toISOString(),
+      endTime: new Date(therapy.endTime).toISOString()
+    };
+    return this.electronService.update<Therapy>(this.collection, id, therapyToUpdate);
   }
 
-  deleteTherapy(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteTherapy(id: string): Observable<string> {
+    return this.electronService.delete(this.collection, id);
   }
 
-  duplicateTherapy(therapy: Therapy): Observable<Therapy> {
-    // Erstelle eine Kopie der Therapie ohne ID
+  // Hilfsmethode zum Duplizieren einer Therapie
+  duplicateTherapy(therapy: Therapy, newDate: Date): Observable<Therapy> {
     const duplicatedTherapy: Therapy = {
       ...therapy,
-      id: undefined, // ID wird vom Server generiert
-      name: `${therapy.name}_copy`, // Füge _copy zum Namen hinzu
-      startTime: new Date(therapy.startTime),
-      endTime: new Date(therapy.endTime)
+      id: crypto.randomUUID(),
+      startTime: newDate.toISOString(),
+      endTime: new Date(newDate.getTime() + (new Date(therapy.endTime).getTime() - new Date(therapy.startTime).getTime())).toISOString()
     };
     return this.addTherapy(duplicatedTherapy);
-  }
-
-  getTherapiesByDate(date: Date): Observable<Therapy[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    console.log('Filtering therapies for date range:', {
-      date: date.toISOString(),
-      startOfDay: startOfDay.toISOString(),
-      endOfDay: endOfDay.toISOString()
-    });
-
-    return this.getTherapies().pipe(
-      map(therapies => {
-        console.log('All therapies:', therapies);
-        
-        const filteredTherapies = therapies.filter(therapy => {
-          const therapyDate = new Date(therapy.startTime);
-          const isInRange = therapyDate >= startOfDay && therapyDate <= endOfDay;
-          
-          console.log('Checking therapy:', {
-            name: therapy.name,
-            startTime: therapy.startTime,
-            therapyDate: therapyDate.toISOString(),
-            isInRange
-          });
-          
-          return isInRange;
-        });
-
-        console.log('Filtered therapies:', filteredTherapies);
-        return filteredTherapies;
-      })
-    );
   }
 }

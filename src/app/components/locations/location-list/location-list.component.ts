@@ -39,7 +39,7 @@ export class LocationListComponent implements OnInit {
   openDialog(location?: Location): void {
     const dialogRef = this.dialog.open(LocationDialogComponent, {
       width: '400px',
-      data: location || { id: null, name: '', description: '' }
+      data: location || { id: crypto.randomUUID(), name: '', description: '' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -72,8 +72,8 @@ export class LocationListComponent implements OnInit {
     });
   }
 
-  deleteLocation(id: number): void {
-    if (!id) {
+  deleteLocation(id: string): void {
+    if (!id || id.trim() === '') {
       console.error('Keine gültige ID zum Löschen vorhanden');
       return;
     }

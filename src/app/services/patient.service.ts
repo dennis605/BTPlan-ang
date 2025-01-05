@@ -1,43 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Patient } from '../models/patient';
-import { environment } from '../../environments/environment';
+import { ElectronService } from './electron.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
-  private apiUrl = `${environment.apiUrl}/patients`;
+  private readonly collection = 'patients';
 
-  constructor(private http: HttpClient) {}
+  constructor(private electronService: ElectronService) {}
 
-  getPatients(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Patient[]> {
-    let params = new HttpParams();
-    
-    if (sortField) {
-      // JSON Server verwendet _sort und _order für Sortierung
-      params = params
-        .set('_sort', sortField)
-        .set('_order', sortOrder);
-    }
-    
-    return this.http.get<Patient[]>(this.apiUrl, { params });
+  getPatients(): Observable<Patient[]> {
+    return this.electronService.getAll<Patient>(this.collection);
   }
 
-  getPatient(id: number): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/${id}`);
+  getPatient(id: string): Observable<Patient | null> {
+    return this.electronService.getAll<Patient>(this.collection)
+      .pipe(
+        map(patients => patients.find(pat => pat.id === id) || null)
+      );
   }
 
   addPatient(patient: Patient): Observable<Patient> {
-    return this.http.post<Patient>(this.apiUrl, patient);
+    // Generiere eine neue ID für neue Patienten
+    const patientToAdd: Patient = {
+      ...patient,
+      id: patient.id || crypto.randomUUID()
+    };
+    return this.electronService.add<Patient>(this.collection, patientToAdd);
   }
 
   updatePatient(patient: Patient): Observable<Patient> {
-    return this.http.put<Patient>(`${this.apiUrl}/${patient.id}`, patient);
+    const id = patient.id;
+    return this.electronService.update<Patient>(this.collection, id, patient);
   }
 
-  deletePatient(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deletePatient(id: string): Observable<string> {
+    return this.electronService.delete(this.collection, id);
   }
 }

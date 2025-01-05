@@ -1,43 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Employee } from '../models/employee';
-import { environment } from '../../environments/environment';
+import { ElectronService } from './electron.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
-  private apiUrl = `${environment.apiUrl}/employees`;
+  private readonly collection = 'employees';
 
-  constructor(private http: HttpClient) {}
+  constructor(private electronService: ElectronService) {}
 
-  getEmployees(sortField?: string, sortOrder: 'asc' | 'desc' = 'asc'): Observable<Employee[]> {
-    let params = new HttpParams();
-    
-    if (sortField) {
-      // JSON Server verwendet _sort und _order für Sortierung
-      params = params
-        .set('_sort', sortField)
-        .set('_order', sortOrder);
-    }
-    
-    return this.http.get<Employee[]>(this.apiUrl, { params });
+  getEmployees(): Observable<Employee[]> {
+    return this.electronService.getAll<Employee>(this.collection);
   }
 
-  getEmployee(id: number): Observable<Employee> {
-    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
+  getEmployee(id: string): Observable<Employee | null> {
+    return this.electronService.getAll<Employee>(this.collection)
+      .pipe(
+        map(employees => employees.find(emp => emp.id === id) || null)
+      );
   }
 
   addEmployee(employee: Employee): Observable<Employee> {
-    return this.http.post<Employee>(this.apiUrl, employee);
+    // Generiere eine neue ID für neue Mitarbeiter
+    const employeeToAdd: Employee = {
+      ...employee,
+      id: employee.id || crypto.randomUUID()
+    };
+    return this.electronService.add<Employee>(this.collection, employeeToAdd);
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
-    return this.http.put<Employee>(`${this.apiUrl}/${employee.id}`, employee);
+    const id = employee.id;
+    return this.electronService.update<Employee>(this.collection, id, employee);
   }
 
-  deleteEmployee(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteEmployee(id: string): Observable<string> {
+    return this.electronService.delete(this.collection, id);
   }
 }

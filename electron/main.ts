@@ -1,7 +1,8 @@
-import { app, BrowserWindow, dialog } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
-const express = require('express');
-const jsonServer = require('json-server');
+import { DatabaseManager } from './database';
+
+let dbManager: DatabaseManager;
 
 async function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -14,36 +15,69 @@ async function createWindow() {
     }
   });
 
-  // Start the Express server with JSON Server
-  const server = express();
-  const dbPath = app.isPackaged
+  // Initialisiere die Datenbank
+  dbManager = new DatabaseManager();
+
+  // Migriere Daten aus der JSON-Datei, wenn sie existiert
+  const jsonPath = app.isPackaged
     ? path.join(process.resourcesPath, 'db.json')
     : path.join(__dirname, '..', 'db.json');
 
+  try {
+    await dbManager.migrateFromJson(jsonPath);
+    console.log('Datenmigration erfolgreich');
+  } catch (error) {
+    console.error('Fehler bei der Datenmigration:', error);
+  }
+
+  // IPC Handler für Datenbankoperationen
+  ipcMain.handle('db-get', async (event, collection) => {
+    try {
+      return await dbManager.find(collection);
+    } catch (error) {
+      console.error(`Fehler beim Laden von ${collection}:`, error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db-add', async (event, { collection, item }) => {
+    try {
+      return await dbManager.insert(collection, item);
+    } catch (error) {
+      console.error(`Fehler beim Hinzufügen zu ${collection}:`, error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db-update', async (event, { collection, id, updates }) => {
+    try {
+      await dbManager.update(collection, { id }, { $set: updates });
+      return updates;
+    } catch (error) {
+      console.error(`Fehler beim Aktualisieren in ${collection}:`, error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db-delete', async (event, { collection, id }) => {
+    try {
+      await dbManager.remove(collection, { id });
+      return id;
+    } catch (error) {
+      console.error(`Fehler beim Löschen aus ${collection}:`, error);
+      throw error;
+    }
+  });
+
+  // Lade die Angular App
   const browserPath = app.isPackaged
     ? path.join(process.resourcesPath, 'browser')
     : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
 
-  const router = jsonServer.router(dbPath);
-  server.use('/api', jsonServer.defaults(), router);
-
-  // Serve static files
-  server.use(express.static(browserPath));
-
-  // All other routes should redirect to index.html
-  server.get('*', (req, res) => {
-    res.sendFile(path.join(browserPath, 'index.html'));
+  mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(err => {
+    dialog.showErrorBox('Fehler beim Laden',
+      'Die Anwendung konnte nicht geladen werden. ' + err.message);
   });
-
-  // Start server
-  server.listen(3000, () => {
-    console.log('Server is running on port 3000');
-    mainWindow.loadURL('http://localhost:3000').catch(err => {
-      dialog.showErrorBox('Fehler beim Laden',
-        'Die Anwendung konnte nicht geladen werden. ' + err.message);
-    });
-  });
-
 
   // DevTools im Entwicklungsmodus
   if (!app.isPackaged) {
