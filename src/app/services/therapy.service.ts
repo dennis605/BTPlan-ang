@@ -12,14 +12,22 @@ export class TherapyService {
   constructor(private electronService: ElectronService) {}
 
   getTherapies(): Observable<Therapy[]> {
-    return this.electronService.getAll<Therapy>(this.collection)
-      .pipe(
-        map(therapies => therapies.map(therapy => ({
-          ...therapy,
-          startTime: therapy.startTime,
-          endTime: therapy.endTime
-        })))
-      );
+    return this.electronService.getAll<Therapy>(this.collection);
+  }
+
+  getTherapiesByDate(date: Date): Observable<Therapy[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return this.getTherapies().pipe(
+      map(therapies => therapies.filter(therapy => {
+        const therapyDate = new Date(therapy.startTime);
+        return therapyDate >= startOfDay && therapyDate <= endOfDay;
+      }))
+    );
   }
 
   getTherapy(id: string): Observable<Therapy | null> {

@@ -1,0 +1,22 @@
+{
+  "name": "BTPlan Desktop",
+  "main": "index.html",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "BTPlan Desktop Application",
+  "window": {
+    "title": "BTPlan Desktop",
+    "width": 1280,
+    "height": 800,
+    "min_width": 800,
+    "min_height": 600,
+    "position": "center",
+    "frame": true,
+    "show": true,
+    "focus": true,
+    "toolbar": false
+  },
+  "permissions": [
+    "storage"
+  ]
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { DailySchedule } from '../models/daily-schedule';
+import { Therapy } from '../models/therapy';
 import { ElectronService } from './electron.service';
 import { TherapyService } from './therapy.service';
 
@@ -16,27 +17,35 @@ export class DailyScheduleService {
   ) {}
 
   getDailySchedules(): Observable<DailySchedule[]> {
-    return this.electronService.getAll<DailySchedule>(this.collection)
-      .pipe(
-        map(schedules => schedules.map(schedule => ({
-          ...schedule,
-          date: schedule.date
-        })))
-      );
+    return this.electronService.getAll<DailySchedule>(this.collection);
   }
 
   getDailySchedule(id: string): Observable<DailySchedule | null> {
     return this.electronService.getAll<DailySchedule>(this.collection)
       .pipe(
-        map(schedules => {
-          const schedule = schedules.find(s => s.id === id);
-          if (!schedule) return null;
-          return {
-            ...schedule,
-            date: schedule.date
-          };
-        })
+        map(schedules => schedules.find(s => s.id === id) || null)
       );
+  }
+
+  getScheduleByDate(date: Date): Observable<DailySchedule | undefined> {
+    return this.therapyService.getTherapiesByDate(date).pipe(
+      map((therapies: Therapy[]) => {
+        if (therapies.length === 0) {
+          return undefined;
+        }
+
+        // Sortiere Therapien nach Startzeit
+        const sortedTherapies = therapies.sort((a: Therapy, b: Therapy) => 
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+
+        return {
+          id: crypto.randomUUID(),
+          date: date.toISOString(),
+          therapies: sortedTherapies
+        };
+      })
+    );
   }
 
   addDailySchedule(schedule: DailySchedule): Observable<DailySchedule> {
