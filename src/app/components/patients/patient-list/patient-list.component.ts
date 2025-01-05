@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Patient } from '../../../models/patient';
 import { PatientService } from '../../../services/patient.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { PatientDialogComponent } from '../patient-dialog/patient-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -16,13 +15,82 @@ import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-patient-list',
-  templateUrl: './patient-list.component.html',
+  template: `
+    <div class="container">
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="addPatient()">
+          <mat-icon>add</mat-icon>
+          Patient hinzufügen
+        </button>
+        <button mat-raised-button color="warn" 
+                [disabled]="selection.isEmpty()"
+                (click)="deleteSelected()"
+                matTooltip="Ausgewählte Patienten löschen">
+          <mat-icon>delete</mat-icon>
+          Löschen
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="patients" class="mat-elevation-z8">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let patient">{{patient.name}}</td>
+        </ng-container>
+
+        <!-- Surname Column -->
+        <ng-container matColumnDef="surname">
+          <th mat-header-cell *matHeaderCellDef>Nachname</th>
+          <td mat-cell *matCellDef="let patient">{{patient.surname}}</td>
+        </ng-container>
+
+        <!-- Note Column -->
+        <ng-container matColumnDef="note">
+          <th mat-header-cell *matHeaderCellDef>Notiz</th>
+          <td mat-cell *matCellDef="let patient">{{patient.note}}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+          <td mat-cell *matCellDef="let patient">
+            <button mat-icon-button color="primary" (click)="editPatient(patient)"
+                    matTooltip="Patient bearbeiten">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deletePatient(patient.id)"
+                    matTooltip="Patient löschen">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  `,
   styles: [`
     .container {
       padding: 20px;
-    }
-    .add-button {
-      margin-bottom: 20px;
     }
     .action-buttons {
       margin-bottom: 20px;
@@ -47,7 +115,6 @@ import { forkJoin } from 'rxjs';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSortModule,
     MatDialogModule,
     MatCheckboxModule,
     MatTooltipModule
@@ -57,8 +124,6 @@ export class PatientListComponent implements OnInit {
   patients: Patient[] = [];
   displayedColumns: string[] = ['select', 'name', 'surname', 'note', 'actions'];
   selection = new SelectionModel<Patient>(true, []);
-  
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private patientService: PatientService,
@@ -107,10 +172,8 @@ export class PatientListComponent implements OnInit {
       : `Möchten Sie diese ${this.selection.selected.length} Patienten wirklich löschen?`;
 
     if (confirm(message)) {
-      // Nur Patienten mit gültiger ID löschen
       const deleteObservables = this.selection.selected
-        .filter(patient => patient.id !== undefined)
-        .map(patient => this.patientService.deletePatient(patient.id!));
+        .map(patient => this.patientService.deletePatient(patient.id));
 
       if (deleteObservables.length > 0) {
         forkJoin(deleteObservables).subscribe({
@@ -126,19 +189,7 @@ export class PatientListComponent implements OnInit {
     }
   }
 
-  onSort(event: Sort) {
-    if (!event.active || event.direction === '') {
-      this.loadPatients();
-      return;
-    }
-
-    this.patientService.getPatients(event.active, event.direction as 'asc' | 'desc')
-      .subscribe(patients => {
-        this.patients = patients;
-      });
-  }
-
-  deletePatient(id: number): void {
+  deletePatient(id: string): void {
     if (confirm('Möchten Sie diesen Patienten wirklich löschen?')) {
       this.patientService.deletePatient(id).subscribe({
         next: () => {

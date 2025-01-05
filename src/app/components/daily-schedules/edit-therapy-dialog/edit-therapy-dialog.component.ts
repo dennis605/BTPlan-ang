@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { EmployeeService } from '../../../services/employee.service';
 import { PatientService } from '../../../services/patient.service';
 import { LocationService } from '../../../services/location.service';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-edit-therapy-dialog',
@@ -152,21 +153,22 @@ export class EditTherapyDialogComponent implements OnInit {
     private locationService: LocationService
   ) {
     console.log('Dialog data:', data);
-    // Deep clone the therapy object to avoid modifying the original
+    // Deep clone the therapy object and ensure IDs are strings
     this.therapy = {
       ...data.therapy,
+      id: data.therapy.id || crypto.randomUUID(),
       location: { ...data.therapy.location },
       leadingEmployee: { ...data.therapy.leadingEmployee },
       patients: data.therapy.patients.map(p => ({ ...p }))
     };
     
     // Set the date and time fields
-    const startDate = new Date(this.therapy.startTime);
-    const endDate = new Date(this.therapy.endTime);
+    const startDate = dayjs(this.therapy.startTime);
+    const endDate = dayjs(this.therapy.endTime);
     
-    this.selectedDate = new Date(startDate);
-    this.startTime = startDate.toTimeString().slice(0, 5);
-    this.endTime = endDate.toTimeString().slice(0, 5);
+    this.selectedDate = startDate.toDate();
+    this.startTime = startDate.format('HH:mm');
+    this.endTime = endDate.format('HH:mm');
     
     console.log('Initialized therapy:', this.therapy);
   }
@@ -217,18 +219,24 @@ export class EditTherapyDialogComponent implements OnInit {
   onSave(): void {
     console.log('Saving therapy:', this.therapy);
     
-    // Combine date and time
+    // Combine date and time using dayjs
     const [startHours, startMinutes] = this.startTime.split(':').map(Number);
     const [endHours, endMinutes] = this.endTime.split(':').map(Number);
 
-    const startDate = new Date(this.selectedDate);
-    const endDate = new Date(this.selectedDate);
+    const startDate = dayjs(this.selectedDate)
+      .hour(startHours)
+      .minute(startMinutes)
+      .second(0)
+      .millisecond(0);
 
-    startDate.setHours(startHours, startMinutes);
-    endDate.setHours(endHours, endMinutes);
+    const endDate = dayjs(this.selectedDate)
+      .hour(endHours)
+      .minute(endMinutes)
+      .second(0)
+      .millisecond(0);
 
-    this.therapy.startTime = startDate;
-    this.therapy.endTime = endDate;
+    this.therapy.startTime = startDate.toISOString();
+    this.therapy.endTime = endDate.toISOString();
 
     console.log('Updated therapy:', this.therapy);
     this.dialogRef.close(this.therapy);

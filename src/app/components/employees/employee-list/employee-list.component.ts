@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Employee } from '../../../models/employee';
 import { EmployeeService } from '../../../services/employee.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -16,7 +15,79 @@ import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-employee-list',
-  templateUrl: './employee-list.component.html',
+  template: `
+    <div class="container">
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="addEmployee()">
+          <mat-icon>add</mat-icon>
+          Mitarbeiter hinzufügen
+        </button>
+        <button mat-raised-button color="warn" 
+                [disabled]="selection.isEmpty()"
+                (click)="deleteSelected()"
+                matTooltip="Ausgewählte Mitarbeiter löschen">
+          <mat-icon>delete</mat-icon>
+          Löschen
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="employees" class="mat-elevation-z8">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let employee">{{employee.name}}</td>
+        </ng-container>
+
+        <!-- Surname Column -->
+        <ng-container matColumnDef="surname">
+          <th mat-header-cell *matHeaderCellDef>Nachname</th>
+          <td mat-cell *matCellDef="let employee">{{employee.surname}}</td>
+        </ng-container>
+
+        <!-- Note Column -->
+        <ng-container matColumnDef="note">
+          <th mat-header-cell *matHeaderCellDef>Notiz</th>
+          <td mat-cell *matCellDef="let employee">{{employee.note}}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+          <td mat-cell *matCellDef="let employee">
+            <button mat-icon-button color="primary" (click)="editEmployee(employee)"
+                    matTooltip="Mitarbeiter bearbeiten">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteEmployee(employee.id)"
+                    matTooltip="Mitarbeiter löschen">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  `,
   styles: [`
     .container {
       padding: 20px;
@@ -44,7 +115,6 @@ import { forkJoin } from 'rxjs';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSortModule,
     MatDialogModule,
     MatCheckboxModule,
     MatTooltipModule
@@ -54,8 +124,6 @@ export class EmployeeListComponent implements OnInit {
   employees: Employee[] = [];
   displayedColumns: string[] = ['select', 'name', 'surname', 'note', 'actions'];
   selection = new SelectionModel<Employee>(true, []);
-  
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private employeeService: EmployeeService,
@@ -104,10 +172,8 @@ export class EmployeeListComponent implements OnInit {
       : `Möchten Sie diese ${this.selection.selected.length} Mitarbeiter wirklich löschen?`;
 
     if (confirm(message)) {
-      // Nur Mitarbeiter mit gültiger ID löschen
       const deleteObservables = this.selection.selected
-        .filter(employee => employee.id !== undefined)
-        .map(employee => this.employeeService.deleteEmployee(employee.id!));
+        .map(employee => this.employeeService.deleteEmployee(employee.id));
 
       if (deleteObservables.length > 0) {
         forkJoin(deleteObservables).subscribe({
@@ -123,19 +189,7 @@ export class EmployeeListComponent implements OnInit {
     }
   }
 
-  onSort(event: Sort) {
-    if (!event.active || event.direction === '') {
-      this.loadEmployees();
-      return;
-    }
-
-    this.employeeService.getEmployees(event.active, event.direction as 'asc' | 'desc')
-      .subscribe(employees => {
-        this.employees = employees;
-      });
-  }
-
-  deleteEmployee(id: number): void {
+  deleteEmployee(id: string): void {
     if (confirm('Möchten Sie diesen Mitarbeiter wirklich löschen?')) {
       this.employeeService.deleteEmployee(id).subscribe({
         next: () => {

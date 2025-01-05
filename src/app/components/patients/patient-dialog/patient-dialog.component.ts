@@ -9,8 +9,44 @@ import { Patient } from '../../../models/patient';
 
 @Component({
   selector: 'app-patient-dialog',
-  templateUrl: './patient-dialog.component.html',
-  styleUrls: ['./patient-dialog.component.scss'],
+  template: `
+    <h2 mat-dialog-title>{{data.patient ? 'Patient bearbeiten' : 'Neuer Patient'}}</h2>
+    <mat-dialog-content>
+      <form #patientForm="ngForm">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="patient.name" name="name" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Nachname</mat-label>
+          <input matInput [(ngModel)]="patient.surname" name="surname" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Notiz</mat-label>
+          <textarea matInput [(ngModel)]="patient.note" name="note" rows="3"></textarea>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Abbrechen</button>
+      <button mat-raised-button color="primary" 
+              (click)="onSave()" 
+              [disabled]="!patientForm.form.valid">
+        Speichern
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    textarea {
+      min-height: 100px;
+    }
+  `],
   standalone: true,
   imports: [
     CommonModule,
@@ -29,6 +65,7 @@ export class PatientDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { patient?: Patient }
   ) {
     this.patient = data.patient ? { ...data.patient } : {
+      id: crypto.randomUUID(),
       name: '',
       surname: '',
       note: ''
