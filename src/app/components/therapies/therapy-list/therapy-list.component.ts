@@ -5,7 +5,6 @@ import { TherapyService } from '../../../services/therapy.service';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSortModule, Sort, MatSort } from '@angular/material/sort';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { TherapyDialogComponent } from '../therapy-dialog/therapy-dialog.component';
@@ -18,10 +17,138 @@ import { forkJoin } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-therapy-list',
-  templateUrl: './therapy-list.component.html',
+  template: `
+    <div class="container">
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="addTherapy()">
+          <mat-icon>add</mat-icon>
+          Programm hinzufügen
+        </button>
+        <button mat-raised-button color="warn" 
+                [disabled]="selection.isEmpty()"
+                (click)="deleteSelected()"
+                matTooltip="Ausgewählte Programme löschen">
+          <mat-icon>delete</mat-icon>
+          Löschen
+        </button>
+      </div>
+
+      <mat-form-field class="search-field">
+        <mat-label>Suchen</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="z.B. Name, Mitarbeiter, Ort..." #input>
+      </mat-form-field>
+
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let therapy">{{therapy.name}}</td>
+        </ng-container>
+
+        <!-- Leading Employee Column -->
+        <ng-container matColumnDef="leadingEmployee">
+          <th mat-header-cell *matHeaderCellDef>Mitarbeiter</th>
+          <td mat-cell *matCellDef="let therapy">
+            {{therapy.leadingEmployee?.name}} {{therapy.leadingEmployee?.surname}}
+          </td>
+        </ng-container>
+
+        <!-- Patients Column -->
+        <ng-container matColumnDef="patients">
+          <th mat-header-cell *matHeaderCellDef>Bewohner</th>
+          <td mat-cell *matCellDef="let therapy">
+            <mat-chip-set>
+              <mat-chip *ngFor="let patient of therapy.patients">
+                {{patient.name}} {{patient.surname}}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Location Column -->
+        <ng-container matColumnDef="location">
+          <th mat-header-cell *matHeaderCellDef>Ort</th>
+          <td mat-cell *matCellDef="let therapy">{{therapy.location?.name}}</td>
+        </ng-container>
+
+        <!-- Time Column -->
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Zeit</th>
+          <td mat-cell *matCellDef="let therapy">
+            {{formatDate(therapy.startTime)}}<br>
+            {{formatTime(therapy.startTime)}} - {{formatTime(therapy.endTime)}}
+          </td>
+        </ng-container>
+
+        <!-- Preparation Time Column -->
+        <ng-container matColumnDef="preparationTime">
+          <th mat-header-cell *matHeaderCellDef>Vorbereitung</th>
+          <td mat-cell *matCellDef="let therapy">{{therapy.preparationTime}} Min.</td>
+        </ng-container>
+
+        <!-- Follow Up Time Column -->
+        <ng-container matColumnDef="followUpTime">
+          <th mat-header-cell *matHeaderCellDef>Nachbereitung</th>
+          <td mat-cell *matCellDef="let therapy">{{therapy.followUpTime}} Min.</td>
+        </ng-container>
+
+        <!-- Comment Column -->
+        <ng-container matColumnDef="comment">
+          <th mat-header-cell *matHeaderCellDef>Kommentar</th>
+          <td mat-cell *matCellDef="let therapy">{{therapy.comment}}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Aktionen</th>
+          <td mat-cell *matCellDef="let therapy">
+            <button mat-icon-button color="primary" (click)="editTherapy(therapy)"
+                    matTooltip="Programm bearbeiten">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="duplicateTherapy(therapy)"
+                    matTooltip="Programm duplizieren">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteTherapy(therapy.id)"
+                    matTooltip="Programm löschen">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]"
+                    showFirstLastButtons
+                    aria-label="Seite wählen">
+      </mat-paginator>
+    </div>
+  `,
   styles: [`
     .container {
       padding: 20px;
@@ -59,7 +186,6 @@ import { FormsModule } from '@angular/forms';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSortModule,
     MatDialogModule,
     MatChipsModule,
     MatTooltipModule,
@@ -74,7 +200,6 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['select', 'name', 'leadingEmployee', 'patients', 'location', 'time', 'preparationTime', 'followUpTime', 'comment', 'actions'];
   selection = new SelectionModel<Therapy>(true, []);
   
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -101,7 +226,6 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
 
@@ -152,10 +276,8 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
       : `Möchten Sie diese ${this.selection.selected.length} Programme wirklich löschen?`;
 
     if (confirm(message)) {
-      // Nur Therapien mit gültiger ID löschen
       const deleteObservables = this.selection.selected
-        .filter(therapy => therapy.id !== undefined)
-        .map(therapy => this.therapyService.deleteTherapy(therapy.id!));
+        .map(therapy => this.therapyService.deleteTherapy(therapy.id));
 
       if (deleteObservables.length > 0) {
         forkJoin(deleteObservables).subscribe({
@@ -171,27 +293,15 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSort(event: Sort) {
-    if (!event.active || event.direction === '') {
-      this.loadTherapies();
-      return;
-    }
-
-    this.therapyService.getTherapies(event.active, event.direction as 'asc' | 'desc')
-      .subscribe(therapies => {
-        this.dataSource.data = therapies;
-      });
-  }
-
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('de-DE');
+    return dayjs(date).format('DD.MM.YYYY');
   }
 
   formatTime(date: string): string {
-    return new Date(date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return dayjs(date).format('HH:mm');
   }
 
-  deleteTherapy(id: number): void {
+  deleteTherapy(id: string): void {
     if (confirm('Möchten Sie dieses Programm wirklich löschen?')) {
       this.therapyService.deleteTherapy(id).subscribe({
         next: () => {
@@ -206,17 +316,26 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   duplicateTherapy(therapy: Therapy): void {
-    if (confirm('Möchten Sie dieses Programm duplizieren?')) {
-      this.therapyService.duplicateTherapy(therapy).subscribe({
-        next: () => {
-          this.loadTherapies();
-        },
-        error: (error) => {
-          console.error('Fehler beim Duplizieren des Programms:', error);
-          alert('Fehler beim Duplizieren des Programms');
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(TherapyDialogComponent, {
+      data: { therapy: null }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.therapyService.addTherapy({
+          ...result,
+          id: crypto.randomUUID()
+        }).subscribe({
+          next: () => {
+            this.loadTherapies();
+          },
+          error: (error) => {
+            console.error('Fehler beim Duplizieren des Programms:', error);
+            alert('Fehler beim Duplizieren des Programms');
+          }
+        });
+      }
+    });
   }
 
   editTherapy(therapy: Therapy): void {

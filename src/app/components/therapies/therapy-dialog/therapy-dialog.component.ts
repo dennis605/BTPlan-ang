@@ -20,8 +20,108 @@ import { LocationService } from '../../../services/location.service';
 
 @Component({
   selector: 'app-therapy-dialog',
-  templateUrl: './therapy-dialog.component.html',
-  styleUrls: ['./therapy-dialog.component.scss'],
+  template: `
+    <h2 mat-dialog-title>{{data.therapy ? 'Therapie bearbeiten' : 'Neue Therapie'}}</h2>
+    <mat-dialog-content>
+      <form #therapyForm="ngForm">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="therapy.name" name="name" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Datum</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" name="date" required>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="time-inputs">
+          <mat-form-field appearance="fill">
+            <mat-label>Startzeit</mat-label>
+            <input matInput type="time" [(ngModel)]="selectedStartTime" name="startTime" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Endzeit</mat-label>
+            <input matInput type="time" [(ngModel)]="selectedEndTime" name="endTime" required>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Mitarbeiter</mat-label>
+          <mat-select [(ngModel)]="therapy.leadingEmployee" name="leadingEmployee" required
+                    [compareWith]="compareEmployees">
+            <mat-option *ngFor="let employee of employees" [value]="employee">
+              {{employee.name}} {{employee.surname}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Bewohner</mat-label>
+          <mat-select [(ngModel)]="therapy.patients" name="patients" multiple required
+                    [compareWith]="comparePatients">
+            <mat-option *ngFor="let patient of patients" [value]="patient">
+              {{patient.name}} {{patient.surname}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Ort</mat-label>
+          <mat-select [(ngModel)]="therapy.location" name="location" required
+                    [compareWith]="compareLocations">
+            <mat-option *ngFor="let location of locations" [value]="location">
+              {{location.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="time-inputs">
+          <mat-form-field appearance="fill">
+            <mat-label>Vorbereitungszeit (Min)</mat-label>
+            <input matInput type="number" [(ngModel)]="therapy.preparationTime" name="preparationTime" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Nachbereitungszeit (Min)</mat-label>
+            <input matInput type="number" [(ngModel)]="therapy.followUpTime" name="followUpTime" required>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Kommentar</mat-label>
+          <textarea matInput [(ngModel)]="therapy.comment" name="comment" rows="3"></textarea>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Abbrechen</button>
+      <button mat-raised-button color="primary" 
+              (click)="onSave()" 
+              [disabled]="!isValid()">
+        Speichern
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .time-inputs {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    mat-form-field {
+      width: 100%;
+    }
+    textarea {
+      min-height: 100px;
+    }
+  `],
   standalone: true,
   imports: [
     CommonModule,
@@ -63,6 +163,7 @@ export class TherapyDialogComponent {
   locations: Location[] = [];
   selectedStartTime: string = '00:00';
   selectedEndTime: string = '00:00';
+  selectedDate: Date;
 
   constructor(
     private dateAdapter: DateAdapter<any>,
@@ -73,22 +174,26 @@ export class TherapyDialogComponent {
     private locationService: LocationService
   ) {
     this.therapy = data.therapy ? { ...data.therapy } : {
+      id: crypto.randomUUID(),
       name: '',
       patients: [],
       leadingEmployee: {} as Employee,
       location: {} as Location,
-      startTime: new Date(),
-      endTime: new Date(),
+      startTime: dayjs().startOf('hour').toISOString(),
+      endTime: dayjs().startOf('hour').add(1, 'hour').toISOString(),
       preparationTime: 15,
       followUpTime: 15
     };
 
     // Initialisiere Start- und Endzeit aus therapy
     if (data.therapy) {
-      const startTime = new Date(this.therapy.startTime);
-      const endTime = new Date(this.therapy.endTime);
-      this.selectedStartTime = `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`;
-      this.selectedEndTime = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
+      const startTime = dayjs(this.therapy.startTime);
+      const endTime = dayjs(this.therapy.endTime);
+      this.selectedDate = startTime.toDate();
+      this.selectedStartTime = startTime.format('HH:mm');
+      this.selectedEndTime = endTime.format('HH:mm');
+    } else {
+      this.selectedDate = new Date();
     }
 
     this.loadEmployees();
@@ -123,12 +228,23 @@ export class TherapyDialogComponent {
   onSave(): void {
     if (this.isValid()) {
       // Aktualisiere Start- und Endzeit
-      const date = dayjs(this.therapy.startTime).format('YYYY-MM-DD');
-      const [startHours, startMinutes] = this.selectedStartTime.split(':');
-      const [endHours, endMinutes] = this.selectedEndTime.split(':');
+      const [startHours, startMinutes] = this.selectedStartTime.split(':').map(Number);
+      const [endHours, endMinutes] = this.selectedEndTime.split(':').map(Number);
       
-      this.therapy.startTime = new Date(date + 'T' + this.selectedStartTime);
-      this.therapy.endTime = new Date(date + 'T' + this.selectedEndTime);
+      const startDate = dayjs(this.selectedDate)
+        .hour(startHours)
+        .minute(startMinutes)
+        .second(0)
+        .millisecond(0);
+
+      const endDate = dayjs(this.selectedDate)
+        .hour(endHours)
+        .minute(endMinutes)
+        .second(0)
+        .millisecond(0);
+
+      this.therapy.startTime = startDate.toISOString();
+      this.therapy.endTime = endDate.toISOString();
 
       this.dialogRef.close(this.therapy);
     }
