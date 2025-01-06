@@ -5,6 +5,22 @@ import { DatabaseManager, Database } from './database';
 
 let dbManager: DatabaseManager;
 
+// Initialisiere die Datenbank
+async function initDatabase() {
+  dbManager = new DatabaseManager();
+  // Warte auf das tatsächliche Laden der Datenbank
+  const counts = await dbManager.loadAllDatabases();
+  
+  // Wenn die Datenbank leer ist, migriere die Daten aus db.json
+  if (Object.values(counts).every(count => count === 0)) {
+    console.log('Datenbank ist leer, starte Migration...');
+    await dbManager.migrateFromJson(path.join(__dirname, '..', 'db.json'));
+    return dbManager;
+  }
+  
+  return dbManager;
+}
+
 // IPC Handler für Datenbankoperationen
 // Hilfsfunktion zum Loggen der Datenbankoperationen
 async function logDatabaseOperation(operation: string, collection: keyof Database) {
@@ -63,9 +79,7 @@ ipcMain.handle('db-delete', async (event, { collection, id }: { collection: keyo
 
 async function createWindow() {
   // Initialisiere und lade die Datenbank
-  dbManager = new DatabaseManager();
-  const counts = await dbManager.loadAllDatabases();
-  console.log('Datenbank-Status beim Start:', counts);
+  dbManager = await initDatabase();
 
   const mainWindow = new BrowserWindow({
     width: 1200,

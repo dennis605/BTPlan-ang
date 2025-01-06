@@ -40,6 +40,28 @@ var electron_1 = require("electron");
 var path = require("path");
 var database_1 = require("./database");
 var dbManager;
+// Initialisiere die Datenbank
+function initDatabase() {
+    return __awaiter(this, void 0, void 0, function () {
+        var counts;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    dbManager = new database_1.DatabaseManager();
+                    return [4 /*yield*/, dbManager.loadAllDatabases()];
+                case 1:
+                    counts = _a.sent();
+                    if (!Object.values(counts).every(function (count) { return count === 0; })) return [3 /*break*/, 3];
+                    console.log('Datenbank ist leer, starte Migration...');
+                    return [4 /*yield*/, dbManager.migrateFromJson(path.join(__dirname, '..', 'db.json'))];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/, dbManager];
+                case 3: return [2 /*return*/, dbManager];
+            }
+        });
+    });
+}
 // IPC Handler für Datenbankoperationen
 // Hilfsfunktion zum Loggen der Datenbankoperationen
 function logDatabaseOperation(operation, collection) {
@@ -148,16 +170,13 @@ electron_1.ipcMain.handle('db-delete', function (event_1, _a) { return __awaiter
 }); });
 function createWindow() {
     return __awaiter(this, void 0, void 0, function () {
-        var counts, mainWindow, browserPath;
+        var mainWindow, browserPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    // Initialisiere und lade die Datenbank
-                    dbManager = new database_1.DatabaseManager();
-                    return [4 /*yield*/, dbManager.loadAllDatabases()];
+                case 0: return [4 /*yield*/, initDatabase()];
                 case 1:
-                    counts = _a.sent();
-                    console.log('Datenbank-Status beim Start:', counts);
+                    // Initialisiere und lade die Datenbank
+                    dbManager = _a.sent();
                     mainWindow = new electron_1.BrowserWindow({
                         width: 1200,
                         height: 800,

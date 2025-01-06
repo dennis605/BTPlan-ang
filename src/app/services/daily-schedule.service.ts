@@ -19,17 +19,26 @@ export class DailyScheduleService {
   getDailySchedules(): Observable<DailySchedule[]> {
     return this.electronService.getAll<{ id: string; date: string; therapies: string[] }>(this.collection).pipe(
       switchMap(schedules => {
-        const therapyObservables = schedules.map(schedule => 
-          forkJoin(schedule.therapies.map((therapyId: string) => 
-            this.therapyService.getTherapy(therapyId)
-          )).pipe(
-            map(therapies => ({
+        // Sammle alle einzigartigen Therapie-IDs
+        const allTherapyIds = [...new Set(schedules.flatMap(s => s.therapies))];
+        
+        // Lade alle Therapien auf einmal
+        return this.therapyService.getTherapies().pipe(
+          map(allTherapies => {
+            // Erstelle eine Map für schnellen Zugriff
+            const therapyMap = new Map(allTherapies.map(t => [t.id, t]));
+            
+            // Wandle die Schedules um und sortiere die Therapien nach Startzeit
+            return schedules.map(schedule => ({
               ...schedule,
-              therapies: therapies.filter((t): t is Therapy => t !== null)
-            }))
-          )
+              therapies: schedule.therapies
+                .map(id => therapyMap.get(id))
+                .filter((t): t is Therapy => t !== undefined)
+                .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+            }));
+          })
         );
-        return forkJoin(therapyObservables);
       })
     );
   }
@@ -40,13 +49,20 @@ export class DailyScheduleService {
         const schedule = schedules.find(s => s.id === id);
         if (!schedule) return of(null);
         
-        return forkJoin(schedule.therapies.map((therapyId: string) => 
-          this.therapyService.getTherapy(therapyId)
-        )).pipe(
-          map(therapies => ({
-            ...schedule,
-            therapies: therapies.filter((t): t is Therapy => t !== null)
-          }))
+        // Lade alle Therapien auf einmal
+        return this.therapyService.getTherapies().pipe(
+          map(allTherapies => {
+            // Erstelle eine Map für schnellen Zugriff
+            const therapyMap = new Map(allTherapies.map(t => [t.id, t]));
+            
+            // Wandle den Schedule um
+            return {
+              ...schedule,
+              therapies: schedule.therapies
+                .map(id => therapyMap.get(id))
+                .filter((t): t is Therapy => t !== undefined)
+            };
+          })
         );
       })
     );
