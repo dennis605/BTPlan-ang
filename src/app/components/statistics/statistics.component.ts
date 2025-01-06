@@ -85,9 +85,7 @@ export class StatisticsComponent implements OnInit {
       next: (therapies) => {
         const filteredTherapies = therapies.filter(therapy => {
           const therapyDate = new Date(therapy.startTime);
-          const adjustedStartDate = new Date(this.startDate);
-          adjustedStartDate.setDate(this.startDate.getDate() - 1);
-          return therapyDate >= adjustedStartDate && therapyDate <= this.endDate;
+          return therapyDate >= this.startDate && therapyDate <= this.endDate;
         });
 
         // Wenn Patienten ausgewählt sind, nur für diese berechnen
