@@ -427,57 +427,16 @@ export class DailyScheduleListComponent implements OnInit {
           return;
         }
 
-        const oldDate = dayjs(this.selectedDate).startOf('day');
-        const newDate = dayjs(result).startOf('day');
-        const daysDiff = newDate.diff(oldDate, 'millisecond');
-
-        // Speichere die Therapien nacheinander
-        const duplicatedTherapies: Therapy[] = [];
-        const saveTherapies = (index: number) => {
-          if (index >= currentSchedule.therapies.length) {
-            // Alle Therapien wurden gespeichert, erstelle den Tagesplan
-            const duplicatedSchedule: DailySchedule = {
-              id: crypto.randomUUID(),
-              date: dayjs(result).toISOString(),
-              therapies: duplicatedTherapies
-            };
-
-            // Speichere den neuen Tagesplan
-            this.dailyScheduleService.addDailySchedule(duplicatedSchedule).subscribe({
-              next: () => {
-                this.selectedDate = dayjs(result).toISOString();
-                this.loadDailySchedule();
-              },
-              error: (error: Error) => {
-                console.error('Fehler beim Duplizieren des Tagesplans:', error);
-                alert('Fehler beim Duplizieren des Tagesplans');
-              }
-            });
-            return;
+        this.dailyScheduleService.duplicateDailySchedule(currentSchedule, result).subscribe({
+          next: () => {
+            this.selectedDate = dayjs(result).toISOString();
+            this.loadDailySchedule();
+          },
+          error: (error: Error) => {
+            console.error('Fehler beim Duplizieren des Tagesplans:', error);
+            alert('Fehler beim Duplizieren des Tagesplans');
           }
-
-          const therapy = currentSchedule.therapies[index];
-          const duplicatedTherapy: Therapy = {
-            ...therapy,
-            id: crypto.randomUUID(),
-            startTime: dayjs(therapy.startTime).add(daysDiff, 'millisecond').toISOString(),
-            endTime: dayjs(therapy.endTime).add(daysDiff, 'millisecond').toISOString()
-          };
-
-          this.therapyService.addTherapy(duplicatedTherapy).subscribe({
-            next: (savedTherapy) => {
-              duplicatedTherapies.push(savedTherapy);
-              saveTherapies(index + 1);
-            },
-            error: (error: Error) => {
-              console.error('Fehler beim Duplizieren der Therapie:', error);
-              alert('Fehler beim Duplizieren der Therapie');
-            }
-          });
-        };
-
-        // Starte das Speichern der Therapien
-        saveTherapies(0);
+        });
       }
     });
   }
@@ -490,42 +449,19 @@ export class DailyScheduleListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(targetDate => {
       if (targetDate) {
-        const duplicatedTherapy: Therapy = {
-          ...therapy,
+        // Erstelle einen temporären Tagesplan mit nur dieser Therapie
+        const tempSchedule: DailySchedule = {
           id: crypto.randomUUID(),
-          startTime: dayjs(therapy.startTime)
-            .year(dayjs(targetDate).year())
-            .month(dayjs(targetDate).month())
-            .date(dayjs(targetDate).date())
-            .toISOString(),
-          endTime: dayjs(therapy.endTime)
-            .year(dayjs(targetDate).year())
-            .month(dayjs(targetDate).month())
-            .date(dayjs(targetDate).date())
-            .toISOString()
+          date: dayjs(therapy.startTime).toISOString(),
+          therapies: [therapy]
         };
 
-        // Speichere zuerst die Therapie
-        this.therapyService.addTherapy(duplicatedTherapy).subscribe({
-          next: (savedTherapy) => {
-            // Erstelle dann den Tagesplan mit der ID der gespeicherten Therapie
-            const newSchedule: DailySchedule = {
-              id: crypto.randomUUID(),
-              date: dayjs(targetDate).startOf('day').toISOString(),
-              therapies: [savedTherapy]
-            };
-
-            this.dailyScheduleService.addDailySchedule(newSchedule).subscribe({
-              next: () => {
-                if (dayjs(targetDate).format('YYYY-MM-DD') === dayjs(this.selectedDate).format('YYYY-MM-DD')) {
-                  this.loadDailySchedule();
-                }
-              },
-              error: (error: Error) => {
-                console.error('Fehler beim Duplizieren des Tagesplans:', error);
-                alert('Fehler beim Duplizieren des Tagesplans');
-              }
-            });
+        // Nutze die existierende Methode zum Duplizieren
+        this.dailyScheduleService.duplicateDailySchedule(tempSchedule, targetDate).subscribe({
+          next: () => {
+            if (dayjs(targetDate).format('YYYY-MM-DD') === dayjs(this.selectedDate).format('YYYY-MM-DD')) {
+              this.loadDailySchedule();
+            }
           },
           error: (error: Error) => {
             console.error('Fehler beim Duplizieren der Therapie:', error);

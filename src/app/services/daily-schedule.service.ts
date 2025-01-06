@@ -147,18 +147,46 @@ export class DailyScheduleService {
 
   // Hilfsmethode zum Duplizieren eines Tagesplans
   duplicateDailySchedule(schedule: DailySchedule, newDate: Date): Observable<DailySchedule> {
-    const duplicatedSchedule: DailySchedule = {
-      ...schedule,
-      id: crypto.randomUUID(),
-      date: newDate.toISOString(),
-      therapies: schedule.therapies.map(therapy => ({
+    // Zuerst die Therapien duplizieren und speichern
+    const therapyObservables = schedule.therapies.map(therapy => {
+      const duplicatedTherapy = {
         ...therapy,
         id: crypto.randomUUID(),
         startTime: this.adjustDate(therapy.startTime, schedule.date, newDate.toISOString()),
         endTime: this.adjustDate(therapy.endTime, schedule.date, newDate.toISOString())
-      }))
-    };
-    return this.addDailySchedule(duplicatedSchedule);
+      };
+      return this.therapyService.addTherapy(duplicatedTherapy);
+    });
+
+    // Wenn alle Therapien gespeichert sind, prüfen ob bereits ein Tagesplan existiert
+    return forkJoin(therapyObservables).pipe(
+      switchMap(savedTherapies => {
+        return this.getScheduleByDate(newDate).pipe(
+          switchMap(existingSchedule => {
+            if (existingSchedule) {
+              // Wenn ein Tagesplan existiert, die neuen Therapien hinzufügen
+              const updatedSchedule: DailySchedule = {
+                ...existingSchedule,
+                therapies: [...existingSchedule.therapies, ...savedTherapies]
+                  .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+              };
+              return this.updateDailySchedule(updatedSchedule);
+            } else {
+              // Wenn kein Tagesplan existiert, einen neuen erstellen
+              const duplicatedSchedule: DailySchedule = {
+                ...schedule,
+                id: crypto.randomUUID(),
+                date: newDate.toISOString(),
+                therapies: savedTherapies.sort((a, b) => 
+                  new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+                )
+              };
+              return this.addDailySchedule(duplicatedSchedule);
+            }
+          })
+        );
+      })
+    );
   }
 
   // Hilfsmethode zum Anpassen des Datums einer Therapie
