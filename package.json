@@ -12,7 +12,8 @@
     "dev": "concurrently \"npm run server\" \"npm run start\"",
     "electron:dev": "ng build && tsc electron/main.ts electron/preload.ts && electron .",
     "electron:build": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build",
-    "dist": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build -mw --dir"
+    "dist": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build -mw --dir",
+    "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build --win --arm64"
   },
   "build": {
     "appId": "com.btplan.app",
@@ -47,11 +48,11 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "arm64"]
+          "arch": "arm64"
         }
       ],
       "icon": "src/assets/images/schloss.jpg",
-      "artifactName": "BTPlan-Setup-${version}-${arch}.${ext}",
+      "artifactName": "BTPlan-Setup-${version}-arm64.${ext}",
       "publisherName": "BTPlan"
     },
     "nsis": {
