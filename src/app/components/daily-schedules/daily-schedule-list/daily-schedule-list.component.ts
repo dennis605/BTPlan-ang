@@ -342,7 +342,7 @@ export class DailyScheduleListComponent implements OnInit {
             <div class="header">
               <div class="header-left">
                 <div class="logo-container">
-                  <img src="/assets/images/schloss.jpg" alt="Schloss" class="logo">
+                  <img src="assets/images/schloss.jpg" alt="Schloss" class="logo">
                   <div class="logo-text">
                     Schloss Binau<br>
                     Private Pflege
@@ -387,7 +387,7 @@ export class DailyScheduleListComponent implements OnInit {
             </table>
           </div>
           <div class="footer">
-            <img src="/assets/images/schloss.jpg" alt="Schloss" class="footer-logo">
+            <img src="assets/images/schloss.jpg" alt="Schloss" class="footer-logo">
           </div>
         </body>
       </html>
