@@ -44,9 +44,14 @@
       ]
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "icon": "src/assets/images/schloss.jpg",
-      "artifactName": "BTPlan-Setup-${version}.${ext}",
+      "artifactName": "BTPlan-Setup-${version}-${arch}.${ext}",
       "publisherName": "BTPlan"
     },
     "nsis": {
@@ -94,7 +99,7 @@
     "@types/jasmine": "~5.1.0",
     "concurrently": "^9.1.0",
     "electron": "^33.2.1",
-    "electron-builder": "^25.1.8",
+    "electron-builder": "^24.9.1",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
