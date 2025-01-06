@@ -38,27 +38,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
-var fs = require("fs");
 var database_1 = require("./database");
 var dbManager;
-// Initialisiere die Datenbank
-dbManager = new database_1.DatabaseManager();
 // IPC Handler für Datenbankoperationen
+// Hilfsfunktion zum Loggen der Datenbankoperationen
+function logDatabaseOperation(operation, collection) {
+    return __awaiter(this, void 0, void 0, function () {
+        var data;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, dbManager.find(collection)];
+                case 1:
+                    data = _a.sent();
+                    console.log("[".concat(operation, "] ").concat(String(collection), " enth\u00E4lt jetzt ").concat(data.length, " Eintr\u00E4ge:"), data);
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 electron_1.ipcMain.handle('db-get', function (event, collection) { return __awaiter(void 0, void 0, void 0, function () {
     var result, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                console.log("Lade Daten aus Collection ".concat(collection, "..."));
+                console.log("[GET] Lade Daten aus Collection ".concat(String(collection), "..."));
                 return [4 /*yield*/, dbManager.find(collection)];
             case 1:
                 result = _a.sent();
-                console.log("Gefundene Daten in ".concat(collection, ":"), result);
+                console.log("[GET] Gefundene Daten in ".concat(String(collection), ":"), result);
                 return [2 /*return*/, result];
             case 2:
                 error_1 = _a.sent();
-                console.error("Fehler beim Laden von ".concat(collection, ":"), error_1);
+                console.error("[GET] Fehler beim Laden von ".concat(String(collection), ":"), error_1);
                 throw error_1;
             case 3: return [2 /*return*/];
         }
@@ -70,18 +82,21 @@ electron_1.ipcMain.handle('db-add', function (event_1, _a) { return __awaiter(vo
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
-                console.log("F\u00FCge Datensatz zu ".concat(collection, " hinzu:"), item);
+                _c.trys.push([0, 3, , 4]);
+                console.log("[ADD] F\u00FCge Datensatz zu ".concat(String(collection), " hinzu:"), item);
                 return [4 /*yield*/, dbManager.insert(collection, item)];
             case 1:
                 result = _c.sent();
-                console.log("Datensatz hinzugef\u00FCgt:", result);
-                return [2 /*return*/, result];
+                console.log("[ADD] Datensatz hinzugef\u00FCgt:", result);
+                return [4 /*yield*/, logDatabaseOperation('ADD', collection)];
             case 2:
+                _c.sent();
+                return [2 /*return*/, result];
+            case 3:
                 error_2 = _c.sent();
-                console.error("Fehler beim Hinzuf\u00FCgen zu ".concat(collection, ":"), error_2);
+                console.error("[ADD] Fehler beim Hinzuf\u00FCgen zu ".concat(String(collection), ":"), error_2);
                 throw error_2;
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
@@ -91,16 +106,20 @@ electron_1.ipcMain.handle('db-update', function (event_1, _a) { return __awaiter
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                _c.trys.push([0, 3, , 4]);
+                console.log("[UPDATE] Aktualisiere Datensatz in ".concat(String(collection), ":"), { id: id, updates: updates });
                 return [4 /*yield*/, dbManager.update(collection, { id: id }, { $set: updates })];
             case 1:
                 _c.sent();
-                return [2 /*return*/, updates];
+                return [4 /*yield*/, logDatabaseOperation('UPDATE', collection)];
             case 2:
+                _c.sent();
+                return [2 /*return*/, updates];
+            case 3:
                 error_3 = _c.sent();
-                console.error("Fehler beim Aktualisieren in ".concat(collection, ":"), error_3);
+                console.error("[UPDATE] Fehler beim Aktualisieren in ".concat(String(collection), ":"), error_3);
                 throw error_3;
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
@@ -110,57 +129,35 @@ electron_1.ipcMain.handle('db-delete', function (event_1, _a) { return __awaiter
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                _c.trys.push([0, 3, , 4]);
+                console.log("[DELETE] L\u00F6sche Datensatz aus ".concat(String(collection), ":"), id);
                 return [4 /*yield*/, dbManager.remove(collection, { id: id })];
             case 1:
                 _c.sent();
-                return [2 /*return*/, id];
+                return [4 /*yield*/, logDatabaseOperation('DELETE', collection)];
             case 2:
+                _c.sent();
+                return [2 /*return*/, id];
+            case 3:
                 error_4 = _c.sent();
-                console.error("Fehler beim L\u00F6schen aus ".concat(collection, ":"), error_4);
+                console.error("[DELETE] Fehler beim L\u00F6schen aus ".concat(String(collection), ":"), error_4);
                 throw error_4;
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
-function migrateDataIfNeeded() {
-    return __awaiter(this, void 0, void 0, function () {
-        var jsonPath, error_5;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    jsonPath = electron_1.app.isPackaged
-                        ? path.join(process.resourcesPath, 'db.json')
-                        : path.join(__dirname, '..', 'db.json');
-                    console.log('Suche nach db.json:', jsonPath);
-                    if (!fs.existsSync(jsonPath)) return [3 /*break*/, 5];
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    console.log('db.json gefunden, starte Migration...');
-                    return [4 /*yield*/, dbManager.migrateFromJson(jsonPath)];
-                case 2:
-                    _a.sent();
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_5 = _a.sent();
-                    console.error('Fehler bei der Datenmigration:', error_5);
-                    return [3 /*break*/, 4];
-                case 4: return [3 /*break*/, 6];
-                case 5:
-                    console.log('db.json nicht gefunden');
-                    _a.label = 6;
-                case 6: return [2 /*return*/];
-            }
-        });
-    });
-}
 function createWindow() {
     return __awaiter(this, void 0, void 0, function () {
-        var mainWindow, browserPath;
+        var counts, mainWindow, browserPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    // Initialisiere und lade die Datenbank
+                    dbManager = new database_1.DatabaseManager();
+                    return [4 /*yield*/, dbManager.loadAllDatabases()];
+                case 1:
+                    counts = _a.sent();
+                    console.log('Datenbank-Status beim Start:', counts);
                     mainWindow = new electron_1.BrowserWindow({
                         width: 1200,
                         height: 800,
@@ -170,11 +167,6 @@ function createWindow() {
                             preload: path.join(__dirname, 'preload.js')
                         }
                     });
-                    // Führe die Datenmigration durch, wenn nötig
-                    return [4 /*yield*/, migrateDataIfNeeded()];
-                case 1:
-                    // Führe die Datenmigration durch, wenn nötig
-                    _a.sent();
                     browserPath = electron_1.app.isPackaged
                         ? path.join(process.resourcesPath, 'browser')
                         : path.join(__dirname, '..', 'dist', 'btplan', 'browser');

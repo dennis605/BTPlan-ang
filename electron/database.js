@@ -53,12 +53,36 @@ var DatabaseManager = /** @class */ (function () {
         }
         // Initialisiere die Datenbanken
         this.db = {
-            employees: new Datastore({ filename: path.join(this.dbPath, 'employees.db'), autoload: true }),
-            patients: new Datastore({ filename: path.join(this.dbPath, 'patients.db'), autoload: true }),
-            therapies: new Datastore({ filename: path.join(this.dbPath, 'therapies.db'), autoload: true }),
-            locations: new Datastore({ filename: path.join(this.dbPath, 'locations.db'), autoload: true }),
-            dailySchedules: new Datastore({ filename: path.join(this.dbPath, 'dailySchedules.db'), autoload: true })
+            employees: new Datastore({
+                filename: path.join(this.dbPath, 'employees.db'),
+                autoload: false,
+                timestampData: true
+            }),
+            patients: new Datastore({
+                filename: path.join(this.dbPath, 'patients.db'),
+                autoload: false,
+                timestampData: true
+            }),
+            therapies: new Datastore({
+                filename: path.join(this.dbPath, 'therapies.db'),
+                autoload: false,
+                timestampData: true
+            }),
+            locations: new Datastore({
+                filename: path.join(this.dbPath, 'locations.db'),
+                autoload: false,
+                timestampData: true
+            }),
+            dailySchedules: new Datastore({
+                filename: path.join(this.dbPath, 'dailySchedules.db'),
+                autoload: false,
+                timestampData: true
+            })
         };
+        // Regelmäßige Komprimierung der Datenbanken
+        Object.values(this.db).forEach(function (db) {
+            db.persistence.setAutocompactionInterval(5000); // Alle 5 Sekunden
+        });
         // Indizes erstellen
         this.db.employees.ensureIndex({ fieldName: 'id', unique: true });
         this.db.patients.ensureIndex({ fieldName: 'id', unique: true });
@@ -67,6 +91,48 @@ var DatabaseManager = /** @class */ (function () {
         this.db.dailySchedules.ensureIndex({ fieldName: 'id', unique: true });
         this.db.dailySchedules.ensureIndex({ fieldName: 'date' });
     }
+    // Methode zum Laden aller Datenbanken
+    DatabaseManager.prototype.loadAllDatabases = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var counts, _loop_1, this_1, _i, _a, _b, name_1, db;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        counts = {};
+                        _loop_1 = function (name_1, db) {
+                            var data;
+                            return __generator(this, function (_d) {
+                                switch (_d.label) {
+                                    case 0: return [4 /*yield*/, this_1.promisify(function (cb) { return db.loadDatabase(cb); })];
+                                    case 1:
+                                        _d.sent();
+                                        return [4 /*yield*/, this_1.promisify(function (cb) { return db.find({}, cb); })];
+                                    case 2:
+                                        data = _d.sent();
+                                        counts[name_1] = data.length;
+                                        console.log("[DB LOAD] ".concat(name_1, ": ").concat(data.length, " Eintr\u00E4ge geladen"));
+                                        return [2 /*return*/];
+                                }
+                            });
+                        };
+                        this_1 = this;
+                        _i = 0, _a = Object.entries(this.db);
+                        _c.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        _b = _a[_i], name_1 = _b[0], db = _b[1];
+                        return [5 /*yield**/, _loop_1(name_1, db)];
+                    case 2:
+                        _c.sent();
+                        _c.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/, counts];
+                }
+            });
+        });
+    };
     // Hilfsmethode zum Promisify von NeDB Callbacks
     DatabaseManager.prototype.promisify = function (operation) {
         return new Promise(function (resolve, reject) {
@@ -84,7 +150,12 @@ var DatabaseManager = /** @class */ (function () {
             var _this = this;
             if (query === void 0) { query = {}; }
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].find(query, cb); })];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].loadDatabase(cb); })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].find(query, cb); })];
+                }
             });
         });
     };
@@ -92,101 +163,64 @@ var DatabaseManager = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].findOne(query, cb); })];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].loadDatabase(cb); })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].findOne(query, cb); })];
+                }
             });
         });
     };
     DatabaseManager.prototype.insert = function (collection, doc) {
         return __awaiter(this, void 0, void 0, function () {
+            var result;
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].insert(doc, cb); })];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].insert(doc, cb); })];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].loadDatabase(cb); })];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, result];
+                }
             });
         });
     };
     DatabaseManager.prototype.update = function (collection_1, query_1, update_1) {
         return __awaiter(this, arguments, void 0, function (collection, query, update, options) {
+            var result;
             var _this = this;
             if (options === void 0) { options = {}; }
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].update(query, update, options, cb); })];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].update(query, update, options, cb); })];
+                    case 1:
+                        result = _a.sent();
+                        return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].loadDatabase(cb); })];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, result];
+                }
             });
         });
     };
     DatabaseManager.prototype.remove = function (collection_1, query_1) {
         return __awaiter(this, arguments, void 0, function (collection, query, options) {
+            var result;
             var _this = this;
             if (options === void 0) { options = {}; }
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.promisify(function (cb) { return _this.db[collection].remove(query, options, cb); })];
-            });
-        });
-    };
-    // Methode zum Migrieren der JSON-Daten
-    DatabaseManager.prototype.migrateFromJson = function (jsonPath) {
-        return __awaiter(this, void 0, void 0, function () {
-            var jsonContent, jsonData, _i, _a, collection, _b, _c, _d, collection, data, _e, data_1, item, err_1, error_1;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
-                    case 0:
-                        _f.trys.push([0, 13, , 14]);
-                        console.log('Starte Migration von:', jsonPath);
-                        jsonContent = fs.readFileSync(jsonPath, 'utf8');
-                        console.log('JSON-Inhalt gelesen');
-                        jsonData = JSON.parse(jsonContent);
-                        console.log('JSON geparst:', Object.keys(jsonData));
-                        _i = 0, _a = Object.keys(this.db);
-                        _f.label = 1;
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].remove(query, options, cb); })];
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
-                        collection = _a[_i];
-                        console.log("L\u00F6sche alte Daten aus ".concat(collection, "..."));
-                        return [4 /*yield*/, this.remove(collection, {}, { multi: true })];
+                        result = _a.sent();
+                        return [4 /*yield*/, this.promisify(function (cb) { return _this.db[collection].loadDatabase(cb); })];
                     case 2:
-                        _f.sent();
-                        _f.label = 3;
-                    case 3:
-                        _i++;
-                        return [3 /*break*/, 1];
-                    case 4:
-                        _b = 0, _c = Object.entries(jsonData);
-                        _f.label = 5;
-                    case 5:
-                        if (!(_b < _c.length)) return [3 /*break*/, 12];
-                        _d = _c[_b], collection = _d[0], data = _d[1];
-                        if (!Array.isArray(data)) return [3 /*break*/, 11];
-                        console.log("F\u00FCge ".concat(data.length, " Eintr\u00E4ge in ").concat(collection, " ein..."));
-                        _e = 0, data_1 = data;
-                        _f.label = 6;
-                    case 6:
-                        if (!(_e < data_1.length)) return [3 /*break*/, 11];
-                        item = data_1[_e];
-                        _f.label = 7;
-                    case 7:
-                        _f.trys.push([7, 9, , 10]);
-                        return [4 /*yield*/, this.insert(collection, item)];
-                    case 8:
-                        _f.sent();
-                        return [3 /*break*/, 10];
-                    case 9:
-                        err_1 = _f.sent();
-                        console.error("Fehler beim Einf\u00FCgen in ".concat(collection, ":"), err_1);
-                        console.error('Problematischer Datensatz:', item);
-                        return [3 /*break*/, 10];
-                    case 10:
-                        _e++;
-                        return [3 /*break*/, 6];
-                    case 11:
-                        _b++;
-                        return [3 /*break*/, 5];
-                    case 12:
-                        console.log('Datenmigration erfolgreich abgeschlossen');
-                        return [3 /*break*/, 14];
-                    case 13:
-                        error_1 = _f.sent();
-                        console.error('Fehler bei der Datenmigration:', error_1);
-                        throw error_1;
-                    case 14: return [2 /*return*/];
+                        _a.sent();
+                        return [2 /*return*/, result];
                 }
             });
         });
