@@ -5,6 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
 import { DailySchedule } from '../../../models/daily-schedule';
 import { DailyScheduleService } from '../../../services/daily-schedule.service';
+import { TherapyService } from '../../../services/therapy.service';
 import { DailyScheduleDetailDialogComponent } from '../daily-schedule-detail-dialog/daily-schedule-detail-dialog.component';
 import { EditTherapyDialogComponent } from '../edit-therapy-dialog/edit-therapy-dialog.component';
 import { DuplicateScheduleDialogComponent } from '../duplicate-schedule-dialog/duplicate-schedule-dialog.component';
@@ -159,6 +160,7 @@ export class DailyScheduleListComponent implements OnInit {
 
   constructor(
     private dailyScheduleService: DailyScheduleService,
+    private therapyService: TherapyService,
     private dialog: MatDialog,
     private router: Router
   ) {}
@@ -178,7 +180,7 @@ export class DailyScheduleListComponent implements OnInit {
         }
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: Error) => {
         console.error('Fehler beim Laden des Tagesplans:', error);
         this.isLoading = false;
       }
@@ -446,7 +448,7 @@ export class DailyScheduleListComponent implements OnInit {
             this.selectedDate = dayjs(result).toISOString();
             this.loadDailySchedule();
           },
-          error: (error) => {
+          error: (error: Error) => {
             console.error('Fehler beim Duplizieren des Tagesplans:', error);
             alert('Fehler beim Duplizieren des Tagesplans');
           }
@@ -490,7 +492,7 @@ export class DailyScheduleListComponent implements OnInit {
               this.loadDailySchedule();
             }
           },
-          error: (error) => {
+          error: (error: Error) => {
             console.error('Error duplicating therapy:', error);
             alert('Fehler beim Duplizieren der Therapie');
           }
@@ -507,21 +509,11 @@ export class DailyScheduleListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const currentSchedule = this.schedules[0];
-        if (!currentSchedule) return;
-
-        const updatedSchedule: DailySchedule = {
-          ...currentSchedule,
-          therapies: currentSchedule.therapies.map(t => 
-            t.id === result.id ? result : t
-          )
-        };
-
-        this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe({
+        this.therapyService.updateTherapy(result).subscribe({
           next: () => {
             this.loadDailySchedule();
           },
-          error: (error) => {
+          error: (error: Error) => {
             console.error('Error updating therapy:', error);
             alert('Fehler beim Aktualisieren der Therapie');
           }
@@ -532,19 +524,11 @@ export class DailyScheduleListComponent implements OnInit {
 
   deleteTherapy(therapy: Therapy): void {
     if (confirm(`Möchten Sie die Therapie "${therapy.name}" wirklich löschen?`)) {
-      const currentSchedule = this.schedules[0];
-      if (!currentSchedule) return;
-
-      const updatedSchedule: DailySchedule = {
-        ...currentSchedule,
-        therapies: currentSchedule.therapies.filter(t => t.id !== therapy.id)
-      };
-
-      this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe({
+      this.therapyService.deleteTherapy(therapy.id).subscribe({
         next: () => {
           this.loadDailySchedule();
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Error deleting therapy:', error);
           alert('Fehler beim Löschen der Therapie');
         }
