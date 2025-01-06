@@ -101,10 +101,6 @@ async function createWindow() {
       'Die Anwendung konnte nicht geladen werden. ' + err.message);
   });
 
-  // DevTools im Entwicklungsmodus
-  if (!app.isPackaged) {
-    mainWindow.webContents.openDevTools();
-  }
 }
 
 app.whenReady().then(createWindow);

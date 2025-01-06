@@ -192,10 +192,6 @@ function createWindow() {
                     mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(function (err) {
                         electron_1.dialog.showErrorBox('Fehler beim Laden', 'Die Anwendung konnte nicht geladen werden. ' + err.message);
                     });
-                    // DevTools im Entwicklungsmodus
-                    if (!electron_1.app.isPackaged) {
-                        mainWindow.webContents.openDevTools();
-                    }
                     return [2 /*return*/];
             }
         });
