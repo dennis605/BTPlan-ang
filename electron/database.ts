@@ -30,27 +30,27 @@ export class DatabaseManager {
         this.db = {
             employees: new Datastore({ 
                 filename: path.join(this.dbPath, 'employees.db'), 
-                autoload: true,
+                autoload: false,
                 timestampData: true
             }),
             patients: new Datastore({ 
                 filename: path.join(this.dbPath, 'patients.db'), 
-                autoload: true,
+                autoload: false,
                 timestampData: true
             }),
             therapies: new Datastore({ 
                 filename: path.join(this.dbPath, 'therapies.db'), 
-                autoload: true,
+                autoload: false,
                 timestampData: true
             }),
             locations: new Datastore({ 
                 filename: path.join(this.dbPath, 'locations.db'), 
-                autoload: true,
+                autoload: false,
                 timestampData: true
             }),
             dailySchedules: new Datastore({ 
                 filename: path.join(this.dbPath, 'dailySchedules.db'), 
-                autoload: true,
+                autoload: false,
                 timestampData: true
             })
         };
@@ -69,6 +69,20 @@ export class DatabaseManager {
         this.db.dailySchedules.ensureIndex({ fieldName: 'date' });
     }
 
+    // Methode zum Laden aller Datenbanken
+    async loadAllDatabases(): Promise<{ [key: string]: number }> {
+        const counts: { [key: string]: number } = {};
+        
+        for (const [name, db] of Object.entries(this.db)) {
+            await this.promisify(cb => db.loadDatabase(cb));
+            const data = await this.promisify<any[]>(cb => db.find({}, cb));
+            counts[name] = data.length;
+            console.log(`[DB LOAD] ${name}: ${data.length} Einträge geladen`);
+        }
+
+        return counts;
+    }
+
     // Hilfsmethode zum Promisify von NeDB Callbacks
     private promisify<T>(operation: (callback: (err: Error | null, result: T) => void) => void): Promise<T> {
         return new Promise((resolve, reject) => {
@@ -81,60 +95,31 @@ export class DatabaseManager {
 
     // CRUD Operationen für jede Kollektion
     async find<T>(collection: keyof Database, query: any = {}): Promise<T[]> {
+        await this.promisify(cb => this.db[collection].loadDatabase(cb));
         return this.promisify<T[]>(cb => this.db[collection].find(query, cb));
     }
 
     async findOne<T>(collection: keyof Database, query: any): Promise<T | null> {
+        await this.promisify(cb => this.db[collection].loadDatabase(cb));
         return this.promisify<T | null>(cb => this.db[collection].findOne(query, cb));
     }
 
     async insert<T>(collection: keyof Database, doc: T): Promise<T> {
-        return this.promisify<T>(cb => this.db[collection].insert(doc, cb));
+        const result = await this.promisify<T>(cb => this.db[collection].insert(doc, cb));
+        await this.promisify(cb => this.db[collection].loadDatabase(cb));
+        return result;
     }
 
     async update(collection: keyof Database, query: any, update: any, options: any = {}): Promise<number> {
-        return this.promisify<number>(cb => this.db[collection].update(query, update, options, cb));
+        const result = await this.promisify<number>(cb => this.db[collection].update(query, update, options, cb));
+        await this.promisify(cb => this.db[collection].loadDatabase(cb));
+        return result;
     }
 
     async remove(collection: keyof Database, query: any, options: any = {}): Promise<number> {
-        return this.promisify<number>(cb => this.db[collection].remove(query, options, cb));
-    }
-
-    // Methode zum Migrieren der JSON-Daten
-    async migrateFromJson(jsonPath: string): Promise<void> {
-        try {
-            console.log('Starte Migration von:', jsonPath);
-            const jsonContent = fs.readFileSync(jsonPath, 'utf8');
-            console.log('JSON-Inhalt gelesen');
-            const jsonData = JSON.parse(jsonContent);
-            console.log('JSON geparst:', Object.keys(jsonData));
-
-            // Lösche alte Daten
-            for (const collection of Object.keys(this.db)) {
-                console.log(`Lösche alte Daten aus ${collection}...`);
-                await this.remove(collection as keyof Database, {}, { multi: true });
-            }
-
-            // Füge neue Daten ein
-            for (const [collection, data] of Object.entries(jsonData)) {
-                if (Array.isArray(data)) {
-                    console.log(`Füge ${data.length} Einträge in ${collection} ein...`);
-                    for (const item of data) {
-                        try {
-                            await this.insert(collection as keyof Database, item);
-                        } catch (err) {
-                            console.error(`Fehler beim Einfügen in ${collection}:`, err);
-                            console.error('Problematischer Datensatz:', item);
-                        }
-                    }
-                }
-            }
-
-            console.log('Datenmigration erfolgreich abgeschlossen');
-        } catch (error) {
-            console.error('Fehler bei der Datenmigration:', error);
-            throw error;
-        }
+        const result = await this.promisify<number>(cb => this.db[collection].remove(query, options, cb));
+        await this.promisify(cb => this.db[collection].loadDatabase(cb));
+        return result;
     }
 
     // Getter für die Datenbank-Instanz
