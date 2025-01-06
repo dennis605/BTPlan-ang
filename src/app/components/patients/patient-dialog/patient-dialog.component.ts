@@ -10,7 +10,7 @@ import { Patient } from '../../../models/patient';
 @Component({
   selector: 'app-patient-dialog',
   template: `
-    <h2 mat-dialog-title>{{data.patient ? 'Patient bearbeiten' : 'Neuer Patient'}}</h2>
+    <h2 mat-dialog-title>{{data.patient ? 'Bewohner bearbeiten' : 'Neuer Bewohner'}}</h2>
     <mat-dialog-content>
       <form #patientForm="ngForm">
         <mat-form-field appearance="fill" class="full-width">

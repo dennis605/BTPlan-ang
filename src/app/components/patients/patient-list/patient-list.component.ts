@@ -20,7 +20,7 @@ import { forkJoin } from 'rxjs';
       <div class="action-buttons">
         <button mat-raised-button color="primary" (click)="addPatient()">
           <mat-icon>add</mat-icon>
-          Patient hinzufügen
+          Bewohner hinzufügen
         </button>
         <button mat-raised-button color="warn" 
                 [disabled]="selection.isEmpty()"
@@ -235,8 +235,8 @@ export class PatientListComponent implements OnInit {
             this.loadPatients();
           },
           error: (error) => {
-            console.error('Fehler beim Hinzufügen des Patienten:', error);
-            alert('Fehler beim Hinzufügen des Patienten');
+            console.error('Fehler beim Hinzufügen des Bewohners:', error);
+            alert('Fehler beim Hinzufügen des Bewohners');
           }
         });
       }
