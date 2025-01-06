@@ -1,13 +1,5 @@
-{"id":"83fb","name":"helmut","surname":"grau","note":"","_id":"MSzC2aU5rKvYkUag"}
-{"id":"db66","name":"testbew","surname":"dreie","note":"","_id":"k7kwq0VwBGIh5EUD"}
-{"id":"35f5","name":"bewohner","surname":"vier","note":"","_id":"ngOxopE4KMsx6Ws3"}
-{"id":"91f6","name":"Bewohner","surname":"eins","note":"","_id":"x5cXqSrU2fisX2PC"}
 {"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
-{"$$deleted":true,"_id":"MSzC2aU5rKvYkUag"}
-{"$$deleted":true,"_id":"k7kwq0VwBGIh5EUD"}
-{"$$deleted":true,"_id":"ngOxopE4KMsx6Ws3"}
-{"$$deleted":true,"_id":"x5cXqSrU2fisX2PC"}
-{"id":"91f6","name":"Bewohner","surname":"eins","note":"","_id":"maqqbaBqJ9SebE4K"}
-{"id":"83fb","name":"helmut","surname":"grau","note":"","_id":"Z5x1Z2SGPntY8X7J"}
-{"id":"db66","name":"testbew","surname":"dreie","note":"","_id":"tfQXRPwXNQuquPFJ"}
-{"id":"35f5","name":"bewohner","surname":"vier","note":"","_id":"1tOEa781I9kqSStg"}
+{"id":"91f6","name":"Bewohner","surname":"eins","note":"","_id":"9CQMg8LlaTMYWWLT"}
+{"id":"83fb","name":"helmut","surname":"grau","note":"","_id":"msMfsTKX3jpAw3xF"}
+{"id":"db66","name":"testbew","surname":"dreie","note":"","_id":"pjVzWUgoFDlQOsiO"}
+{"id":"35f5","name":"bewohner","surname":"vier","note":"","_id":"fea2pcbarLMu2vsU"}

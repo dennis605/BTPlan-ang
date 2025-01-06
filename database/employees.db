@@ -1,13 +1,5 @@
-{"id":"8cff","name":"Romy","surname":"Streib","note":"","_id":"3jA3hT0TL9Dd4lAL"}
-{"id":"daab","name":"ma","surname":"Eins","note":"","_id":"DIjTqTiMldSpVnpu"}
-{"name":"eng","surname":"tez","note":"","id":"iVWe_3z","_id":"QFhCL6GSDU0rbBh1"}
-{"id":"73f7","name":"Lisa","surname":"Henken","note":"","_id":"UEVOkX6ao9cnyr57"}
 {"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
-{"$$deleted":true,"_id":"3jA3hT0TL9Dd4lAL"}
-{"$$deleted":true,"_id":"DIjTqTiMldSpVnpu"}
-{"$$deleted":true,"_id":"QFhCL6GSDU0rbBh1"}
-{"$$deleted":true,"_id":"UEVOkX6ao9cnyr57"}
-{"id":"73f7","name":"Lisa","surname":"Henken","note":"","_id":"2HSuq5TSEVMVmwaL"}
-{"id":"8cff","name":"Romy","surname":"Streib","note":"","_id":"DR0iv6TOEAEsANlN"}
-{"id":"daab","name":"ma","surname":"Eins","note":"","_id":"oc39XHzDaD1bUaij"}
-{"name":"eng","surname":"tez","note":"","id":"iVWe_3z","_id":"zsUSwqs8QgJGefsu"}
+{"id":"73f7","name":"Lisa","surname":"Henken","note":"","_id":"ngvCs4X9VTn8Rq0O"}
+{"id":"8cff","name":"Romy","surname":"Streib","note":"","_id":"iZUDI2FwxQrjrElh"}
+{"id":"daab","name":"ma","surname":"Eins","note":"","_id":"AlnFFeliV2Dl9cHk"}
+{"name":"eng","surname":"tez","note":"","id":"iVWe_3z","_id":"bTk0v1dQDNzhhDUy"}

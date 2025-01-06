@@ -65,6 +65,7 @@ var DatabaseManager = /** @class */ (function () {
         this.db.therapies.ensureIndex({ fieldName: 'id', unique: true });
         this.db.locations.ensureIndex({ fieldName: 'id', unique: true });
         this.db.dailySchedules.ensureIndex({ fieldName: 'id', unique: true });
+        this.db.dailySchedules.ensureIndex({ fieldName: 'date' });
     }
     // Hilfsmethode zum Promisify von NeDB Callbacks
     DatabaseManager.prototype.promisify = function (operation) {
