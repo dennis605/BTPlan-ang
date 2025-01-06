@@ -55,13 +55,14 @@
       "publisherName": "BTPlan"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
+      "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "BTPlan"
+      "shortcutName": "BTPlan",
+      "include": "installer.nsh"
     }
   },
   "private": true,
