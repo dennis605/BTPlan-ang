@@ -28,12 +28,37 @@ export class DatabaseManager {
 
         // Initialisiere die Datenbanken
         this.db = {
-            employees: new Datastore({ filename: path.join(this.dbPath, 'employees.db'), autoload: true }),
-            patients: new Datastore({ filename: path.join(this.dbPath, 'patients.db'), autoload: true }),
-            therapies: new Datastore({ filename: path.join(this.dbPath, 'therapies.db'), autoload: true }),
-            locations: new Datastore({ filename: path.join(this.dbPath, 'locations.db'), autoload: true }),
-            dailySchedules: new Datastore({ filename: path.join(this.dbPath, 'dailySchedules.db'), autoload: true })
+            employees: new Datastore({ 
+                filename: path.join(this.dbPath, 'employees.db'), 
+                autoload: true,
+                timestampData: true
+            }),
+            patients: new Datastore({ 
+                filename: path.join(this.dbPath, 'patients.db'), 
+                autoload: true,
+                timestampData: true
+            }),
+            therapies: new Datastore({ 
+                filename: path.join(this.dbPath, 'therapies.db'), 
+                autoload: true,
+                timestampData: true
+            }),
+            locations: new Datastore({ 
+                filename: path.join(this.dbPath, 'locations.db'), 
+                autoload: true,
+                timestampData: true
+            }),
+            dailySchedules: new Datastore({ 
+                filename: path.join(this.dbPath, 'dailySchedules.db'), 
+                autoload: true,
+                timestampData: true
+            })
         };
+
+        // Regelmäßige Komprimierung der Datenbanken
+        Object.values(this.db).forEach(db => {
+            db.persistence.setAutocompactionInterval(5000); // Alle 5 Sekunden
+        });
 
         // Indizes erstellen
         this.db.employees.ensureIndex({ fieldName: 'id', unique: true });
