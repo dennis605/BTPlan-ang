@@ -55,24 +55,47 @@ export class TherapyService {
   }
 
   addTherapy(therapy: Therapy): Observable<Therapy> {
-    // Generiere eine neue ID für neue Therapien
-    const therapyToAdd: Therapy = {
-      ...therapy,
+    // Konvertiere zu DbTherapy Format und entferne _id
+    const { _id, ...rest } = therapy as any;
+    const therapyToAdd = {
+      ...rest,
       id: therapy.id || crypto.randomUUID(),
       startTime: new Date(therapy.startTime).toISOString(),
-      endTime: new Date(therapy.endTime).toISOString()
+      endTime: new Date(therapy.endTime).toISOString(),
+      leadingEmployee: therapy.leadingEmployee || null,
+      patients: therapy.patients || [],
+      location: therapy.location || null
     };
-    return this.electronService.add<Therapy>(this.collection, therapyToAdd);
+    return this.electronService.add<Therapy>(this.collection, therapyToAdd).pipe(
+      map((savedTherapy: Therapy) => ({
+        ...therapy,
+        id: savedTherapy.id,
+        startTime: savedTherapy.startTime,
+        endTime: savedTherapy.endTime
+      }))
+    );
   }
 
   updateTherapy(therapy: Therapy): Observable<Therapy> {
-    const id = therapy.id;
-    const therapyToUpdate: Therapy = {
-      ...therapy,
+    // Konvertiere zu DbTherapy Format und entferne _id
+    const { _id, ...rest } = therapy as any;
+    const therapyToUpdate = {
+      ...rest,
+      id: therapy.id,
       startTime: new Date(therapy.startTime).toISOString(),
-      endTime: new Date(therapy.endTime).toISOString()
+      endTime: new Date(therapy.endTime).toISOString(),
+      leadingEmployee: therapy.leadingEmployee || null,
+      patients: therapy.patients || [],
+      location: therapy.location || null
     };
-    return this.electronService.update<Therapy>(this.collection, id, therapyToUpdate);
+    return this.electronService.update<Therapy>(this.collection, therapy.id, therapyToUpdate).pipe(
+      map((savedTherapy: Therapy) => ({
+        ...therapy,
+        id: savedTherapy.id,
+        startTime: savedTherapy.startTime,
+        endTime: savedTherapy.endTime
+      }))
+    );
   }
 
   deleteTherapy(id: string): Observable<string> {
