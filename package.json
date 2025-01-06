@@ -51,7 +51,6 @@
           "arch": "arm64"
         }
       ],
-      "icon": "src/assets/images/schloss.jpg",
       "artifactName": "BTPlan-Setup-${version}-arm64.${ext}",
       "publisherName": "BTPlan"
     },
@@ -62,9 +61,7 @@
       "deleteAppDataOnUninstall": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "BTPlan",
-      "installerIcon": "src/assets/images/schloss.jpg",
-      "uninstallerIcon": "src/assets/images/schloss.jpg"
+      "shortcutName": "BTPlan"
     }
   },
   "private": true,
