@@ -69,9 +69,9 @@ export class DailyScheduleService {
           return of(schedule);
         }
         return this.therapyService.getTherapiesByDate(date).pipe(
-          map((therapies: Therapy[]) => {
+          switchMap((therapies: Therapy[]) => {
             if (therapies.length === 0) {
-              return undefined;
+              return of(undefined);
             }
 
             // Sortiere Therapien nach Startzeit
@@ -79,12 +79,14 @@ export class DailyScheduleService {
               new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
             );
 
-            // Erstelle einen neuen Tagesplan ohne ihn zu speichern
-            return {
+            // Erstelle und speichere einen neuen Tagesplan
+            const newSchedule: DailySchedule = {
               id: crypto.randomUUID(),
               date: date.toISOString(),
               therapies: sortedTherapies
             };
+
+            return this.addDailySchedule(newSchedule);
           })
         );
       })

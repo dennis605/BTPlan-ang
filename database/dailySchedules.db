@@ -1,8 +1,14 @@
-{"id":"fb95ca96-2c48-43fc-88eb-c45529a029f1","date":"2025-01-06T00:45:29.287Z","therapies":["49c548ab-d35a-4df4-931a-e3cd2cf02868"],"_id":"AQ3LgwdJ6CCE6rIT"}
-{"id":"1","date":"2024-02-20T00:00:00.000Z","therapies":[{"id":1,"name":"Gruppentherapie","patients":[{"id":1,"name":"Erika","surname":"Musterfrau","note":"Regelmäßige Teilnahme"}],"leadingEmployee":{"id":1,"name":"Max","surname":"Mustermann","note":"Therapeut"},"location":{"id":1,"name":"Therapieraum 1","description":"Haupttherapieraum im Erdgeschoss"},"startTime":"2024-02-20T10:00:00.000Z","endTime":"2024-02-20T11:00:00.000Z","preparationTime":15,"followUpTime":10}],"_id":"ckOx9LDH5slNihcN"}
+{"id":"1","date":"2024-02-20T00:00:00.000Z","therapies":[{"id":1,"name":"Gruppentherapie","patients":[{"id":1,"name":"Erika","surname":"Musterfrau","note":"Regelmäßige Teilnahme"}],"leadingEmployee":{"id":1,"name":"Max","surname":"Mustermann","note":"Therapeut"},"location":{"id":1,"name":"Therapieraum 1","description":"Haupttherapieraum im Erdgeschoss"},"startTime":"2024-02-20T10:00:00.000Z","endTime":"2024-02-20T11:00:00.000Z","preparationTime":15,"followUpTime":10}],"_id":"5ssMNZ5f8W9Wjvcy"}
+{"id":"44f93305-baa4-45e3-90ad-046382478a3e","date":"2025-01-06T00:55:22.830Z","therapies":["8d425aa4-c5cb-4611-9c77-710223b8197a"],"_id":"Vr9qR99qKzYCNxdp"}
+{"id":"5a524db8-231a-4688-8b5d-8c7ecdd95d8b","date":"2025-01-02T23:00:00.000Z","therapies":["6e84"],"_id":"nAY5IzRbjFYnXjsL"}
 {"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}
 {"$$indexCreated":{"fieldName":"date","unique":false,"sparse":false}}
-{"$$deleted":true,"_id":"AQ3LgwdJ6CCE6rIT"}
-{"$$deleted":true,"_id":"ckOx9LDH5slNihcN"}
-{"id":"1","date":"2024-02-20T00:00:00.000Z","therapies":[{"id":1,"name":"Gruppentherapie","patients":[{"id":1,"name":"Erika","surname":"Musterfrau","note":"Regelmäßige Teilnahme"}],"leadingEmployee":{"id":1,"name":"Max","surname":"Mustermann","note":"Therapeut"},"location":{"id":1,"name":"Therapieraum 1","description":"Haupttherapieraum im Erdgeschoss"},"startTime":"2024-02-20T10:00:00.000Z","endTime":"2024-02-20T11:00:00.000Z","preparationTime":15,"followUpTime":10}],"_id":"RZlM4BAvOT38G2Nj"}
-{"id":"cff85fb0-59a1-4bf0-9d61-afb05436a148","date":"2025-01-06T00:47:17.697Z","therapies":["a3460460-5eb6-4822-8683-3535be88883e"],"_id":"QrPDseVG1avRXvTk"}
+{"$$deleted":true,"_id":"5ssMNZ5f8W9Wjvcy"}
+{"$$deleted":true,"_id":"Vr9qR99qKzYCNxdp"}
+{"$$deleted":true,"_id":"nAY5IzRbjFYnXjsL"}
+{"id":"1","date":"2024-02-20T00:00:00.000Z","therapies":[{"id":1,"name":"Gruppentherapie","patients":[{"id":1,"name":"Erika","surname":"Musterfrau","note":"Regelmäßige Teilnahme"}],"leadingEmployee":{"id":1,"name":"Max","surname":"Mustermann","note":"Therapeut"},"location":{"id":1,"name":"Therapieraum 1","description":"Haupttherapieraum im Erdgeschoss"},"startTime":"2024-02-20T10:00:00.000Z","endTime":"2024-02-20T11:00:00.000Z","preparationTime":15,"followUpTime":10}],"_id":"2stm3ROcMsmcJ7Ot"}
+{"id":"bf715c74-50bf-4da9-abfe-0168b1c0eb0c","date":"2025-01-02T23:00:00.000Z","therapies":["6e84"],"_id":"lyeHwFL6ZGceA7oq"}
+{"id":"a3a33ff3-b268-43fc-a3cd-bcf0f2d5e373","date":"2025-01-06T00:59:12.575Z","therapies":["adcc99cf-a836-421f-8026-557a4a762ca5"],"_id":"28x6XOkTIbdmdfms"}
+{"id":"a3a33ff3-b268-43fc-a3cd-bcf0f2d5e373","date":"2025-01-06T00:59:12.575Z","therapies":["adcc99cf-a836-421f-8026-557a4a762ca5","c435d2ba-1288-4061-a776-60b0e810e668"],"_id":"28x6XOkTIbdmdfms"}
+{"id":"a30116e6-1679-4fea-99d1-8cf2064359f9","date":"2025-01-01T23:00:00.000Z","therapies":["2871d70e-2445-4a75-a1e2-c2482df1c111","3864d35c-1ef7-4e9f-89fe-ed1f41d32987"],"_id":"qrXIHvRLp4D7ZqyG"}
+{"id":"323baca4-41b5-4815-b6de-20bab8114a1a","date":"2025-01-02T23:00:00.000Z","therapies":["9425ef27-59f8-411b-b336-1985b129d596","e97644bc-673d-4a88-bc75-10c2eeb6c023"],"_id":"aumpkH7M3fPFXwqP"}

@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Therapy } from '../../../models/therapy';
+import { DailySchedule } from '../../../models/daily-schedule';
 import { TherapyService } from '../../../services/therapy.service';
+import { DailyScheduleService } from '../../../services/daily-schedule.service';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +15,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
@@ -204,6 +207,7 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private therapyService: TherapyService,
+    private dailyScheduleService: DailyScheduleService,
     private dialog: MatDialog
   ) {
     this.dataSource = new MatTableDataSource<Therapy>([]);
@@ -279,17 +283,34 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
       : `Möchten Sie diese ${this.selection.selected.length} Programme wirklich löschen?`;
 
     if (confirm(message)) {
-      const deleteObservables = this.selection.selected
-        .map(therapy => this.therapyService.deleteTherapy(therapy.id));
+      // Für jede ausgewählte Therapie
+      const deleteOperations = this.selection.selected.map(therapy => {
+        const therapyDate = new Date(therapy.startTime);
+        // Lösche die Therapie und aktualisiere den Tagesplan
+        return this.therapyService.deleteTherapy(therapy.id).pipe(
+          switchMap(() => this.dailyScheduleService.getScheduleByDate(therapyDate)),
+          switchMap((schedule: DailySchedule | undefined) => {
+            if (schedule) {
+              // Entferne die Therapie aus dem Tagesplan
+              const updatedSchedule = {
+                ...schedule,
+                therapies: schedule.therapies.filter((t: Therapy) => t.id !== therapy.id)
+              };
+              return this.dailyScheduleService.updateDailySchedule(updatedSchedule);
+            }
+            return of(null);
+          })
+        );
+      });
 
-      if (deleteObservables.length > 0) {
-        forkJoin(deleteObservables).subscribe({
+      if (deleteOperations.length > 0) {
+        forkJoin(deleteOperations).subscribe({
           next: () => {
             this.loadTherapies();
           },
           error: (error) => {
-            console.error('Fehler beim Löschen des Programms:', error);
-            alert('Fehler beim Löschen des Programms');
+            console.error('Fehler beim Löschen der Programme:', error);
+            alert('Fehler beim Löschen der Programme');
           }
         });
       }
@@ -306,13 +327,35 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
 
   deleteTherapy(id: string): void {
     if (confirm('Möchten Sie dieses Programm wirklich löschen?')) {
-      this.therapyService.deleteTherapy(id).subscribe({
-        next: () => {
-          this.loadTherapies();
-        },
-        error: (error) => {
-          console.error('Fehler beim Löschen des Programms:', error);
-          alert('Fehler beim Löschen des Programms');
+      // Finde zuerst die Therapie, um das Datum zu bekommen
+      this.therapyService.getTherapy(id).subscribe({
+        next: (therapy) => {
+          if (therapy) {
+            const therapyDate = new Date(therapy.startTime);
+            // Lösche die Therapie
+            this.therapyService.deleteTherapy(id).subscribe({
+              next: () => {
+                // Aktualisiere den Tagesplan
+                this.dailyScheduleService.getScheduleByDate(therapyDate).subscribe({
+                  next: (schedule: DailySchedule | undefined) => {
+                    if (schedule) {
+                      // Entferne die Therapie aus dem Tagesplan
+                      const updatedSchedule = {
+                        ...schedule,
+                        therapies: schedule.therapies.filter(t => t.id !== id)
+                      };
+                      this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe();
+                    }
+                  }
+                });
+                this.loadTherapies();
+              },
+              error: (error) => {
+                console.error('Fehler beim Löschen des Programms:', error);
+                alert('Fehler beim Löschen des Programms');
+              }
+            });
+          }
         }
       });
     }
@@ -340,7 +383,29 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.therapyService.addTherapy(result).subscribe({
-          next: () => {
+          next: (savedTherapy) => {
+            // Erstelle oder aktualisiere den Tagesplan für das Datum der Therapie
+            const therapyDate = new Date(savedTherapy.startTime);
+            this.dailyScheduleService.getScheduleByDate(therapyDate).subscribe({
+              next: (schedule: DailySchedule | undefined) => {
+                if (schedule) {
+                  // Füge die neue Therapie zum bestehenden Tagesplan hinzu
+                  const updatedSchedule = {
+                    ...schedule,
+                    therapies: [...schedule.therapies, savedTherapy]
+                  };
+                  this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe();
+                } else {
+                  // Erstelle einen neuen Tagesplan mit der Therapie
+                  const newSchedule = {
+                    id: crypto.randomUUID(),
+                    date: therapyDate.toISOString(),
+                    therapies: [savedTherapy]
+                  };
+                  this.dailyScheduleService.addDailySchedule(newSchedule).subscribe();
+                }
+              }
+            });
             this.loadTherapies();
           },
           error: (error) => {
@@ -360,7 +425,23 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.therapyService.updateTherapy(result).subscribe({
-          next: () => {
+          next: (savedTherapy) => {
+            // Aktualisiere den Tagesplan für das Datum der Therapie
+            const therapyDate = new Date(savedTherapy.startTime);
+            this.dailyScheduleService.getScheduleByDate(therapyDate).subscribe({
+              next: (schedule: DailySchedule | undefined) => {
+                if (schedule) {
+                  // Aktualisiere die Therapie im Tagesplan
+                  const updatedSchedule = {
+                    ...schedule,
+                    therapies: schedule.therapies.map(t => 
+                      t.id === savedTherapy.id ? savedTherapy : t
+                    )
+                  };
+                  this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe();
+                }
+              }
+            });
             this.loadTherapies();
           },
           error: (error) => {
@@ -380,7 +461,29 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.therapyService.addTherapy(result).subscribe({
-          next: () => {
+          next: (savedTherapy) => {
+            // Erstelle oder aktualisiere den Tagesplan für das Datum der Therapie
+            const therapyDate = new Date(savedTherapy.startTime);
+            this.dailyScheduleService.getScheduleByDate(therapyDate).subscribe({
+              next: (schedule: DailySchedule | undefined) => {
+                if (schedule) {
+                  // Füge die neue Therapie zum bestehenden Tagesplan hinzu
+                  const updatedSchedule = {
+                    ...schedule,
+                    therapies: [...schedule.therapies, savedTherapy]
+                  };
+                  this.dailyScheduleService.updateDailySchedule(updatedSchedule).subscribe();
+                } else {
+                  // Erstelle einen neuen Tagesplan mit der Therapie
+                  const newSchedule = {
+                    id: crypto.randomUUID(),
+                    date: therapyDate.toISOString(),
+                    therapies: [savedTherapy]
+                  };
+                  this.dailyScheduleService.addDailySchedule(newSchedule).subscribe();
+                }
+              }
+            });
             this.loadTherapies();
           },
           error: (error) => {
