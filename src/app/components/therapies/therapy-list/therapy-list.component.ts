@@ -319,13 +319,20 @@ export class TherapyListComponent implements OnInit, AfterViewInit {
   }
 
   duplicateTherapy(therapy: Therapy): void {
-    const duplicatedTherapy = {
-      ...therapy,
+    // Erstelle eine exakte Kopie mit neuem Namen und ID
+    const duplicatedTherapy: Therapy = {
       id: crypto.randomUUID(),
       name: `${therapy.name}_copy`,
-      startTime: new Date().toISOString() // Setze aktuelle Zeit für neue Sortierung
+      patients: therapy.patients,
+      leadingEmployee: therapy.leadingEmployee,
+      location: therapy.location,
+      startTime: therapy.startTime,
+      endTime: therapy.endTime,
+      preparationTime: therapy.preparationTime,
+      followUpTime: therapy.followUpTime,
+      comment: therapy.comment
     };
-    
+
     const dialogRef = this.dialog.open(TherapyDialogComponent, {
       data: { therapy: duplicatedTherapy }
     });
