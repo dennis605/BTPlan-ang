@@ -85,7 +85,11 @@ export class StatisticsComponent implements OnInit {
       next: (therapies) => {
         const filteredTherapies = therapies.filter(therapy => {
           const therapyDate = new Date(therapy.startTime);
-          return therapyDate >= this.startDate && therapyDate <= this.endDate;
+          const startOfDay = new Date(this.startDate);
+          startOfDay.setHours(0, 0, 0, 0);
+          const endOfDay = new Date(this.endDate);
+          endOfDay.setHours(23, 59, 59, 999);
+          return therapyDate >= startOfDay && therapyDate <= endOfDay;
         });
 
         // Wenn Patienten ausgewählt sind, nur für diese berechnen
