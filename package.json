@@ -10,10 +10,10 @@
     "test": "ng test",
     "server": "json-server --watch db.json",
     "dev": "concurrently \"npm run server\" \"npm run start\"",
-    "electron:dev": "ng build && tsc electron/main.ts electron/preload.ts && electron .",
-    "electron:build": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build",
-    "dist": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build -mw --dir",
-    "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts && electron-builder build --win --arm64"
+    "electron:dev": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron .",
+    "electron:build": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build",
+    "dist": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build -mw --dir",
+    "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --arm64"
   },
   "build": {
     "appId": "com.btplan.app",
@@ -25,7 +25,9 @@
     "files": [
       "electron/main.js",
       "electron/preload.js",
-      "dist/btplan/browser/**/*"
+      "electron/database.js",
+      "dist/btplan/browser/**/*",
+      "database/**/*"
     ],
     "extraResources": [
       {
@@ -35,6 +37,10 @@
       {
         "from": "dist/btplan/browser",
         "to": "browser"
+      },
+      {
+        "from": "database",
+        "to": "database"
       }
     ],
     "mac": {
