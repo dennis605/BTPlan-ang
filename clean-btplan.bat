@@ -54,7 +54,13 @@ echo.
 echo 3. Loesche Installationsverzeichnisse...
 rd /s /q "%LocalAppData%\Programs\BTPlan" 2>nul
 rd /s /q "C:\Program Files\BTPlan" 2>nul
+rd /s /q "C:\Program Files\BTPlan-arm64" 2>nul
 rd /s /q "C:\Program Files (x86)\BTPlan" 2>nul
+rd /s /q "%ProgramFiles%\BTPlan" 2>nul
+rd /s /q "%ProgramFiles%\BTPlan-arm64" 2>nul
+rd /s /q "%ProgramFiles(x86)%\BTPlan" 2>nul
+rd /s /q "%ProgramW6432%\BTPlan" 2>nul
+rd /s /q "%ProgramW6432%\BTPlan-arm64" 2>nul
 
 echo.
 echo 4. Bereinige AppData...

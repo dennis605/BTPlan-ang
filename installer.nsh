@@ -1,21 +1,6 @@
 !include LogicLib.nsh
-!include FileFunc.nsh
 
 !macro customInit
-  ; Setze Standardwerte
-  StrCpy $R2 "CLEAN_INSTALL"
-  
-  ; Suche nach existierenden Installationen in verschiedenen Verzeichnissen
-  ${If} ${FileExists} "$LOCALAPPDATA\Programs\BTPlan\BTPlan.exe"
-  ${OrIf} ${FileExists} "$PROGRAMFILES\BTPlan\BTPlan.exe"
-  ${OrIf} ${FileExists} "$PROGRAMFILES64\BTPlan\BTPlan.exe"
-    MessageBox MB_YESNO|MB_ICONQUESTION "Eine bestehende BTPlan-Installation wurde gefunden. Möchten Sie diese entfernen und neu installieren?" IDYES remove IDNO continue
-    remove:
-      ExecWait 'cmd.exe /c "$TEMP\clean-btplan.bat"'
-      Goto continue
-    continue:
-  ${EndIf}
-
   ; Beende BTPlan falls es läuft
   nsProcess::_FindProcess "BTPlan.exe"
   Pop $R0

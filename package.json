@@ -78,7 +78,14 @@
       "removeDefaultUninstallWelcomePage": true,
       "warningsAsErrors": false,
       "allowElevation": true,
-      "packElevateHelper": true
+      "packElevateHelper": true,
+      "displayLanguageSelector": false,
+      "multiLanguageInstaller": false,
+      "unicode": true,
+      "guid": null,
+      "runAfterFinish": false,
+      "createStartMenuShortcut": true,
+      "menuCategory": false
     }
   },
   "private": true,
