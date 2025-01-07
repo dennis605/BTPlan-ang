@@ -1,6 +1,8 @@
 {
   "name": "btplan",
   "version": "0.0.0",
+  "description": "BTPlan - Therapieplanungssoftware",
+  "author": "BTPlan Team",
   "main": "electron/main.js",
   "scripts": {
     "ng": "ng",
@@ -71,7 +73,6 @@
       "include": "installer.nsh",
       "installerIcon": "public/favicon.ico",
       "uninstallerIcon": "public/favicon.ico",
-      "installDirectory": "${localappdata}\\Programs\\BTPlan",
       "uninstallDisplayName": "BTPlan"
     }
   },
