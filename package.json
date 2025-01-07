@@ -18,8 +18,8 @@
     "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --arm64"
   },
   "build": {
-    "appId": "com.btplan.app.arm64",
-    "productName": "BTPlan-ARM64",
+    "appId": "com.btplan.app",
+    "productName": "BTPlan",
     "directories": {
       "output": "release",
       "buildResources": "dist/btplan/browser"
@@ -53,21 +53,7 @@
       ]
     },
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": "arm64"
-        }
-      ],
-      "artifactName": "BTPlan-ARM64-Setup-${version}.${ext}",
-      "publisherName": "BTPlan",
-      "appId": "com.btplan.app.arm64"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "include": "installer.nsh"
+      "target": "nsis"
     }
   },
   "private": true,
