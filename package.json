@@ -15,7 +15,9 @@
     "electron:dev": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron .",
     "electron:build": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build",
     "dist": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build -mw --dir",
-    "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --arm64"
+    "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --arm64",
+    "build:windows-x64": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --x64"
+
   },
   "build": {
     "appId": "com.btplan.app.arm64",
@@ -57,9 +59,13 @@
         {
           "target": "nsis",
           "arch": "arm64"
+        },
+        {
+          "target": "nsis",
+          "arch": "x64"
         }
       ],
-      "artifactName": "BTPlan-ARM64-Setup-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${arch}-${version}.${ext}"
     }
   },
   "private": true,
