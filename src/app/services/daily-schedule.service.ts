@@ -74,42 +74,56 @@ export class DailyScheduleService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return this.getDailySchedules().pipe(
-      map(schedules => schedules.find(s => {
-        const scheduleDate = new Date(s.date);
-        return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
-      })),
-      switchMap(schedule => {
-        if (schedule) {
-          // Wenn ein Schedule existiert, lade nur die Therapien aus der therapies-Collection
-          return this.therapyService.getTherapiesByDate(date).pipe(
-            map(therapies => ({
-              ...schedule,
-              therapies: therapies.sort((a, b) => 
-                new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-              )
-            }))
+    return this.therapyService.getTherapiesByDate(date).pipe(
+      switchMap(therapies => {
+        if (therapies.length === 0) {
+          // Wenn keine Therapien existieren, lösche einen möglicherweise existierenden leeren Schedule
+          return this.getDailySchedules().pipe(
+            switchMap(schedules => {
+              const existingSchedule = schedules.find(s => {
+                const scheduleDate = new Date(s.date);
+                return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
+              });
+              
+              if (existingSchedule) {
+                return this.deleteDailySchedule(existingSchedule.id).pipe(
+                  map(() => undefined)
+                );
+              }
+              
+              return of(undefined);
+            })
           );
         }
-        return this.therapyService.getTherapiesByDate(date).pipe(
-          switchMap((therapies: Therapy[]) => {
-            if (therapies.length === 0) {
-              return of(undefined);
+
+        // Sortiere Therapien nach Startzeit
+        const sortedTherapies = therapies.sort((a, b) => 
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+
+        return this.getDailySchedules().pipe(
+          switchMap(schedules => {
+            const existingSchedule = schedules.find(s => {
+              const scheduleDate = new Date(s.date);
+              return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
+            });
+
+            if (existingSchedule) {
+              // Update existierenden Schedule
+              const updatedSchedule: DailySchedule = {
+                ...existingSchedule,
+                therapies: sortedTherapies
+              };
+              return this.updateDailySchedule(updatedSchedule);
+            } else {
+              // Erstelle neuen Schedule
+              const newSchedule: DailySchedule = {
+                id: crypto.randomUUID(),
+                date: date.toISOString(),
+                therapies: sortedTherapies
+              };
+              return this.addDailySchedule(newSchedule);
             }
-
-            // Sortiere Therapien nach Startzeit
-            const sortedTherapies = therapies.sort((a: Therapy, b: Therapy) => 
-              new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-            );
-
-            // Erstelle und speichere einen neuen Tagesplan
-            const newSchedule: DailySchedule = {
-              id: crypto.randomUUID(),
-              date: date.toISOString(),
-              therapies: sortedTherapies
-            };
-
-            return this.addDailySchedule(newSchedule);
           })
         );
       })
@@ -117,7 +131,10 @@ export class DailyScheduleService {
   }
 
   addDailySchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    // Generiere eine neue ID für neue Tagespläne
+    if (schedule.therapies.length === 0) {
+      return of(schedule);
+    }
+
     const scheduleToAdd = {
       id: schedule.id || crypto.randomUUID(),
       date: new Date(schedule.date).toISOString(),
@@ -133,13 +150,18 @@ export class DailyScheduleService {
   }
 
   updateDailySchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    const id = schedule.id;
+    if (schedule.therapies.length === 0) {
+      return this.deleteDailySchedule(schedule.id).pipe(
+        map(() => schedule)
+      );
+    }
+
     const scheduleToUpdate = {
       id: schedule.id,
       date: new Date(schedule.date).toISOString(),
       therapies: schedule.therapies.map(therapy => therapy.id)
     };
-    return this.electronService.update(this.collection, id, scheduleToUpdate).pipe(
+    return this.electronService.update(this.collection, schedule.id, scheduleToUpdate).pipe(
       map(savedSchedule => ({
         ...schedule,
         id: savedSchedule.id,
@@ -152,7 +174,6 @@ export class DailyScheduleService {
     return this.electronService.delete(this.collection, id);
   }
 
-  // Hilfsmethode zum Duplizieren eines Tagesplans
   duplicateDailySchedule(schedule: DailySchedule, newDate: Date): Observable<DailySchedule> {
     // Zuerst die Therapien duplizieren und speichern
     const therapyObservables = schedule.therapies.map(therapy => {
@@ -209,7 +230,6 @@ export class DailyScheduleService {
     );
   }
 
-  // Hilfsmethode zum Anpassen des Datums einer Therapie
   private adjustDate(time: string, oldDate: string, newDate: string): string {
     const oldDateTime = new Date(time);
     const oldScheduleDate = new Date(oldDate);
