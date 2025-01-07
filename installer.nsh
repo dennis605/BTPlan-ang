@@ -1,6 +1,16 @@
+!define PRODUCT_GUID "B6A98E78-5DAD-4F6E-B6E9-C6E7B1A6F5D2"
+
 !macro customInit
-  ; Beende BTPlan vor der Installation
-  ; Prüfe ob BTPlan läuft und beende es nur wenn nötig
+  ; Prüfe zuerst, ob BTPlan überhaupt installiert ist
+  ReadRegStr $R1 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{${PRODUCT_GUID}}" "UninstallString"
+  ${If} $R1 == ""
+    ; Keine vorherige Installation gefunden
+    StrCpy $R2 "CLEAN_INSTALL"
+  ${Else}
+    StrCpy $R2 "UPDATE"
+  ${EndIf}
+
+  ; Beende BTPlan nur wenn es läuft
   nsProcess::_FindProcess "BTPlan.exe"
   Pop $R0
   ${If} $R0 = 0
