@@ -85,7 +85,9 @@ function initDatabase() {
                     counts = _a.sent();
                     if (!Object.values(counts).every(function (count) { return count === 0; })) return [3 /*break*/, 3];
                     console.log('Datenbank ist leer, starte Migration...');
-                    return [4 /*yield*/, dbManager.migrateFromJson(path.join(__dirname, '..', 'db.json'))];
+                    return [4 /*yield*/, dbManager.migrateFromJson(electron_1.app.isPackaged
+                            ? path.join(process.resourcesPath, 'db.json')
+                            : path.join(__dirname, '..', 'db.json'))];
                 case 2:
                     _a.sent();
                     return [2 /*return*/, dbManager];
