@@ -73,7 +73,12 @@
       "include": "installer.nsh",
       "installerIcon": "public/favicon.ico",
       "uninstallerIcon": "public/favicon.ico",
-      "uninstallDisplayName": "BTPlan"
+      "uninstallDisplayName": "BTPlan",
+      "differentialPackage": false,
+      "removeDefaultUninstallWelcomePage": true,
+      "warningsAsErrors": false,
+      "allowElevation": true,
+      "packElevateHelper": true
     }
   },
   "private": true,
