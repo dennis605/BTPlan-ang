@@ -74,56 +74,34 @@ export class DailyScheduleService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return this.therapyService.getTherapiesByDate(date).pipe(
-      switchMap(therapies => {
-        if (therapies.length === 0) {
-          // Wenn keine Therapien existieren, lösche einen möglicherweise existierenden leeren Schedule
-          return this.getDailySchedules().pipe(
-            switchMap(schedules => {
-              const existingSchedule = schedules.find(s => {
-                const scheduleDate = new Date(s.date);
-                return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
-              });
-              
-              if (existingSchedule) {
-                return this.deleteDailySchedule(existingSchedule.id).pipe(
-                  map(() => undefined)
-                );
-              }
-              
-              return of(undefined);
-            })
-          );
+    return this.getDailySchedules().pipe(
+      map(schedules => schedules.find(s => {
+        const scheduleDate = new Date(s.date);
+        return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
+      })),
+      switchMap(schedule => {
+        if (schedule) {
+          return of(schedule);
         }
-
-        // Sortiere Therapien nach Startzeit
-        const sortedTherapies = therapies.sort((a, b) => 
-          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-        );
-
-        return this.getDailySchedules().pipe(
-          switchMap(schedules => {
-            const existingSchedule = schedules.find(s => {
-              const scheduleDate = new Date(s.date);
-              return scheduleDate >= startOfDay && scheduleDate <= endOfDay;
-            });
-
-            if (existingSchedule) {
-              // Update existierenden Schedule
-              const updatedSchedule: DailySchedule = {
-                ...existingSchedule,
-                therapies: sortedTherapies
-              };
-              return this.updateDailySchedule(updatedSchedule);
-            } else {
-              // Erstelle neuen Schedule
-              const newSchedule: DailySchedule = {
-                id: crypto.randomUUID(),
-                date: date.toISOString(),
-                therapies: sortedTherapies
-              };
-              return this.addDailySchedule(newSchedule);
+        return this.therapyService.getTherapiesByDate(date).pipe(
+          switchMap((therapies: Therapy[]) => {
+            if (therapies.length === 0) {
+              return of(undefined);
             }
+
+            // Sortiere Therapien nach Startzeit
+            const sortedTherapies = therapies.sort((a: Therapy, b: Therapy) =>
+              new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+            );
+
+            // Erstelle und speichere einen neuen Tagesplan
+            const newSchedule: DailySchedule = {
+              id: crypto.randomUUID(),
+              date: date.toISOString(),
+              therapies: sortedTherapies
+            };
+
+            return this.addDailySchedule(newSchedule);
           })
         );
       })
@@ -131,10 +109,6 @@ export class DailyScheduleService {
   }
 
   addDailySchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    if (schedule.therapies.length === 0) {
-      return of(schedule);
-    }
-
     const scheduleToAdd = {
       id: schedule.id || crypto.randomUUID(),
       date: new Date(schedule.date).toISOString(),
@@ -150,12 +124,6 @@ export class DailyScheduleService {
   }
 
   updateDailySchedule(schedule: DailySchedule): Observable<DailySchedule> {
-    if (schedule.therapies.length === 0) {
-      return this.deleteDailySchedule(schedule.id).pipe(
-        map(() => schedule)
-      );
-    }
-
     const scheduleToUpdate = {
       id: schedule.id,
       date: new Date(schedule.date).toISOString(),
@@ -192,12 +160,11 @@ export class DailyScheduleService {
         return this.getScheduleByDate(newDate).pipe(
           switchMap(existingSchedule => {
             if (existingSchedule) {
-              // Wenn ein Tagesplan existiert, einfach alle neuen Therapien hinzufügen
+              // Wenn ein Tagesplan existiert, die neuen Therapien hinzufügen
               const updatedSchedule: DailySchedule = {
                 ...existingSchedule,
-                therapies: [...existingSchedule.therapies, ...savedTherapies].sort((a, b) => 
-                  new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-                )
+                therapies: [...existingSchedule.therapies, ...savedTherapies]
+                  .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
               };
               return this.updateDailySchedule(updatedSchedule);
             } else {
@@ -206,7 +173,7 @@ export class DailyScheduleService {
                 ...schedule,
                 id: crypto.randomUUID(),
                 date: newDate.toISOString(),
-                therapies: savedTherapies.sort((a, b) => 
+                therapies: savedTherapies.sort((a, b) =>
                   new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
                 )
               };
