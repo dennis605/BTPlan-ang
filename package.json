@@ -35,14 +35,15 @@
         "to": "db.json"
       },
       {
-        "from": "dist/btplan/browser",
-        "to": "browser"
-      },
-      {
         "from": "database",
         "to": "database"
+      },
+      {
+        "from": "dist/btplan/browser",
+        "to": "resources/browser"
       }
     ],
+    "asar": false,
     "mac": {
       "category": "public.app-category.productivity",
       "target": [

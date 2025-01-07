@@ -93,8 +93,18 @@ async function createWindow() {
 
   // Lade die Angular App
   const browserPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'browser')
+    ? path.join(process.resourcesPath, 'resources', 'browser')
     : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
+
+  console.log('Browser Path:', browserPath);
+  console.log('Index File Path:', path.join(browserPath, 'index.html'));
+  
+  if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
+    dialog.showErrorBox('Fehler beim Laden',
+      `Die Anwendung konnte nicht gefunden werden. Pfad: ${path.join(browserPath, 'index.html')}`);
+    app.quit();
+    return;
+  }
 
   mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(err => {
     dialog.showErrorBox('Fehler beim Laden',
