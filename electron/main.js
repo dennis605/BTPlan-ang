@@ -233,7 +233,9 @@ function createWindow() {
                             nodeIntegration: false,
                             contextIsolation: true,
                             preload: path.join(__dirname, 'preload.js')
-                        }
+                        },
+                        // Menüleiste für Windows ARM ausblenden
+                        autoHideMenuBar: process.platform === 'win32' && process.arch === 'arm64'
                     });
                     log('Browser window created');
                     browserPath = electron_1.app.isPackaged
