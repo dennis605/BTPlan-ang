@@ -25,7 +25,7 @@ import { LocationService } from '../../../services/location.service';
     <mat-dialog-content>
       <form #therapyForm="ngForm">
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Name</mat-label>
+          <mat-label>Programmname</mat-label>
           <input matInput [(ngModel)]="therapy.name" name="name" required>
         </mat-form-field>
 

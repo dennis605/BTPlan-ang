@@ -66,7 +66,7 @@ import dayjs from 'dayjs';
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <th mat-header-cell *matHeaderCellDef>Programmname</th>
           <td mat-cell *matCellDef="let therapy">{{therapy.name}}</td>
         </ng-container>
 

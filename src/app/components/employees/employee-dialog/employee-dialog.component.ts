@@ -14,7 +14,7 @@ import { Employee } from '../../../models/employee';
     <mat-dialog-content>
       <form #employeeForm="ngForm">
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Name</mat-label>
+          <mat-label>Vorname</mat-label>
           <input matInput [(ngModel)]="employee.name" name="name" required>
         </mat-form-field>
 

@@ -14,7 +14,7 @@ import { Patient } from '../../../models/patient';
     <mat-dialog-content>
       <form #patientForm="ngForm">
         <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Name</mat-label>
+          <mat-label>Vorname</mat-label>
           <input matInput [(ngModel)]="patient.name" name="name" required>
         </mat-form-field>
 

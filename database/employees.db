@@ -1,3 +1,4 @@
+{"id":"3fe2bdfe-d233-4804-a8b2-5d47f945d8f9","name":"testv","surname":"efgr","note":"","_id":"ZdFBFCzg7SGBTMgz","createdAt":{"$$date":1736276374591},"updatedAt":{"$$date":1736276374591}}
 {"id":"8cff","name":"Romy","surname":"Streib","note":"","_id":"gutcpPnBeEk94oV8","createdAt":{"$$date":1736156205517},"updatedAt":{"$$date":1736156205517}}
 {"id":"202eb2c5-a888-4d07-b1d0-a9f38e6f8e76","name":"Lisa","surname":"Henken","note":"","_id":"qsmzoVBbaapcMil8","createdAt":{"$$date":1736159782313},"updatedAt":{"$$date":1736159782313}}
 {"$$indexCreated":{"fieldName":"id","unique":true,"sparse":false}}

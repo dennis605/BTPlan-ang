@@ -52,7 +52,7 @@ import { forkJoin } from 'rxjs';
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <th mat-header-cell *matHeaderCellDef>Vorname</th>
           <td mat-cell *matCellDef="let employee">{{employee.name}}</td>
         </ng-container>
 
