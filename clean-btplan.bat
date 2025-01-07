@@ -61,14 +61,22 @@ echo 4. Bereinige AppData...
 rd /s /q "%AppData%\BTPlan" 2>nul
 rd /s /q "%LocalAppData%\BTPlan" 2>nul
 rd /s /q "%LocalAppData%\Programs\btplan" 2>nul
+rd /s /q "%LocalAppData%\electron-builder" 2>nul
+rd /s /q "%LocalAppData%\SquirrelSetup" 2>nul
+rd /s /q "%LocalAppData%\Programs\BTPlan-arm64" 2>nul
 
 echo.
-echo 5. Loesche Desktop-Verknuepfung...
+echo 5. Bereinige NSIS-Installer Cache...
+rd /s /q "%LocalAppData%\Package Cache" 2>nul
+rd /s /q "%ProgramData%\Package Cache" 2>nul
+
+echo.
+echo 6. Loesche Desktop-Verknuepfung...
 del /f /q "%Public%\Desktop\BTPlan.lnk" 2>nul
 del /f /q "%UserProfile%\Desktop\BTPlan.lnk" 2>nul
 
 echo.
-echo 6. Loesche Startmenue-Eintraege...
+echo 7. Loesche Startmenue-Eintraege...
 rd /s /q "%AppData%\Microsoft\Windows\Start Menu\Programs\BTPlan" 2>nul
 rd /s /q "%ProgramData%\Microsoft\Windows\Start Menu\Programs\BTPlan" 2>nul
 
