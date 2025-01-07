@@ -81,7 +81,15 @@ export class DailyScheduleService {
       })),
       switchMap(schedule => {
         if (schedule) {
-          return of(schedule);
+          // Wenn ein Schedule existiert, lade nur die Therapien aus der therapies-Collection
+          return this.therapyService.getTherapiesByDate(date).pipe(
+            map(therapies => ({
+              ...schedule,
+              therapies: therapies.sort((a, b) => 
+                new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+              )
+            }))
+          );
         }
         return this.therapyService.getTherapiesByDate(date).pipe(
           switchMap((therapies: Therapy[]) => {

@@ -54,13 +54,27 @@ var electron_1 = require("electron");
 var fs = require("fs");
 var DatabaseManager = /** @class */ (function () {
     function DatabaseManager() {
+        var _this = this;
         // Bestimme den Pfad für die Datenbank-Dateien
+        var devDbPath = path.join(__dirname, '..', 'database');
         this.dbPath = electron_1.app.isPackaged
             ? path.join(electron_1.app.getPath('userData'), 'database')
-            : path.join(__dirname, '..', 'database');
+            : devDbPath;
         // Stelle sicher, dass das Datenbankverzeichnis existiert
         if (!fs.existsSync(this.dbPath)) {
             fs.mkdirSync(this.dbPath, { recursive: true });
+            // Wenn wir im gepackten Modus sind und das Verzeichnis neu erstellt wurde,
+            // kopiere die Entwicklungsdatenbanken als initiale Daten
+            if (electron_1.app.isPackaged && fs.existsSync(devDbPath)) {
+                var dbFiles = ['dailySchedules.db', 'employees.db', 'locations.db', 'patients.db', 'therapies.db'];
+                dbFiles.forEach(function (file) {
+                    var srcPath = path.join(devDbPath, file);
+                    var destPath = path.join(_this.dbPath, file);
+                    if (fs.existsSync(srcPath)) {
+                        fs.copyFileSync(srcPath, destPath);
+                    }
+                });
+            }
         }
         // Initialisiere die Datenbanken
         this.db = {
