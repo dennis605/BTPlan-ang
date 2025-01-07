@@ -3,23 +3,20 @@
 
 !define APP_NAME "BTPlan"
 
-Function .onInit
-    ; Standard-Installationsverzeichnis vorschlagen
-    StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${APP_NAME}-ARM64"
-
-    ; Dialog für Installationsort anzeigen
-    MessageBox MB_YESNO|MB_ICONQUESTION "Möchten Sie den Standard-Installationsort verwenden?$\n$\nStandard: $INSTDIR" IDYES useDefault
-    
-    ; Wenn Nein, dann Verzeichnisauswahl anzeigen
-    nsDialogs::SelectFolderDialog "Wählen Sie den Installationsort" "$INSTDIR"
-    Pop $0
-    StrCmp $0 "error" useDefault
-    StrCpy $INSTDIR $0
-    
-    useDefault:
-FunctionEnd
-
 !macro customInit
+  ; Standard-Installationsverzeichnis vorschlagen
+  StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${APP_NAME}-ARM64"
+
+  ; Dialog für Installationsort anzeigen
+  MessageBox MB_YESNO|MB_ICONQUESTION "Möchten Sie den Standard-Installationsort verwenden?$\n$\nStandard: $INSTDIR" IDYES customInit_useDefault
+    
+  ; Wenn Nein, dann Verzeichnisauswahl anzeigen
+  nsDialogs::SelectFolderDialog "Wählen Sie den Installationsort" "$INSTDIR"
+  Pop $0
+  StrCmp $0 "error" customInit_useDefault
+  StrCpy $INSTDIR $0
+    
+  customInit_useDefault:
   ; Beende BTPlan falls es läuft
   nsProcess::_FindProcess "BTPlan.exe"
   Pop $R0
