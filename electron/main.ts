@@ -3,6 +3,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { DatabaseManager, Database } from './database';
 
+// Logger-Funktion einrichten
+function log(message: string) {
+  const logPath = path.join(app.getPath('userData'), 'btplan.log');
+  const timestamp = new Date().toISOString();
+  const logMessage = `${timestamp}: ${message}\n`;
+  fs.appendFileSync(logPath, logMessage);
+  console.log(message);
+}
+
 let dbManager: DatabaseManager;
 
 // Initialisiere die Datenbank
@@ -96,8 +105,10 @@ async function createWindow() {
     ? path.join(process.resourcesPath, 'resources', 'browser')
     : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
 
-  console.log('Browser Path:', browserPath);
-  console.log('Index File Path:', path.join(browserPath, 'index.html'));
+  log('App Path: ' + app.getAppPath());
+  log('Resource Path: ' + process.resourcesPath);
+  log('Browser Path: ' + browserPath);
+  log('Index File Path: ' + path.join(browserPath, 'index.html'));
   
   if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
     dialog.showErrorBox('Fehler beim Laden',

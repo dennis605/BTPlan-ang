@@ -56,7 +56,7 @@ var DatabaseManager = /** @class */ (function () {
     function DatabaseManager() {
         // Bestimme den Pfad für die Datenbank-Dateien
         this.dbPath = electron_1.app.isPackaged
-            ? path.join(process.resourcesPath, 'database')
+            ? path.join(electron_1.app.getPath('userData'), 'database')
             : path.join(__dirname, '..', 'database');
         // Stelle sicher, dass das Datenbankverzeichnis existiert
         if (!fs.existsSync(this.dbPath)) {
