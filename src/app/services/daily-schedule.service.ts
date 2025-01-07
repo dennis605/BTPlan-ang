@@ -35,7 +35,6 @@ export class DailyScheduleService {
                 .map(id => therapyMap.get(id))
                 .filter((t): t is Therapy => t !== undefined)
                 .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-                .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
             }));
           })
         );
@@ -165,10 +164,23 @@ export class DailyScheduleService {
           switchMap(existingSchedule => {
             if (existingSchedule) {
               // Wenn ein Tagesplan existiert, die neuen Therapien hinzufügen
+              // Prüfe auf Duplikate basierend auf Startzeit und Name
+              const uniqueTherapies = [...existingSchedule.therapies];
+              savedTherapies.forEach(newTherapy => {
+                const isDuplicate = uniqueTherapies.some(existingTherapy => 
+                  new Date(existingTherapy.startTime).getTime() === new Date(newTherapy.startTime).getTime() &&
+                  existingTherapy.name === newTherapy.name
+                );
+                if (!isDuplicate) {
+                  uniqueTherapies.push(newTherapy);
+                }
+              });
+              
               const updatedSchedule: DailySchedule = {
                 ...existingSchedule,
-                therapies: [...existingSchedule.therapies, ...savedTherapies]
-                  .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                therapies: uniqueTherapies.sort((a, b) => 
+                  new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+                )
               };
               return this.updateDailySchedule(updatedSchedule);
             } else {
