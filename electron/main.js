@@ -202,13 +202,28 @@ electron_1.ipcMain.handle('db-delete', function (event_1, _a) { return __awaiter
 }); });
 function createWindow() {
     return __awaiter(this, void 0, void 0, function () {
-        var mainWindow, browserPath;
+        var dbError_1, mainWindow, browserPath, resourceFiles, browserFiles, errorMessage, error_5;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, initDatabase()];
-                case 1:
+                case 0:
+                    _a.trys.push([0, 5, , 6]);
+                    log('Starting createWindow function...');
                     // Initialisiere und lade die Datenbank
+                    log('Initializing database...');
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, initDatabase()];
+                case 2:
                     dbManager = _a.sent();
+                    log('Database initialized successfully');
+                    return [3 /*break*/, 4];
+                case 3:
+                    dbError_1 = _a.sent();
+                    log('Database initialization failed: ' + dbError_1);
+                    throw dbError_1;
+                case 4:
+                    log('Creating browser window...');
                     mainWindow = new electron_1.BrowserWindow({
                         width: 1200,
                         height: 800,
@@ -218,6 +233,7 @@ function createWindow() {
                             preload: path.join(__dirname, 'preload.js')
                         }
                     });
+                    log('Browser window created');
                     browserPath = electron_1.app.isPackaged
                         ? path.join(process.resourcesPath, 'browser')
                         : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
@@ -225,15 +241,43 @@ function createWindow() {
                     log('Resource Path: ' + process.resourcesPath);
                     log('Browser Path: ' + browserPath);
                     log('Index File Path: ' + path.join(browserPath, 'index.html'));
+                    // Liste den Inhalt des Ressourcen-Verzeichnisses auf
+                    try {
+                        resourceFiles = fs.readdirSync(process.resourcesPath);
+                        log('Resource directory contents: ' + JSON.stringify(resourceFiles));
+                        if (fs.existsSync(path.join(process.resourcesPath, 'browser'))) {
+                            browserFiles = fs.readdirSync(path.join(process.resourcesPath, 'browser'));
+                            log('Browser directory contents: ' + JSON.stringify(browserFiles));
+                        }
+                        else {
+                            log('Browser directory does not exist');
+                        }
+                    }
+                    catch (fsError) {
+                        log('Error reading directory: ' + fsError);
+                    }
                     if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
-                        electron_1.dialog.showErrorBox('Fehler beim Laden', "Die Anwendung konnte nicht gefunden werden. Pfad: ".concat(path.join(browserPath, 'index.html')));
+                        errorMessage = "Die Anwendung konnte nicht gefunden werden. Pfad: ".concat(path.join(browserPath, 'index.html'));
+                        log('Error: ' + errorMessage);
+                        electron_1.dialog.showErrorBox('Fehler beim Laden', errorMessage);
                         electron_1.app.quit();
                         return [2 /*return*/];
                     }
+                    log('Loading index.html...');
                     mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(function (err) {
+                        log('Error loading index.html: ' + err);
                         electron_1.dialog.showErrorBox('Fehler beim Laden', 'Die Anwendung konnte nicht geladen werden. ' + err.message);
                     });
-                    return [2 /*return*/];
+                    return [3 /*break*/, 6];
+                case 5:
+                    error_5 = _a.sent();
+                    log('Critical error in createWindow: ' + error_5);
+                    if (error_5.stack) {
+                        log('Stack trace: ' + error_5.stack);
+                    }
+                    electron_1.dialog.showErrorBox('Kritischer Fehler', 'Ein kritischer Fehler ist aufgetreten: ' + error_5.message);
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
             }
         });
     });

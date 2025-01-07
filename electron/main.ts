@@ -45,7 +45,9 @@ async function initDatabase() {
   // Wenn die Datenbank leer ist, migriere die Daten aus db.json
   if (Object.values(counts).every(count => count === 0)) {
     console.log('Datenbank ist leer, starte Migration...');
-    await dbManager.migrateFromJson(path.join(__dirname, '..', 'db.json'));
+    await dbManager.migrateFromJson(app.isPackaged 
+      ? path.join(process.resourcesPath, 'db.json')
+      : path.join(__dirname, '..', 'db.json'));
     return dbManager;
   }
   
