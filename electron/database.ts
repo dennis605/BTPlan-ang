@@ -17,13 +17,27 @@ export class DatabaseManager {
 
     constructor() {
         // Bestimme den Pfad für die Datenbank-Dateien
+        const devDbPath = path.join(__dirname, '..', 'database');
         this.dbPath = app.isPackaged
             ? path.join(app.getPath('userData'), 'database')
-            : path.join(__dirname, '..', 'database');
+            : devDbPath;
 
         // Stelle sicher, dass das Datenbankverzeichnis existiert
         if (!fs.existsSync(this.dbPath)) {
             fs.mkdirSync(this.dbPath, { recursive: true });
+            
+            // Wenn wir im gepackten Modus sind und das Verzeichnis neu erstellt wurde,
+            // kopiere die Entwicklungsdatenbanken als initiale Daten
+            if (app.isPackaged && fs.existsSync(devDbPath)) {
+                const dbFiles = ['dailySchedules.db', 'employees.db', 'locations.db', 'patients.db', 'therapies.db'];
+                dbFiles.forEach(file => {
+                    const srcPath = path.join(devDbPath, file);
+                    const destPath = path.join(this.dbPath, file);
+                    if (fs.existsSync(srcPath)) {
+                        fs.copyFileSync(srcPath, destPath);
+                    }
+                });
+            }
         }
 
         // Initialisiere die Datenbanken
