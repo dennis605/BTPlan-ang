@@ -109,41 +109,79 @@ ipcMain.handle('db-delete', async (event, { collection, id }: { collection: keyo
 });
 
 async function createWindow() {
-  // Initialisiere und lade die Datenbank
-  dbManager = await initDatabase();
+  try {
+    log('Starting createWindow function...');
 
-  const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+    // Initialisiere und lade die Datenbank
+    log('Initializing database...');
+    try {
+      dbManager = await initDatabase();
+      log('Database initialized successfully');
+    } catch (dbError) {
+      log('Database initialization failed: ' + dbError);
+      throw dbError;
     }
-  });
 
-  // Lade die Angular App
-  const browserPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'browser')
-    : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
+    log('Creating browser window...');
+    const mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
+      }
+    });
+    log('Browser window created');
 
-  log('App Path: ' + app.getAppPath());
-  log('Resource Path: ' + process.resourcesPath);
-  log('Browser Path: ' + browserPath);
-  log('Index File Path: ' + path.join(browserPath, 'index.html'));
-  
-  if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
-    dialog.showErrorBox('Fehler beim Laden',
-      `Die Anwendung konnte nicht gefunden werden. Pfad: ${path.join(browserPath, 'index.html')}`);
-    app.quit();
-    return;
+    // Lade die Angular App
+    const browserPath = app.isPackaged
+      ? path.join(process.resourcesPath, 'browser')
+      : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
+
+    log('App Path: ' + app.getAppPath());
+    log('Resource Path: ' + process.resourcesPath);
+    log('Browser Path: ' + browserPath);
+    log('Index File Path: ' + path.join(browserPath, 'index.html'));
+    
+    // Liste den Inhalt des Ressourcen-Verzeichnisses auf
+    try {
+      const resourceFiles = fs.readdirSync(process.resourcesPath);
+      log('Resource directory contents: ' + JSON.stringify(resourceFiles));
+
+      if (fs.existsSync(path.join(process.resourcesPath, 'browser'))) {
+        const browserFiles = fs.readdirSync(path.join(process.resourcesPath, 'browser'));
+        log('Browser directory contents: ' + JSON.stringify(browserFiles));
+      } else {
+        log('Browser directory does not exist');
+      }
+    } catch (fsError) {
+      log('Error reading directory: ' + fsError);
+    }
+    
+    if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
+      const errorMessage = `Die Anwendung konnte nicht gefunden werden. Pfad: ${path.join(browserPath, 'index.html')}`;
+      log('Error: ' + errorMessage);
+      dialog.showErrorBox('Fehler beim Laden', errorMessage);
+      app.quit();
+      return;
+    }
+
+    log('Loading index.html...');
+    mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(err => {
+      log('Error loading index.html: ' + err);
+      dialog.showErrorBox('Fehler beim Laden',
+        'Die Anwendung konnte nicht geladen werden. ' + err.message);
+    });
+
+  } catch (error) {
+    log('Critical error in createWindow: ' + error);
+    if (error.stack) {
+      log('Stack trace: ' + error.stack);
+    }
+    dialog.showErrorBox('Kritischer Fehler',
+      'Ein kritischer Fehler ist aufgetreten: ' + error.message);
   }
-
-  mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(err => {
-    dialog.showErrorBox('Fehler beim Laden',
-      'Die Anwendung konnte nicht geladen werden. ' + err.message);
-  });
-
 }
 
 app.whenReady().then(createWindow);

@@ -219,7 +219,7 @@ function createWindow() {
                         }
                     });
                     browserPath = electron_1.app.isPackaged
-                        ? path.join(process.resourcesPath, 'resources', 'browser')
+                        ? path.join(process.resourcesPath, 'browser')
                         : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
                     log('App Path: ' + electron_1.app.getAppPath());
                     log('Resource Path: ' + process.resourcesPath);
