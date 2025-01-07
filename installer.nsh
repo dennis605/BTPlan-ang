@@ -3,11 +3,19 @@
 !macro customInit
   ; Prüfe zuerst, ob BTPlan überhaupt installiert ist
   ReadRegStr $R1 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{${PRODUCT_GUID}}" "UninstallString"
-  ${If} $R1 == ""
-    ; Keine vorherige Installation gefunden
-    StrCpy $R2 "CLEAN_INSTALL"
+  ${If} $R1 != ""
+    ; Prüfe ob der Installationspfad noch existiert
+    ReadRegStr $R3 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{${PRODUCT_GUID}}" "InstallLocation"
+    ${If} ${FileExists} "$R3\BTPlan.exe"
+      StrCpy $R2 "UPDATE"
+    ${Else}
+      ; Installation nicht gefunden, Registry bereinigen
+      DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{${PRODUCT_GUID}}"
+      DeleteRegKey HKCU "Software\BTPlan"
+      StrCpy $R2 "CLEAN_INSTALL"
+    ${EndIf}
   ${Else}
-    StrCpy $R2 "UPDATE"
+    StrCpy $R2 "CLEAN_INSTALL"
   ${EndIf}
 
   ; Beende BTPlan nur wenn es läuft
