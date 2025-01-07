@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
+var fs = require("fs");
 var database_1 = require("./database");
 var dbManager;
 // Initialisiere die Datenbank
@@ -187,8 +188,15 @@ function createWindow() {
                         }
                     });
                     browserPath = electron_1.app.isPackaged
-                        ? path.join(process.resourcesPath, 'browser')
+                        ? path.join(process.resourcesPath, 'resources', 'browser')
                         : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
+                    console.log('Browser Path:', browserPath);
+                    console.log('Index File Path:', path.join(browserPath, 'index.html'));
+                    if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
+                        electron_1.dialog.showErrorBox('Fehler beim Laden', "Die Anwendung konnte nicht gefunden werden. Pfad: ".concat(path.join(browserPath, 'index.html')));
+                        electron_1.app.quit();
+                        return [2 /*return*/];
+                    }
                     mainWindow.loadFile(path.join(browserPath, 'index.html')).catch(function (err) {
                         electron_1.dialog.showErrorBox('Fehler beim Laden', 'Die Anwendung konnte nicht geladen werden. ' + err.message);
                     });

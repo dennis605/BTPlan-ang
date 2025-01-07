@@ -18,7 +18,7 @@ export class DatabaseManager {
     constructor() {
         // Bestimme den Pfad für die Datenbank-Dateien
         this.dbPath = app.isPackaged
-            ? path.join(process.resourcesPath, 'database')
+            ? path.join(app.getPath('userData'), 'database')
             : path.join(__dirname, '..', 'database');
 
         // Stelle sicher, dass das Datenbankverzeichnis existiert

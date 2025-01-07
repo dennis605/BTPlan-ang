@@ -25,9 +25,7 @@
     "files": [
       "electron/main.js",
       "electron/preload.js",
-      "electron/database.js",
-      "dist/btplan/browser/**/*",
-      "database/**/*"
+      "electron/database.js"
     ],
     "extraResources": [
       {
@@ -40,7 +38,7 @@
       },
       {
         "from": "dist/btplan/browser",
-        "to": "resources/browser"
+        "to": "browser"
       }
     ],
     "asar": false,
