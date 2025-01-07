@@ -42,13 +42,36 @@ var fs = require("fs");
 var database_1 = require("./database");
 // Logger-Funktion einrichten
 function log(message) {
-    var logPath = path.join(electron_1.app.getPath('userData'), 'btplan.log');
-    var timestamp = new Date().toISOString();
-    var logMessage = "".concat(timestamp, ": ").concat(message, "\n");
-    fs.appendFileSync(logPath, logMessage);
-    console.log(message);
+    try {
+        var logPath = path.join(electron_1.app.getPath('userData'), 'btplan.log');
+        var timestamp = new Date().toISOString();
+        var logMessage = "".concat(timestamp, ": ").concat(message, "\n");
+        fs.appendFileSync(logPath, logMessage);
+        console.log(message);
+    }
+    catch (error) {
+        console.error('Logging failed:', error);
+    }
 }
+// Globaler Error Handler
+process.on('uncaughtException', function (error) {
+    try {
+        log('Uncaught Exception: ' + error.toString());
+        log(error.stack || 'No stack trace available');
+    }
+    catch (logError) {
+        console.error('Failed to log error:', logError);
+    }
+});
 var dbManager;
+// Sofort beim Start loggen
+try {
+    log('App starting...');
+    log('User Data Path: ' + electron_1.app.getPath('userData'));
+}
+catch (error) {
+    console.error('Initial logging failed:', error);
+}
 // Initialisiere die Datenbank
 function initDatabase() {
     return __awaiter(this, void 0, void 0, function () {

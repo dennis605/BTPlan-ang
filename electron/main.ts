@@ -124,7 +124,7 @@ async function createWindow() {
 
   // Lade die Angular App
   const browserPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'resources', 'browser')
+    ? path.join(process.resourcesPath, 'browser')
     : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
 
   log('App Path: ' + app.getAppPath());
