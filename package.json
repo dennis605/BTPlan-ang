@@ -18,8 +18,8 @@
     "build:windows-arm": "ng build && tsc electron/main.ts electron/preload.ts electron/database.ts && electron-builder build --win --arm64"
   },
   "build": {
-    "appId": "com.btplan.app",
-    "productName": "btplan",
+    "appId": "com.btplan.app.arm64",
+    "productName": "BTPlan-ARM64",
     "directories": {
       "output": "release",
       "buildResources": "dist/btplan/browser"
@@ -59,32 +59,15 @@
           "arch": "arm64"
         }
       ],
-      "artifactName": "BTPlan-Setup-${version}-arm64.${ext}",
-      "publisherName": "BTPlan"
+      "artifactName": "BTPlan-ARM64-Setup-${version}.${ext}",
+      "publisherName": "BTPlan",
+      "appId": "com.btplan.app.arm64"
     },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "BTPlan",
-      "include": "installer.nsh",
-      "installerIcon": "public/favicon.ico",
-      "uninstallerIcon": "public/favicon.ico",
-      "uninstallDisplayName": "BTPlan",
-      "differentialPackage": false,
-      "removeDefaultUninstallWelcomePage": true,
-      "warningsAsErrors": false,
-      "allowElevation": true,
-      "packElevateHelper": true,
-      "displayLanguageSelector": false,
-      "multiLanguageInstaller": false,
-      "unicode": true,
-      "guid": null,
-      "runAfterFinish": false,
-      "menuCategory": false
+      "include": "installer.nsh"
     }
   },
   "private": true,
