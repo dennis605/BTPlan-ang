@@ -5,11 +5,7 @@
 
 Function .onInit
     ; Standard-Installationsverzeichnis vorschlagen
-    ${If} ${RunningX64}
-        StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${APP_NAME}-ARM64"
-    ${Else}
-        StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${APP_NAME}"
-    ${EndIf}
+    StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${APP_NAME}-ARM64"
 
     ; Dialog für Installationsort anzeigen
     MessageBox MB_YESNO|MB_ICONQUESTION "Möchten Sie den Standard-Installationsort verwenden?$\n$\nStandard: $INSTDIR" IDYES useDefault
@@ -17,9 +13,8 @@ Function .onInit
     ; Wenn Nein, dann Verzeichnisauswahl anzeigen
     nsDialogs::SelectFolderDialog "Wählen Sie den Installationsort" "$INSTDIR"
     Pop $0
-    ${If} $0 != "error"
-        StrCpy $INSTDIR $0
-    ${EndIf}
+    StrCmp $0 "error" useDefault
+    StrCpy $INSTDIR $0
     
     useDefault:
 FunctionEnd
