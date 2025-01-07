@@ -125,15 +125,17 @@ async function createWindow() {
     }
 
     log('Creating browser window...');
-    const mainWindow = new BrowserWindow({
-      width: 1200,
-      height: 800,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
-      }
-    });
+  const mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    },
+    // Menüleiste für Windows ARM ausblenden
+    autoHideMenuBar: process.platform === 'win32' && process.arch === 'arm64'
+  });
     log('Browser window created');
 
     // Lade die Angular App
