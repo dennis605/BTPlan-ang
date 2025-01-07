@@ -40,6 +40,14 @@ var electron_1 = require("electron");
 var path = require("path");
 var fs = require("fs");
 var database_1 = require("./database");
+// Logger-Funktion einrichten
+function log(message) {
+    var logPath = path.join(electron_1.app.getPath('userData'), 'btplan.log');
+    var timestamp = new Date().toISOString();
+    var logMessage = "".concat(timestamp, ": ").concat(message, "\n");
+    fs.appendFileSync(logPath, logMessage);
+    console.log(message);
+}
 var dbManager;
 // Initialisiere die Datenbank
 function initDatabase() {
@@ -190,8 +198,10 @@ function createWindow() {
                     browserPath = electron_1.app.isPackaged
                         ? path.join(process.resourcesPath, 'resources', 'browser')
                         : path.join(__dirname, '..', 'dist', 'btplan', 'browser');
-                    console.log('Browser Path:', browserPath);
-                    console.log('Index File Path:', path.join(browserPath, 'index.html'));
+                    log('App Path: ' + electron_1.app.getAppPath());
+                    log('Resource Path: ' + process.resourcesPath);
+                    log('Browser Path: ' + browserPath);
+                    log('Index File Path: ' + path.join(browserPath, 'index.html'));
                     if (!fs.existsSync(path.join(browserPath, 'index.html'))) {
                         electron_1.dialog.showErrorBox('Fehler beim Laden', "Die Anwendung konnte nicht gefunden werden. Pfad: ".concat(path.join(browserPath, 'index.html')));
                         electron_1.app.quit();

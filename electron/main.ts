@@ -5,14 +5,36 @@ import { DatabaseManager, Database } from './database';
 
 // Logger-Funktion einrichten
 function log(message: string) {
-  const logPath = path.join(app.getPath('userData'), 'btplan.log');
-  const timestamp = new Date().toISOString();
-  const logMessage = `${timestamp}: ${message}\n`;
-  fs.appendFileSync(logPath, logMessage);
-  console.log(message);
+  try {
+    const logPath = path.join(app.getPath('userData'), 'btplan.log');
+    const timestamp = new Date().toISOString();
+    const logMessage = `${timestamp}: ${message}\n`;
+    fs.appendFileSync(logPath, logMessage);
+    console.log(message);
+  } catch (error) {
+    console.error('Logging failed:', error);
+  }
 }
 
+// Globaler Error Handler
+process.on('uncaughtException', (error) => {
+  try {
+    log('Uncaught Exception: ' + error.toString());
+    log(error.stack || 'No stack trace available');
+  } catch (logError) {
+    console.error('Failed to log error:', logError);
+  }
+});
+
 let dbManager: DatabaseManager;
+
+// Sofort beim Start loggen
+try {
+  log('App starting...');
+  log('User Data Path: ' + app.getPath('userData'));
+} catch (error) {
+  console.error('Initial logging failed:', error);
+}
 
 // Initialisiere die Datenbank
 async function initDatabase() {
