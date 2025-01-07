@@ -192,22 +192,10 @@ export class DailyScheduleService {
         return this.getScheduleByDate(newDate).pipe(
           switchMap(existingSchedule => {
             if (existingSchedule) {
-              // Wenn ein Tagesplan existiert, die neuen Therapien hinzufügen
-              // Prüfe auf Duplikate basierend auf Startzeit und Name
-              const uniqueTherapies = [...existingSchedule.therapies];
-              savedTherapies.forEach(newTherapy => {
-                const isDuplicate = uniqueTherapies.some(existingTherapy => 
-                  new Date(existingTherapy.startTime).getTime() === new Date(newTherapy.startTime).getTime() &&
-                  existingTherapy.name === newTherapy.name
-                );
-                if (!isDuplicate) {
-                  uniqueTherapies.push(newTherapy);
-                }
-              });
-              
+              // Wenn ein Tagesplan existiert, einfach alle neuen Therapien hinzufügen
               const updatedSchedule: DailySchedule = {
                 ...existingSchedule,
-                therapies: uniqueTherapies.sort((a, b) => 
+                therapies: [...existingSchedule.therapies, ...savedTherapies].sort((a, b) => 
                   new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
                 )
               };
