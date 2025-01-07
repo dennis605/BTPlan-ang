@@ -60,7 +60,8 @@
         }
       ],
       "artifactName": "BTPlan-Setup-${version}-arm64.${ext}",
-      "publisherName": "BTPlan"
+      "publisherName": "BTPlan",
+      "defaultInstallLocation": "${localappdata}\\Programs\\BTPlan-ARM64"
     },
     "nsis": {
       "oneClick": false,
@@ -84,8 +85,8 @@
       "unicode": true,
       "guid": null,
       "runAfterFinish": false,
-      "createStartMenuShortcut": true,
-      "menuCategory": false
+      "menuCategory": false,
+      "defaultInstallLocation": "${localappdata}\\Programs\\BTPlan-ARM64"
     }
   },
   "private": true,

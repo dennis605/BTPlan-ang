@@ -1,6 +1,14 @@
 !include LogicLib.nsh
 
+!define MULTIUSER_INSTALLMODE_INSTDIR "${localappdata}\Programs\BTPlan-ARM64"
+!define INSTALL_DIR "${localappdata}\Programs\BTPlan-ARM64"
+
+Function .onInit
+    StrCpy $INSTDIR "${INSTALL_DIR}"
+FunctionEnd
+
 !macro customInit
+    SetOutPath "$INSTDIR"
   ; Beende BTPlan falls es läuft
   nsProcess::_FindProcess "BTPlan.exe"
   Pop $R0
